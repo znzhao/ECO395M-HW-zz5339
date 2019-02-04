@@ -1,4 +1,4 @@
-#By Chong
+#By Chong test again
 greenbuildings <- read.csv("E:/Homework/DataMining/ECO395M-HW-zz5339/HW1/greenbuildings.csv")
 library(tidyverse)
 
