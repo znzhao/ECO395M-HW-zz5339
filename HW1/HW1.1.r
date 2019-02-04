@@ -76,3 +76,7 @@ p6
 # p7 = ggplot(GB_summ2,aes(x = green_rating, y = GB.mean))+
 #   geom_bar(stat='identity')
 # p7
+
+
+
+
