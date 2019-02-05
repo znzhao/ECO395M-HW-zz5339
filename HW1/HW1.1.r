@@ -51,10 +51,10 @@ p4
 GB_cleaned$size_category = cut(GB_cleaned$size, 9)
 GB_summ <- GB_cleaned %>%
   group_by(size_category,Green) %>%
-  summarise(GB_median = median(Rent))
+  summarise(Rent_median = median(Rent), leasing_rate = mean(leasing_rate))
 
 # Plot of Different Size
-p5 = ggplot(GB_summ, aes(x=size_category, y=GB_median)) + 
+p5 = ggplot(GB_summ, aes(x=size_category, y=Rent_median)) + 
   geom_bar(aes(fill = Green),stat='identity',position='dodge')+
   coord_flip()+
   labs(title = "Median of Different Size Groups")+
@@ -70,13 +70,16 @@ p6 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, color = Green)) +
 p6
 
 
-# GB_summ2 <- greenbuildings %>%
-#   group_by(green_rating) %>%
-#   summarise(GB.mean = mean(leasing_rate))
-# 
-# p7 = ggplot(GB_summ2,aes(x = green_rating, y = GB.mean))+
-#   geom_bar(stat='identity')
-# p7
+# Which occupancy rate should be chosen?
+
+p7 = ggplot(GB_summ,aes(x = size_category, y = leasing_rate))+
+  geom_bar(aes(fill = Green),stat='identity',position='dodge')+
+  coord_flip()+
+  labs(title = "Size & Occupancy Rate Plot",
+       x = "Occupancy rate",
+       y = "size")+
+  theme(plot.title = element_text(hjust = 0.5))
+p7
 
 
 
