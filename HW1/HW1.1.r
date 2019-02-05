@@ -1,8 +1,11 @@
 #By Chong test again
-greenbuildings <- read.csv("E:/Homework/DataMining/ECO395M-HW-zz5339/HW1/greenbuildings.csv")
+#greenbuildings <- read.csv("E:/Homework/DataMining/ECO395M-HW-zz5339/HW1/greenbuildings.csv")
+urlfile<-'https://raw.githubusercontent.com/jgscott/ECO395M/master/data/greenbuildings.csv'
+greenbuildings<-read.csv(url(urlfile))
 library(tidyverse)
 
 summary(greenbuildings)
+#data.frame(table(greenbuildings$cluster)) #group by cluster and count
 
 # Occupancy Rates & Rent Plot: NonGreen vs Green
 labels <- c("0" = "Non-Green", "1" = "Green")
@@ -32,6 +35,7 @@ p2 = ggplot(data = GB_cleaned, aes(x = Green, y = Rent)) +
 p2
 
 # Size & Rent Plot: NonGreen vs Green
+#comment_Chong: not too much relationship 
 p3 = ggplot(data = GB_cleaned) + 
   geom_point(mapping = aes(x = size, y = Rent, shape = Green, color = Green),alpha =0.8)+
   labs(title = "Size & Rent Plot", 
@@ -51,9 +55,10 @@ p4
 GB_cleaned$size_category = cut(GB_cleaned$size, 9)
 GB_summ <- GB_cleaned %>%
   group_by(size_category,Green) %>%
-  summarise(GB_median = median(Rent))
+  summarise(Rent_median = median(Rent), leasing_rate = mean(leasing_rate))
 
 # Plot of Different Size
+# Comment_Chong: green is not pricier than non-green from the plot
 p5 = ggplot(GB_summ, aes(x=size_category, y=GB_median)) + 
   geom_bar(aes(fill = Green),stat='identity',position='dodge')+
   coord_flip()+
@@ -62,6 +67,7 @@ p5 = ggplot(GB_summ, aes(x=size_category, y=GB_median)) +
 p5
 
 # Age of the Building
+# Comment_Chong: age does not seem to matter much
 p6 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, color = Green)) + 
   geom_point(alpha =0.8)+
   geom_smooth(se = TRUE)+
@@ -70,14 +76,16 @@ p6 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, color = Green)) +
 p6
 
 
-# GB_summ2 <- greenbuildings %>%
-#   group_by(green_rating) %>%
-#   summarise(GB.mean = mean(leasing_rate))
-# 
-# p7 = ggplot(GB_summ2,aes(x = green_rating, y = GB.mean))+
-#   geom_bar(stat='identity')
-# p7
+# Which occupancy rate should be chosen?
 
+p7 = ggplot(GB_summ,aes(x = size_category, y = leasing_rate))+
+  geom_bar(aes(fill = Green),stat='identity',position='dodge')+
+  coord_flip()+
+  labs(title = "Size & Occupancy Rate Plot",
+       x = "Occupancy rate",
+       y = "size")+
+  theme(plot.title = element_text(hjust = 0.5))
+p7
 
 
 
