@@ -55,7 +55,7 @@ GB_summ <- GB_cleaned %>%
 
 # Plot of Different Size
 # Comment_Chong: green is not pricier than non-green from the plot
-p5 = ggplot(GB_summ, aes(x=size_category, y=Rent_median)) + 
+p5 = ggplot(GB_summ, aes(x=size_category, y=GB_median)) +  
   geom_bar(aes(fill = Green),stat='identity',position='dodge')+
   coord_flip()+
   labs(title = "Median of Different Size Groups")+
