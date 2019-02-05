@@ -1,8 +1,11 @@
 #By Chong test again
-greenbuildings <- read.csv("E:/Homework/DataMining/ECO395M-HW-zz5339/HW1/greenbuildings.csv")
+#greenbuildings <- read.csv("E:/Homework/DataMining/ECO395M-HW-zz5339/HW1/greenbuildings.csv")
+urlfile<-'https://raw.githubusercontent.com/jgscott/ECO395M/master/data/greenbuildings.csv'
+greenbuildings<-read.csv(url(urlfile))
 library(tidyverse)
 
 summary(greenbuildings)
+#data.frame(table(greenbuildings$cluster)) #group by cluster and count
 
 # Occupancy Rates & Rent Plot: NonGreen vs Green
 labels <- c("0" = "Non-Green", "1" = "Green")
@@ -32,6 +35,7 @@ p2 = ggplot(data = GB_cleaned, aes(x = Green, y = Rent)) +
 p2
 
 # Size & Rent Plot: NonGreen vs Green
+#comment_Chong: not too much relationship 
 p3 = ggplot(data = GB_cleaned) + 
   geom_point(mapping = aes(x = size, y = Rent, shape = Green, color = Green),alpha =0.8)+
   labs(title = "Size & Rent Plot", 
@@ -63,6 +67,7 @@ p5 = ggplot(GB_summ, aes(x=size_category, y=Rent_median)) +
 p5
 
 # Age of the Building
+# Comment_Chong: age does not seem to matter much
 p6 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, color = Green)) + 
   geom_point(alpha =0.8)+
   geom_smooth(se = TRUE)+
