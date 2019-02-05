@@ -54,6 +54,7 @@ GB_summ <- GB_cleaned %>%
   summarise(Rent_median = median(Rent), leasing_rate = mean(leasing_rate))
 
 # Plot of Different Size
+# Comment_Chong: green is not pricier than non-green from the plot
 p5 = ggplot(GB_summ, aes(x=size_category, y=Rent_median)) + 
   geom_bar(aes(fill = Green),stat='identity',position='dodge')+
   coord_flip()+
