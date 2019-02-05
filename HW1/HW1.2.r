@@ -21,31 +21,53 @@ USairports <- subset(airports,(airports$iso_country =="US"))
  
 # Q1: What is the best time of day to fly to minimize delays?
 # Calculate delaying departure time:
-myABIA$TWindow = floor(myABIA$CRSDepTime/100)
+myABIA$TWindow = floor(myABIA$DepTime/100)
+myABIA$CRSTWindow = floor(myABIA$CRSDepTime/100)
 myABIA$INorOUT[myABIA$Dest == "AUS"] = "Arrival"
 myABIA$INorOUT[myABIA$Origin == "AUS"] = "Departure"
 myABIA[is.na(myABIA)]<-0
 myABIA_summ <- myABIA %>%
   group_by(TWindow,INorOUT) %>%
   summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
+myABIA_summ2 <- myABIA %>%
+  group_by(CRSTWindow,INorOUT) %>%
+  summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
 
-ggplot(data = myABIA_summ)+
+p1 = ggplot(data = myABIA_summ)+
   geom_bar(aes(x = TWindow, y = DepDelay_mean, fill = INorOUT),stat='identity',position='dodge')
-ggplot(data = myABIA_summ)+
+p1
+p2 = ggplot(data = myABIA_summ)+
   geom_bar(aes(x = TWindow, y = ArrDelay_mean, fill = INorOUT),stat='identity',position='dodge')
+p2
 
+p3 = ggplot(data = myABIA_summ2)+
+  geom_bar(aes(x = CRSTWindow, y = DepDelay_mean, fill = INorOUT),stat='identity',position='dodge')
+p3
+p4 = ggplot(data = myABIA_summ2)+
+  geom_bar(aes(x = CRSTWindow, y = ArrDelay_mean, fill = INorOUT),stat='identity',position='dodge')
+p4
 
-# Q2:
+# Q2: What is the best time of year to fly to minimize delays?
 
+myABIA_summ3 <- myABIA %>%
+  group_by(Month,INorOUT) %>%
+  summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
+
+p3 = ggplot(data = myABIA_summ3)+
+  geom_bar(aes(x = Month, y = DepDelay_mean, fill = INorOUT),stat='identity',position='dodge')
+p3
+p4 = ggplot(data = myABIA_summ3)+
+  geom_bar(aes(x = Month, y = ArrDelay_mean, fill = INorOUT),stat='identity',position='dodge')
+p4
 
 
 # Q3: How do patterns of flights to different destinations or parts of the country change over the course of the year?
 # first get the location of the Destination and the Origin
 USairportLocation = USairports[ , c("local_code","name","latitude_deg","longitude_deg")]
 myABIA2 = merge(myABIA,USairportLocation,by.x = "Dest", by.y = "local_code", all.x = TRUE)
-colnames(myABIA2)[32:34] <- c("DestAirport", "D_lat", "D_long")
+colnames(myABIA2)[33:35] <- c("DestAirport", "D_lat", "D_long")
 myABIA3 = merge(myABIA2,USairportLocation,by.x = "Origin", by.y = "local_code", all.x = TRUE)
-colnames(myABIA3)[35:37] <- c("OriginAirport", "O_lat", "O_long")
+colnames(myABIA3)[36:38] <- c("OriginAirport", "O_lat", "O_long")
 
 myABIA3$D_lat <- as.numeric(myABIA3$D_lat)
 myABIA3$O_lat <- as.numeric(myABIA3$O_lat)
@@ -61,24 +83,26 @@ Air_summ2 <- myABIA3 %>%
   summarise(O_long = mean(O_long),D_long = mean(D_long),O_lat = mean(O_lat),D_lat = mean(D_lat),airline = length(INorOUT), Delay = mean(DepDelay))
 
 
-# Mapping
-
-ggplot(data = Air_summ2)+
+# Mapping of all year
+p5 = ggplot(data = Air_summ2)+
   geom_point(aes(O_long,O_lat))+
   geom_point(aes(D_long,D_lat))+
   geom_segment(aes(x = O_long, y = O_lat, xend = D_long, yend = D_lat, col = airline),size = 0.8)+
   facet_wrap(~ INorOUT)+
   scale_colour_gradient2(low="white", high="blue")+
   borders("state")
+p5
 
-ggplot(data = Air_summ2)+
+# Mapping of different month
+
+
+
+
+p7 = ggplot(data = Air_summ2)+
   geom_point(aes(O_long,O_lat))+
   geom_point(aes(D_long,D_lat))+
   geom_segment(aes(x = O_long, y = O_lat, xend = D_long, yend = D_lat, col = Delay),size = 0.8)+
   facet_wrap(~ INorOUT)+
   scale_colour_gradient2(low="white", high="red")+
   borders("state")
-
-
-
-
+p7
