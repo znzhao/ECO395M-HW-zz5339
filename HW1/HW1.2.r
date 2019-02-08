@@ -26,17 +26,17 @@ myABIA_CRSsumm <- myABIA_fly %>%
   summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
 # P1 and P2 looks weird.
 # 1:00AM - 5:00AM looks abnormal, because sample size in this range is too small.
-p1 = ggplot(data = myABIA_summ)+
+p1 = ggplot(data = myABIA_Tsumm)+
   geom_bar(aes(x = TWindow, y = DepDelay_mean, fill = INorOUT),stat='identity',position='dodge')
 p1
-p2 = ggplot(data = myABIA_summ)+
+p2 = ggplot(data = myABIA_Tsumm)+
   geom_bar(aes(x = TWindow, y = ArrDelay_mean, fill = INorOUT),stat='identity',position='dodge')
 p2
 # This is much better:
-p3 = ggplot(data = myABIA_summ2)+
+p3 = ggplot(data = myABIA_CRSsumm)+
   geom_bar(aes(x = CRSTWindow, y = DepDelay_mean, fill = INorOUT),stat='identity',position='dodge')
 p3
-p4 = ggplot(data = myABIA_summ2)+
+p4 = ggplot(data = myABIA_CRSsumm)+
   geom_bar(aes(x = CRSTWindow, y = ArrDelay_mean, fill = INorOUT),stat='identity',position='dodge')
 p4
 
