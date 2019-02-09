@@ -28,8 +28,10 @@ rmse = function(y, ypred) {
   sqrt(mean(data.matrix((y-ypred)^2)))
 }
 ```
+
 In this exercise, we used K-nearest neighbors(KNN) to build a predictive model for price, given mileage, separately for each of two trim levels: 350 and 65 AMG.
 First, we run the KNN models for the trim level of 350. Here is the plot for mileage vs price for the trim level of 350:
+
 ```{r s350, echo=FALSE, warning= FALSE}
 # sclass_350
 My_data = sclass_350
@@ -37,7 +39,8 @@ My_data = sclass_350
 # plot the data
 p_350 = ggplot(data = My_data) + 
   geom_point(mapping = aes(x = mileage, y = price), color='darkgrey')+
-  labs(title = "Mileage vs Price (Trim Level: 350)")
+  labs(title = "Mileage vs Price (Trim Level: 350)")+
+  theme(plot.title = element_text(hjust = 0.5))
 p_350
 ```
 
@@ -90,6 +93,7 @@ Kmin = KNN_result$K[which.min(KNN_result$RSME)]
 P_KNNresult_350 = ggplot(data = KNN_result)+
   geom_line(aes(x = K, y = RSME))+
   geom_line(aes(x = Kmin, y = RSME), col = "red")+
-  labs(title = "K vs RSME(Trim Level: 350)")
+  labs(title = "K vs RSME(Trim Level: 350)")+
+  theme(plot.title = element_text(hjust = 0.5))
 P_KNNresult_350
 ```
