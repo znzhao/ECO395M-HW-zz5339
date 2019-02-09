@@ -7,16 +7,16 @@ output:
     variant: markdown_github
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(RColorBrewer)
 library(FNN)
 ```
-# Exercise 1.1
+## Exercise 1.1
 
-# Exercise 1.2
+## Exercise 1.2
 
-# Exercise 1.3
+## Exercise 1.3
 ```{r Ex3setup, include=FALSE}
 urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW1/sclass.csv'
 sclass<-read.csv(url(urlfile))
@@ -30,7 +30,7 @@ rmse = function(y, ypred) {
 ```
 This is a test.
 First, we show the plot of all the data from the class 350.
-```{r s350, echo=FALSE}
+```{r s350, echo=FALSE, warning= FALSE}
 # sclass_350
 My_data = sclass_350
 
@@ -42,7 +42,7 @@ p_350
 
 After the KNN we draw the K-RSME plot.
 
-```{r s350p_KNNplot, echo=FALSE}
+```{r s350p_KNNplot, echo=FALSE, warning=FALSE}
 # Make a train-test split
 N = nrow(My_data)
 N_train = floor(0.8*N)
@@ -60,10 +60,7 @@ D_train = My_data[train_ind,]
 D_test = My_data[-train_ind,]
 
 # optional book-keeping step:
-# reorder the rows of the testing set by the KHOU (temperature) variable
-# this isn't necessary, but it will allow us to make a pretty plot later
 D_test = arrange(D_test, mileage)
-head(D_test)
 
 # Now separate the training and testing sets into features (X) and outcome (y)
 X_train = select(D_train, mileage)
@@ -76,9 +73,6 @@ y_test = select(D_test, price)
 # Fit a few models
 #####
 
-# linear and quadratic models
-#lm1 = lm(COAST ~ KHOU, data=D_train)
-#lm2 = lm(COAST ~ poly(KHOU, 2), data=D_train)
 KNN_result <- data.frame(K=c(), rsme=c())
 # KNN
 for(v in c(3:nrow(X_train))){
