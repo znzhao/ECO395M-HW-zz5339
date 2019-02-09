@@ -17,6 +17,61 @@ library(FNN)
 author: Chong Wang, Tinaping Wu, Zhenning Zhao
 
 ## Exercise 1.1
+The environmentally conscious buildings have some obvious advantages, not only from an eco-friendly view, but also from the financial view, but the "data guru" clearly didn't make an reasonable argument to show the advantages clearly. To be more specific, we conclude that the duration that he calculated to recover the cost is wrong.
+```{r p1.1, echo=FALSE, warning=FALSE, fig.align='center'}
+urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW1/greenbuildings.csv'
+greenbuildings<-read.csv(url(urlfile))
+greenbuildings$Green[greenbuildings$green_rating==0] <- "Non-Green"
+greenbuildings$Green[greenbuildings$green_rating==1] <- "Green"
+# Occupancy Rates & Rent Plot: NonGreen vs Green
+NG <- subset(greenbuildings, (greenbuildings$green_rating == "0"))
+p1 <- ggplot(data = greenbuildings) + 
+  geom_point(mapping = aes(y = Rent, x = leasing_rate),alpha = 0.3, col = brewer.pal(6, "Greens")[5])+
+  facet_wrap(~ Green)+
+  geom_point(data = NG, mapping = aes(y = Rent, x = leasing_rate), alpha = 0.3, col = brewer.pal(6, "Reds")[5])+
+  labs(title = "Occupancy Rates vs Rent Plot", 
+       y = "Rent",
+       x = "Occupancy Rates")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+p1
+```
+The first step is to clean the data. The "data guru" noticed that a handful of the buildings in the data set had very low occupancy rates. Although this is a true fact, which can be shown in the above graph, he didn't provide a ggod reason for why remove the buildings with less than 10% leasing rate from consideration. It might be true that there are something weird happening with the buildings that have an occupancy rate of zero, but there is no good reason to remove 215 data points from the whole data set. According to a [research conducted by IBM](https://www.ibm.com/support/knowledgecenter/en/SSFCZ3_10.5.2/com.ibm.tri.doc/wpm_metrics/r_occupancy_rate.html), the buildings with a zero leasing rate is called not-used buildings. So we decide to exclude these data points fro the original dataset, instead of all the data with a leasing rate less than 10%.
+
+After that, we tried to clean the data further from the view that the "data guru" didn't think of. We noticed that this new project is in Austin. Since we checked from the internet that the tallest building in Austin is 56 floors, it makes no sense to do the analysis with the building that are too tall for Austin. Hence, we exclude all the buildings whose cluster has a building taller than 56 stories, and we end up with 6,618 data in the dataset.
+
+```{r p1.2, echo=FALSE, warning=FALSE, fig.align='center'}
+# clean data by deleting the data with occupacy rate equal to 0% and taller than 56 floor
+GB_test <- subset(greenbuildings,(greenbuildings$stories > 56))
+Clus = unique(GB_test$cluster)
+
+GB_cleaned <- subset(greenbuildings,(greenbuildings$leasing_rate != 0))
+for (i in 1:39){
+  GB_cleaned <-subset(GB_cleaned,(GB_cleaned$cluster!= Clus[i]))
+}
+
+# basic boxplot
+NG_one <- subset(GB_cleaned, green_rating == "0")
+p2 = ggplot(data = GB_cleaned, aes(x = Green, y = Rent)) + 
+  geom_boxplot(fill = brewer.pal(6, "Greens")[5], alpha = 0.8)+
+  geom_boxplot(data = NG_one, fill = brewer.pal(6, "Reds")[5], alpha= 0.9)+
+  labs(title = "Green Rating vs Rent Plot",
+       x = "Green Rating",
+       y = "Rent")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme_bw()
+p2
+```
+According to the "data guru", there are still many outlier from the dataset after the data cleaning, so he choose to use the median instead of the mean to calculate the expected rent for green buildings and non-green buildings. We plot the boxplot of green buildings and non-green buildings, to give a basic taste of the data. it seems that the "data guru" was right about the outliers, but it is unclear why there are so many outliers. So we digged deeper, and got some interesting findings.
+
+
+Second, 
+
+
+
+
+
+
 
 ## Exercise 1.2
 
