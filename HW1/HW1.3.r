@@ -19,7 +19,6 @@ rmse = function(y, ypred) {
 # sclass_350
 My_data = sclass_350
 
-
 # plot the data
 p_350 = ggplot(data = My_data) + 
   geom_point(mapping = aes(x = mileage, y = price), color='darkgrey')
@@ -193,9 +192,57 @@ rmse(y_test, ypred_knn)
 #D_test$ypred_lm2 = ypred_lm2
 D_test$ypred_knn = ypred_knn
 
-p_test_63 = ggplot(data = D_test) + 
+p_test_65 = ggplot(data = D_test) + 
   geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
   geom_path(mapping = aes(x = mileage, y = ypred_knn), color='red') +
   theme_bw(base_size=18)
-p_test_63 
+p_test_65 
 
+
+#####################################
+# In general,
+training = function(dataset) {
+  # Make a train-test split
+  N = nrow(dataset)
+  N_train = floor(0.8*N)
+  N_test = N - N_train
+  
+  # randomly sample a set of data points to include in the training set
+  train_ind = sample.int(N, N_train, replace=FALSE)
+  
+  # Define the training and testing set
+  D_train = dataset[train_ind,]
+  D_test = dataset[-train_ind,]
+  
+  # Now separate the training and testing sets into features (X) and outcome (y)
+  X_train = select(D_train, mileage)
+  y_train = select(D_train, price)
+  X_test = select(D_test, mileage)
+  y_test = select(D_test, price)
+  
+  # linear and quadratic models
+  KNN_result <- data.frame(K=c(), rsme=c())
+  # KNN
+  for(v in c(3:nrow(X_train))){
+    knn_K = knn.reg(train = X_train, test = X_test, y = y_train, k=v)
+    ypred_knn = knn_K$pred
+    KNN_rsme = rmse(y_test, ypred_knn)
+    KNN_result <- rbind(KNN_result,c(v,KNN_rsme))
+  }
+  
+  colnames(KNN_result) = c("K","RSME")
+  Kmin = KNN_result$K[which.min(KNN_result$RSME)]
+  Kmin
+}
+
+OptK_350 <- data.frame(K=c())
+for (i in c(1:20)) {
+  OptK_350 <- rbind(OptK_350, c(training(sclass_350)))
+}
+mean(OptK_350$X5)
+
+OptK_65AMG <- data.frame(K=c())
+for (i in c(1:20)) {
+  OptK_65AMG <- rbind(OptK_65AMG, c(training(sclass_65AMG)))
+}
+mean(OptK_65AMG$X7)
