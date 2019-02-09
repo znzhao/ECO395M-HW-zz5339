@@ -22,11 +22,9 @@ We splited the data into a training and a testing set. There are 80% of the data
 
 The optimal K for trim level 350 is printed below:
 
-    ## [1] 79
+    ## [1] 6
 
 Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, we can get the optimal K for trim level 350 is about 19. Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
-
-    ## [1] 9457.246
 
 <img src="Exercise_1_Report_files/figure-markdown_github/s350p_optimalplot-1.png" style="display: block; margin: auto;" />
 
@@ -40,10 +38,20 @@ We splited the data into a training and a testing set. There are 80% of the data
 
 The optimal K for trim level 65 AMG is printed below:
 
-    ## [1] 20
+    ## [1] 24
 
 Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, we can get the optimal K for trim level 65 AMG is about 16. Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
 
-    ## [1] 23117.32
-
 <img src="Exercise_1_Report_files/figure-markdown_github/s65p_optimalplot-1.png" style="display: block; margin: auto;" />
+
+In the end, the following code showed that the average optimal K for trim level 350 is larger than optimal K for trim level 65 AMG. We think that this is because that the sample size for the first data subset is larger than the second, and hence has a larger optimal K.
+
+    ## Warning in mean.default(OptK_350$X5): argument is not numeric or logical:
+    ## returning NA
+
+    ## [1] NA
+
+    ## Warning in mean.default(OptK_65AMG$X7): argument is not numeric or logical:
+    ## returning NA
+
+    ## [1] NA
