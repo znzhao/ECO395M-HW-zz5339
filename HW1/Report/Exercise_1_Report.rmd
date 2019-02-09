@@ -102,12 +102,16 @@ Since the traning set is chosen randomly, if we run the KNN for several times, w
 Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
 
 ```{r s350p_optimalplot, echo=FALSE, warning=FALSE, fig.align='center'}
+knn_K = knn.reg(train = X_train, test = X_test, y = y_train, k=Kmin)
+ypred_knn = knn_K$pred
+
+rmse(y_test, ypred_knn)
 D_test$ypred_knn = ypred_knn
 
 p_test_350 = ggplot(data = D_test) + 
   geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
   geom_path(mapping = aes(x = mileage, y = ypred_knn), color='red') +
-  theme_bw(base_size=18)+
+  theme_bw()+
   labs(title = "Fitted Model(Trim Level: 350)")+
   theme(plot.title = element_text(hjust = 0.5))
 p_test_350
@@ -184,23 +188,16 @@ Then for the optimal value of K in this one running, a plot of the fitted modeli
 knn_K = knn.reg(train = X_train, test = X_test, y = y_train, k=Kmin)
 ypred_knn = knn_K$pred
 
-#rmse(y_test, ypred_lm1)
-#rmse(y_test, ypred_lm2)
 rmse(y_test, ypred_knn)
 
-
-####
-# plot the fit
-####
-
 # attach the predictions to the test data frame
-#D_test$ypred_lm2 = ypred_lm2
+
 D_test$ypred_knn = ypred_knn
 
 p_test_65 = ggplot(data = D_test) + 
   geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
   geom_path(mapping = aes(x = mileage, y = ypred_knn), color='red') +
-  theme_bw(base_size=18)+
+  theme_bw()+
   labs(title = "Fitted Model(Trim Level: 65AMG)")+
   theme(plot.title = element_text(hjust = 0.5))
 p_test_65 
