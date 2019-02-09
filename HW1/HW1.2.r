@@ -19,65 +19,82 @@ myABIA$INorOUT[myABIA$Origin == "AUS"] = "Departure"
 myABIA_fly <- subset(myABIA,(myABIA$Cancelled == "0"))
 myABIA_fly <- subset(myABIA_fly,!(myABIA_fly$Diverted == 1))
 myABIA_cancel <- subset(myABIA,(myABIA$Cancelled == "1"))
-# myABIA_Tsumm <- myABIA_fly %>%
-#   group_by(TWindow,INorOUT) %>%
-#   summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
+# Q1:
+
+# plot the summ for all the airline companies 
+myABIA_CRSsumm_D_total <- myABIA_fly %>%
+  group_by(CRSTWindow_D,INorOUT) %>%
+  summarise(DepDelay_mean = mean(DepDelay))
+
+myABIA_CRSsumm_A_total <- myABIA_fly %>%
+  group_by(CRSTWindow_A,INorOUT) %>%
+  summarise(ArrDelay_mean = mean(ArrDelay))
+
+p1 = ggplot(data = subset(myABIA_CRSsumm_D_total,(myABIA_CRSsumm_D_total$INorOUT == "Departure")))+
+  geom_bar(aes(x = CRSTWindow_D, y = DepDelay_mean),stat='identity',position='dodge')
+p1
+p2 = ggplot(data = subset(myABIA_CRSsumm_A_total,(myABIA_CRSsumm_A_total$INorOUT == "Arrival")))+
+  geom_bar(aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity',position='dodge')
+p2
+# Now for different airline companies
+# myABIA_CRSsumm_Departure <- subset(myABIA_CRSsumm_Departure,(myABIA_CRSsumm_Departure$UniqueCarrier != "YV"))
 myABIA_CRSsumm_Departure <- myABIA_fly %>%
   group_by(CRSTWindow_D,INorOUT,UniqueCarrier) %>%
-  summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
-
+  summarise(DepDelay_mean = mean(DepDelay))
+myABIA_CRSsumm_Departure <- subset(myABIA_CRSsumm_Departure,(myABIA_CRSsumm_Departure$INorOUT == "Departure"))
 myABIA_CRSsumm_Arrival <- myABIA_fly %>%
   group_by(CRSTWindow_A,INorOUT,UniqueCarrier) %>%
-  summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
-# P1 and P2 looks weird.
-# 1:00AM - 5:00AM looks abnormal, because sample size in this range is too small.
-# p1 = ggplot(data = myABIA_Tsumm)+
-#   geom_bar(aes(x = TWindow, y = DepDelay_mean, fill = INorOUT),stat='identity',position='dodge')
-# p1
-# p2 = ggplot(data = myABIA_Tsumm)+
-#   geom_bar(aes(x = TWindow, y = ArrDelay_mean, fill = INorOUT),stat='identity',position='dodge')
-# p2
-# This is much better:
+  summarise(ArrDelay_mean = mean(ArrDelay))
+myABIA_CRSsumm_Arrival <- subset(myABIA_CRSsumm_Arrival,(myABIA_CRSsumm_Arrival$INorOUT == "Arrival"))
 
-p3 = ggplot(data = subset(myABIA_CRSsumm_Departure,(myABIA_CRSsumm_Departure$INorOUT == "Departure")))+
-  geom_bar(aes(x = CRSTWindow_D, y = DepDelay_mean),stat='identity',position='dodge')+
+# calculate the max point for D
+Delay_D_max = aggregate(myABIA_CRSsumm_Departure$DepDelay_mean,by=list(name=myABIA_CRSsumm_Departure$UniqueCarrier),FUN=max)
+for (i in Delay_D_max$name) {
+  x = myABIA_CRSsumm_Departure$CRSTWindow_D[which((myABIA_CRSsumm_Departure$DepDelay_mean == Delay_D_max$x[Delay_D_max$name == i]))]
+  Delay_D_max$time[Delay_D_max$name == i] <- x
+}
+colnames(Delay_D_max)[1:3] <- c("UniqueCarrier", "Vmax", "CRSTWindow_D")
+p3 = ggplot()+
+  geom_bar(data = myABIA_CRSsumm_Departure, aes(x = CRSTWindow_D, y = DepDelay_mean),stat='identity')+
+  facet_wrap(~UniqueCarrier) +
+  geom_bar(data = Delay_D_max, aes(x = CRSTWindow_D, y = Vmax),stat='identity', fill = "red")
 p3
-p4 = ggplot(data = subset(myABIA_CRSsumm_Arrival,(myABIA_CRSsumm_Arrival$INorOUT == "Arrival")))+
-  geom_bar(aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity',position='dodge')+
-p4
-# myABIA_CRSsumm_Departure <- subset(myABIA_CRSsumm_Departure,(myABIA_CRSsumm_Departure$UniqueCarrier != "YV"))
 
+Delay_A_max = aggregate(myABIA_CRSsumm_Arrival$ArrDelay_mean,by=list(name=myABIA_CRSsumm_Arrival$UniqueCarrier),FUN=max)
+for (i in Delay_A_max$name) {
+  x = myABIA_CRSsumm_Arrival$CRSTWindow_A[which((myABIA_CRSsumm_Arrival$ArrDelay_mean == Delay_A_max$x[Delay_A_max$name == i]))]
+  Delay_A_max$time[Delay_A_max$name == i] <- x
+}
+colnames(Delay_A_max)[1:3] <- c("UniqueCarrier", "Vmax", "CRSTWindow_A")
 
-p3 = ggplot(data = subset(myABIA_CRSsumm_Departure,(myABIA_CRSsumm_Departure$INorOUT == "Departure")))+
-  geom_bar(aes(x = CRSTWindow_D, y = DepDelay_mean, group = INorOUT),stat='identity',position='dodge')+
-  facet_wrap(~UniqueCarrier)
-p3
-p4 = ggplot(data = subset(myABIA_CRSsumm_Arrival,(myABIA_CRSsumm_Arrival$INorOUT == "Arrival")))+
-  geom_bar(aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity',position='dodge')+
-  facet_wrap(~UniqueCarrier)
+p4 = ggplot()+
+  geom_bar(data = myABIA_CRSsumm_Arrival, aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity')+
+  facet_wrap(~UniqueCarrier) +
+  geom_bar(data = Delay_A_max, aes(x = CRSTWindow_A, y = Vmax),stat='identity', fill = "red")
 p4
+
 
 # Q2: What is the best time of year to fly to minimize delays?
-
-myABIA_summ3 <- myABIA_fly %>%
+# plot the summ for all the airline companies 
+myABIA_summ_Month <- myABIA_fly %>%
   group_by(Month,INorOUT) %>%
   summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
 
-p3 = ggplot(data = myABIA_summ3)+
-  geom_bar(aes(x = Month, y = DepDelay_mean, fill = INorOUT),stat='identity',position='dodge')
-p3
-p4 = ggplot(data = myABIA_summ3)+
-  geom_bar(aes(x = Month, y = ArrDelay_mean, fill = INorOUT),stat='identity',position='dodge')
-p4
+p5 = ggplot(data = subset(myABIA_summ_Month,(myABIA_summ_Month$INorOUT == "Departure")))+
+  geom_bar(aes(x = Month, y = DepDelay_mean),stat='identity',position='dodge')
+p5
+p6 = ggplot(data = subset(myABIA_summ_Month,(myABIA_summ_Month$INorOUT == "Arrival")))+
+  geom_bar(aes(x = Month, y = ArrDelay_mean),stat='identity',position='dodge')
+p6
 
 
 # Q3: How do patterns of flights to different destinations or parts of the country change over the course of the year?
 # first get the location of the Destination and the Origin
 USairportLocation = USairports[ , c("local_code","name","latitude_deg","longitude_deg")]
 myABIA2 = merge(myABIA_fly,USairportLocation,by.x = "Dest", by.y = "local_code", all.x = TRUE)
-colnames(myABIA2)[33:35] <- c("DestAirport", "D_lat", "D_long")
+colnames(myABIA2)[34:36] <- c("DestAirport", "D_lat", "D_long")
 myABIA3 = merge(myABIA2,USairportLocation,by.x = "Origin", by.y = "local_code", all.x = TRUE)
-colnames(myABIA3)[36:38] <- c("OriginAirport", "O_lat", "O_long")
+colnames(myABIA3)[37:39] <- c("OriginAirport", "O_lat", "O_long")
 
 myABIA3$D_lat <- as.numeric(myABIA3$D_lat)
 myABIA3$O_lat <- as.numeric(myABIA3$O_lat)
