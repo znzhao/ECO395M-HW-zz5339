@@ -6,7 +6,7 @@ library(RColorBrewer)
 
 summary(greenbuildings)
 #data.frame(table(greenbuildings$cluster)) #group by cluster and count
-
+#theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 greenbuildings$Green[greenbuildings$green_rating==0] <- "Non-Green"
 greenbuildings$Green[greenbuildings$green_rating==1] <- "Green"
@@ -20,8 +20,7 @@ p1 <- ggplot(data = greenbuildings) +
   labs(title = "Occupancy Rates vs Rent Plot", 
        y = "Rent",
        x = "Occupancy Rates")+
-  #theme_bw()+
-  #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p1 
 
@@ -51,7 +50,8 @@ p2 = ggplot(data = GB_cleaned, aes(x = Green, y = Rent)) +
   labs(title = "Green Rating vs Rent Plot",
        x = "Green Rating",
        y = "Rent")+
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme_bw()
 p2
 
 # Size & Rent Plot: NonGreen vs Green
@@ -74,6 +74,7 @@ p3 = ggplot(data = GB_cleaned, aes(x = size))+
   scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
   #scale_fill_brewer(palette= "Greens",direction = -1)+
   labs(title = "Size vs Density Plot", x = "Size", y = "Density")+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p3
 # Building is concentrating in small size 
@@ -97,9 +98,10 @@ p5 = ggplot(data = GB_cleaned, aes(x = stories))+
   geom_density(aes(fill = Green),alpha = 0.7)+
   geom_vline(xintercept = 15)+
   labs(title = "Stories vs Density Plot", x = "Stories", y = "Density",col="grey")+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5)) + 
   scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
-  geom_text(x=16, y=0.06, label="Our Building",adj=-0.05,alpha = 0.5,col="grey")
+  geom_text(x=16, y=0.06, label="Our Building",adj=-0.05,alpha = 0.5)
 
 p5# Building is concentrating in medium size 
 
