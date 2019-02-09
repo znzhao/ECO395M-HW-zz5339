@@ -175,6 +175,7 @@ p_test_65AMG = ggplot(data = KNN_result)+
   geom_line(aes(x = Kmin, y = RSME), col = "red")+
   labs(title = "K vs RSME(Trim Level: 65 AMG)")+
   theme(plot.title = element_text(hjust = 0.5))
+p_test_65AMG
 ```
 
 The optimal K for trim level 65 AMG is printed below:
