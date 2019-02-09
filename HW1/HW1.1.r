@@ -86,7 +86,7 @@ p4 <- ggplot(data = GB_cleaned)+
   labs(title = "Size vs Stories Plot", 
        x = "Size",
        y = "Stories")+
-  
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p4
 
@@ -130,18 +130,20 @@ p6 = ggplot(GB_summ, aes(x=amenities, y=Rent_mean)) +
   #scale_fill_brewer(palette= "Greens",direction = -1)+
   facet_wrap(~ stories_category, labeller = label_parsed) +
   labs(title = "Mean of Different Size Groups vs Rent Plot", x = "Size", y = "Rent")+
-  theme(plot.title = element_text(hjust = 0.5)) + 
-  scale_fill_manual( values = c(brewer.pal(6, "Greens")[3],brewer.pal(3, "Reds")[3]))
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5)) 
+  scale_fill_manual(values=c(brewer.pal(9, "Greens")[5],brewer.pal(9, "Reds")[5]))
 p6
 
 
 # Age of the Building
 p7 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, col = Green)) + 
-  geom_point(aes(x = age, y = Rent, col = Green), alpha =0.7)+
+  geom_point(aes(x = age, y = Rent, col = Green), alpha =0.3)+
 #  geom_smooth(se = TRUE)+
-  scale_color_manual( values = c(brewer.pal(5, "Greens")[3],brewer.pal(3, "Reds")[3]))+
+  scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
   labs(title = "Age vs Rent Plot", x = "Age", y = "Rent")+
   facet_wrap(~ Green, labeller = label_parsed)+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p7
 
@@ -186,10 +188,12 @@ GB_summ2 <- GB_cleaned %>%
 
 p8 = ggplot(GB_summ2,aes(x = stories_category, y = leasing_rate))+
   geom_bar(aes(fill = Green),stat='identity',position='dodge')+
-  scale_fill_manual( values = c(brewer.pal(4, "Greens")[3], brewer.pal(3, "Reds")[3]))+
+  scale_fill_manual(values = c(brewer.pal(6, "Greens")[5], brewer.pal(6, "Reds")[5]))+
+  geom_text(x=stories, y=leasing_rate, label="leasing_rate",adj=-0.05)
   labs(title = "Stories & Occupancy Rate Plot",
        y = "Occupancy Rate",
        x = "Stories")+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p8
 
@@ -212,11 +216,12 @@ GB_summ4 <- subset(GB_summ4, (GB_summ4$age<30))
 p9 = ggplot()+
  geom_point(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
   geom_line(data = GB_summ4, aes( x = age, y = leasing_rate, col = Green))+
-  scale_color_manual( values = c(brewer.pal(5, "Greens")[3],brewer.pal(3, "Reds")[3]))+
+  scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
   ylim(0,100)+
   labs(title = "Age vs Occupancy Rate Plot",
        y = "Occupancy rate",
        x = "Age of the building")+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p9
 ###############################
