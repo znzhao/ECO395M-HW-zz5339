@@ -28,19 +28,20 @@ rmse = function(y, ypred) {
   sqrt(mean(data.matrix((y-ypred)^2)))
 }
 ```
-This is a test.
-First, we show the plot of all the data from the class 350.
+In this exercise, we used K-nearest neighbors(KNN) to build a predictive model for price, given mileage, separately for each of two trim levels: 350 and 65 AMG.
+First, we run the KNN models for the trim level of 350. Here is the plot for mileage vs price for the trim level of 350:
 ```{r s350, echo=FALSE, warning= FALSE}
 # sclass_350
 My_data = sclass_350
 
 # plot the data
 p_350 = ggplot(data = My_data) + 
-  geom_point(mapping = aes(x = mileage, y = price), color='darkgrey')
+  geom_point(mapping = aes(x = mileage, y = price), color='darkgrey')+
+  labs(title = "Mileage vs Price (Trim Level: 350)")
 p_350
 ```
 
-After the KNN we draw the K-RSME plot.
+We splited the data into a training and a testing set. There are 80% of the data are in the training set. Then we run the  K-nearest-neighbors, for many different values of K, starting at K=3 and going as high as the sample size. For each value of K, fit the model to the training set and make predictions on the test set, and calculate the out-of-sample root mean-squared error (RMSE) for each value of K. The plot of K versus RSME is showed below:
 
 ```{r s350p_KNNplot, echo=FALSE, warning=FALSE}
 # Make a train-test split
@@ -88,6 +89,7 @@ Kmin = KNN_result$K[which.min(KNN_result$RSME)]
 
 P_KNNresult_350 = ggplot(data = KNN_result)+
   geom_line(aes(x = K, y = RSME))+
-  geom_line(aes(x = Kmin, y = RSME), col = "red")
+  geom_line(aes(x = Kmin, y = RSME), col = "red")+
+  labs(title = "K vs RSME(Trim Level: 350)")
 P_KNNresult_350
 ```

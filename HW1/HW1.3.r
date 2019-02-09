@@ -19,7 +19,6 @@ rmse = function(y, ypred) {
 # sclass_350
 My_data = sclass_350
 
-
 # plot the data
 p_350 = ggplot(data = My_data) + 
   geom_point(mapping = aes(x = mileage, y = price), color='darkgrey')
