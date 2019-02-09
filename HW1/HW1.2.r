@@ -12,32 +12,49 @@ USairports <- subset(airports,(airports$iso_country =="US"))
 # Q1: What is the best time of day to fly to minimize delays?
 # Calculate delaying departure time:
 myABIA$TWindow = floor(myABIA$DepTime/100)
-myABIA$CRSTWindow = floor(myABIA$CRSDepTime/100)
+myABIA$CRSTWindow_D = floor(myABIA$CRSDepTime/100)
+myABIA$CRSTWindow_A = floor(myABIA$CRSArrTime/100)
 myABIA$INorOUT[myABIA$Dest == "AUS"] = "Arrival"
 myABIA$INorOUT[myABIA$Origin == "AUS"] = "Departure"
 myABIA_fly <- subset(myABIA,(myABIA$Cancelled == "0"))
 myABIA_fly <- subset(myABIA_fly,!(myABIA_fly$Diverted == 1))
 myABIA_cancel <- subset(myABIA,(myABIA$Cancelled == "1"))
-myABIA_Tsumm <- myABIA_fly %>%
-  group_by(TWindow,INorOUT) %>%
+# myABIA_Tsumm <- myABIA_fly %>%
+#   group_by(TWindow,INorOUT) %>%
+#   summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
+myABIA_CRSsumm_Departure <- myABIA_fly %>%
+  group_by(CRSTWindow_D,INorOUT,UniqueCarrier) %>%
   summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
-myABIA_CRSsumm <- myABIA_fly %>%
-  group_by(CRSTWindow,INorOUT) %>%
+
+myABIA_CRSsumm_Arrival <- myABIA_fly %>%
+  group_by(CRSTWindow_A,INorOUT,UniqueCarrier) %>%
   summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
 # P1 and P2 looks weird.
 # 1:00AM - 5:00AM looks abnormal, because sample size in this range is too small.
-p1 = ggplot(data = myABIA_Tsumm)+
-  geom_bar(aes(x = TWindow, y = DepDelay_mean, fill = INorOUT),stat='identity',position='dodge')
-p1
-p2 = ggplot(data = myABIA_Tsumm)+
-  geom_bar(aes(x = TWindow, y = ArrDelay_mean, fill = INorOUT),stat='identity',position='dodge')
-p2
+# p1 = ggplot(data = myABIA_Tsumm)+
+#   geom_bar(aes(x = TWindow, y = DepDelay_mean, fill = INorOUT),stat='identity',position='dodge')
+# p1
+# p2 = ggplot(data = myABIA_Tsumm)+
+#   geom_bar(aes(x = TWindow, y = ArrDelay_mean, fill = INorOUT),stat='identity',position='dodge')
+# p2
 # This is much better:
-p3 = ggplot(data = myABIA_CRSsumm)+
-  geom_bar(aes(x = CRSTWindow, y = DepDelay_mean, fill = INorOUT),stat='identity',position='dodge')
+
+p3 = ggplot(data = subset(myABIA_CRSsumm_Departure,(myABIA_CRSsumm_Departure$INorOUT == "Departure")))+
+  geom_bar(aes(x = CRSTWindow_D, y = DepDelay_mean),stat='identity',position='dodge')+
 p3
-p4 = ggplot(data = myABIA_CRSsumm)+
-  geom_bar(aes(x = CRSTWindow, y = ArrDelay_mean, fill = INorOUT),stat='identity',position='dodge')
+p4 = ggplot(data = subset(myABIA_CRSsumm_Arrival,(myABIA_CRSsumm_Arrival$INorOUT == "Arrival")))+
+  geom_bar(aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity',position='dodge')+
+p4
+# myABIA_CRSsumm_Departure <- subset(myABIA_CRSsumm_Departure,(myABIA_CRSsumm_Departure$UniqueCarrier != "YV"))
+
+
+p3 = ggplot(data = subset(myABIA_CRSsumm_Departure,(myABIA_CRSsumm_Departure$INorOUT == "Departure")))+
+  geom_bar(aes(x = CRSTWindow_D, y = DepDelay_mean, group = INorOUT),stat='identity',position='dodge')+
+  facet_wrap(~UniqueCarrier)
+p3
+p4 = ggplot(data = subset(myABIA_CRSsumm_Arrival,(myABIA_CRSsumm_Arrival$INorOUT == "Arrival")))+
+  geom_bar(aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity',position='dodge')+
+  facet_wrap(~UniqueCarrier)
 p4
 
 # Q2: What is the best time of year to fly to minimize delays?

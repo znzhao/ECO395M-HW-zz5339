@@ -8,7 +8,7 @@ sclass<-read.csv(url(urlfile))
 
 summary(sclass)
 sclass_350 <- subset(sclass,(sclass$trim == "350"))
-sclass_63AMG <- subset(sclass,(sclass$trim == "63 AMG"))
+sclass_65AMG <- subset(sclass,(sclass$trim == "65 AMG"))
 
 # define a helper function for calculating RMSE
 rmse = function(y, ypred) {
@@ -109,7 +109,7 @@ p_test_350
 
 ###################################################################
 # sclass_63AMG
-My_data = sclass_63AMG
+My_data = sclass_65AMG
 
 
 # plot the data
