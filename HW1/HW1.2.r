@@ -113,6 +113,27 @@ p5 = ggplot(data = Air_summ)+
   facet_wrap(~ Month)
 p5
 
+Air_summJan = subset(Air_summ, Air_summ$Month==1) 
+Air_summFeb = subset(Air_summ, Air_summ$Month==2) 
+Air_summOut = subset(Air_summ, Air_summ$INorOUT=="Departure") 
+
+p5half = ggplot(data = Air_summ)+
+  geom_point(aes(O_long,O_lat))+
+  geom_point(aes(D_long,D_lat))+
+  geom_segment(aes(x = O_long, y = O_lat, xend = D_long, yend = D_lat, col = airline),size = 0.8)+
+  facet_wrap(~ INorOUT)+
+  scale_colour_gradient2(low="green", high="Purple")+
+  borders("state")+
+  scale_size_area()+
+  coord_quickmap()+ 
+  transition_states(
+    Month,
+    transition_length = 0,
+    state_length = 1
+    ) + 
+  labs(title = 'Month: {closest_state}', x = 'Longitude', y = 'Latitude') +
+  ease_aes('sine-in-out')
+p5half
 
 # Mapping of all year
 Air_summ2 <- myABIA3 %>%
