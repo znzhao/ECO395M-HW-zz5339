@@ -223,15 +223,16 @@ p9 = ggplot(GB_summ4,aes(x = age, y = leasing_rate, fill = Green))+
   scale_y_continuous(labels = scales::percent,limits = c(0,1))+
   geom_point(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
   geom_line(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
-  #geom_text(aes(x=age,y=leasing_rate,col = Green, label=scales::percent(round(leasing_rate,2))), vjust = -0.5,check_overlap = TRUE)+
   scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
+  annotate("text", x = -0.1, y = 0.49, label = "47%", col=brewer.pal(6, "Reds")[5])+
+  annotate("text", x = -0.1, y = 0.58, label = "56%", col=brewer.pal(6, "Greens")[5])+
+  annotate("text", x = 1, y = 0.67, label = "65%", col=brewer.pal(6, "Reds")[5])+
+  annotate("text", x = 1, y = 0.81, label = "79%", col=brewer.pal(6, "Greens")[5] )+
+  annotate("text", x = 1.9, y = 0.69, label = "67%", col=brewer.pal(6, "Reds")[5])+
+  annotate("text", x = 2, y = 0.91, label = "89%", col=brewer.pal(6, "Greens")[5])+
   labs(title = "Age vs Occupancy Rate Plot",
        y = "Occupancy rate",
        x = "Age of the building")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p9
-###############################
-# first three years, use P12
-# after that use P10 to calculate leasing rate
-###############################
