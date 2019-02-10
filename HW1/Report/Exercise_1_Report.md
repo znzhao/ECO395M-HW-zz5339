@@ -18,6 +18,23 @@ After that, we tried to clean the data further from the view that the "data guru
 
 According to the "data guru", there are still many outlier from the dataset after the data cleaning, so he choose to use the median instead of the mean to calculate the expected rent for green buildings and non-green buildings. We plot the boxplot of green buildings and non-green buildings, to give a basic taste of the data. it seems that the "data guru" was right about the outliers, but it is unclear why there are so many outliers. So we digged deeper, and got some interesting findings.
 
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##    2378   47783  112924  200689  259000 3448680
+
+<img src="Exercise_1_Report_files/figure-markdown_github/p1.3-1.png" style="display: block; margin: auto;" />
+
+<img src="Exercise_1_Report_files/figure-markdown_github/p1.4-1.png" style="display: block; margin: auto;" />
+
+<img src="Exercise_1_Report_files/figure-markdown_github/p1.5-1.png" style="display: block; margin: auto;" />
+
+<img src="Exercise_1_Report_files/figure-markdown_github/p1.6-1.png" style="display: block; margin: auto;" />
+
+<img src="Exercise_1_Report_files/figure-markdown_github/p1.7-1.png" style="display: block; margin: auto;" />
+
+<img src="Exercise_1_Report_files/figure-markdown_github/p1.8-1.png" style="display: block; margin: auto;" />
+
+<img src="Exercise_1_Report_files/figure-markdown_github/p1.9-1.png" style="display: block; margin: auto;" />
+
 Exercise 1.2
 ------------
 
@@ -34,7 +51,7 @@ We splited the data into a training and a testing set. There are 80% of the data
 
 The optimal K for trim level 350 is printed below:
 
-    ## [1] 12
+    ## [1] 11
 
 Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, we can get the optimal K for trim level 350 is about 19. Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
 
@@ -50,7 +67,7 @@ We splited the data into a training and a testing set. There are 80% of the data
 
 The optimal K for trim level 65 AMG is printed below:
 
-    ## [1] 13
+    ## [1] 9
 
 Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, we can get the optimal K for trim level 65 AMG is about 16. Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
 
