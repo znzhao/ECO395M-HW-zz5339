@@ -324,7 +324,7 @@ p6
 ```
 
 
-```{r Q1.2.7, echo = FALSE, warning=FALSE}
+```{r Q1.2.7_1, echo = FALSE, warning=FALSE}
 # Q3: How do patterns of flights to different destinations or parts of the country change over the course of the year?
 # first get the location of the Destination and the Origin
 USairportLocation = USairports[ , c("local_code","name","latitude_deg","longitude_deg")]
@@ -349,9 +349,106 @@ Air_summ <- myABIA3 %>%
 Air_summ$airport[Air_summ$INorOUT == "Arrival"] <- Air_summ$Origin[Air_summ$INorOUT == "Arrival"]
 Air_summ$airport[Air_summ$INorOUT == "Departure"] <- Air_summ$Dest[Air_summ$INorOUT == "Departure"]
 
+Air_summ$OriginState <- map.where(database = "state", x = Air_summ$O_long, y = Air_summ$O_lat)
+Air_summ$DestState <- map.where(database = "state", x = Air_summ$D_long, y = Air_summ$D_lat)
+Air_summ$OriginState[Air_summ$Origin == "BOS"] <- "massachusetts"
+Air_summ$DestState[Air_summ$Dest == "BOS"] <- "massachusetts"
+Air_summ$OriginState[Air_summ$Origin == "OAK"] <- "california"
+Air_summ$DestState[Air_summ$Dest == "OAK"] <- "california"
+Air_summ$State[Air_summ$INorOUT == "Arrival"] <- Air_summ$OriginState[Air_summ$INorOUT == "Arrival"]
+Air_summ$State[Air_summ$INorOUT == "Departure"] <- Air_summ$DestState[Air_summ$INorOUT == "Departure"]
+
+Air_summ_state <- Air_summ %>%
+  group_by(Month, INorOUT, State) %>%
+  summarise(airline = sum(airline))
+
+# https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf
+# https://www2.census.gov/geo/docs/maps-data/maps/reg_div.txt
+Regions <- data.frame(region = "New England", state = "connecticut", stringsAsFactors = FALSE)
+Regions <- rbind(Regions, c("New England", "maine"))
+Regions <- rbind(Regions, c("New England", "massachusetts"))
+Regions <- rbind(Regions, c("New England", "new hampshire"))
+Regions <- rbind(Regions, c("New England", "rhode island"))
+Regions <- rbind(Regions, c("New England", "vermont"))
+
+Regions <- rbind(Regions, c("Middle Atlantic", "new jersey"))
+Regions <- rbind(Regions, c("Middle Atlantic", "new york"))
+Regions <- rbind(Regions, c("Middle Atlantic", "new york:long island"))
+Regions <- rbind(Regions, c("Middle Atlantic", "pennsylvania"))
+
+Regions <- rbind(Regions, c("East North Central", "illinois"))
+Regions <- rbind(Regions, c("East North Central", "indiana"))
+Regions <- rbind(Regions, c("East North Central", "michigan"))
+Regions <- rbind(Regions, c("East North Central", "michigan:south"))
+Regions <- rbind(Regions, c("East North Central", "ohio"))
+Regions <- rbind(Regions, c("East North Central", "wisconsin"))
+
+Regions <- rbind(Regions, c("West North Central", "iowa"))
+Regions <- rbind(Regions, c("West North Central", "kansas"))
+Regions <- rbind(Regions, c("West North Central", "minnesota"))
+Regions <- rbind(Regions, c("West North Central", "missouri"))
+Regions <- rbind(Regions, c("West North Central", "nebraska"))
+Regions <- rbind(Regions, c("West North Central", "north Dakota"))
+Regions <- rbind(Regions, c("West North Central", "south Dakota"))
+
+Regions <- rbind(Regions, c("South Atlantic", "Delaware"))
+Regions <- rbind(Regions, c("South Atlantic", "district of columbia"))
+Regions <- rbind(Regions, c("South Atlantic", "florida"))
+Regions <- rbind(Regions, c("South Atlantic", "georgia"))
+Regions <- rbind(Regions, c("South Atlantic", "maryland"))
+Regions <- rbind(Regions, c("South Atlantic", "north carolina"))
+Regions <- rbind(Regions, c("South Atlantic", "north carolina:main"))
+Regions <- rbind(Regions, c("South Atlantic", "south carolina"))
+Regions <- rbind(Regions, c("South Atlantic", "virginia"))
+Regions <- rbind(Regions, c("South Atlantic", "virginia:main"))
+Regions <- rbind(Regions, c("South Atlantic", "west virginia"))
+
+Regions <- rbind(Regions, c("East South Central", "alabama"))
+Regions <- rbind(Regions, c("East South Central", "kentucky"))
+Regions <- rbind(Regions, c("East South Central", "mississippi"))
+Regions <- rbind(Regions, c("East South Central", "tennessee"))
+
+Regions <- rbind(Regions, c("West South Central", "arkansas"))
+Regions <- rbind(Regions, c("West South Central", "louisiana"))
+Regions <- rbind(Regions, c("West South Central", "oklahoma"))
+Regions <- rbind(Regions, c("West South Central", "texas"))
+
+Regions <- rbind(Regions, c("Mountain", "arizona"))
+Regions <- rbind(Regions, c("Mountain", "colorado"))
+Regions <- rbind(Regions, c("Mountain", "idaho"))
+Regions <- rbind(Regions, c("Mountain", "montana"))
+Regions <- rbind(Regions, c("Mountain", "nevada"))
+Regions <- rbind(Regions, c("Mountain", "new mexico"))
+Regions <- rbind(Regions, c("Mountain", "utah"))
+Regions <- rbind(Regions, c("Mountain", "wyoming"))
+
+Regions <- rbind(Regions, c("Pacific", "alaska"))
+Regions <- rbind(Regions, c("Pacific", "california"))
+Regions <- rbind(Regions, c("Pacific", "hawaii"))
+Regions <- rbind(Regions, c("Pacific", "oregon"))
+Regions <- rbind(Regions, c("Pacific", "washington"))
+Regions <- rbind(Regions, c("Pacific", "washington:main"))
+
+Air_summ_state = merge(Air_summ_state,Regions,by.x = "State", by.y = "state", all.x = TRUE)
+Air_summ_state <- Air_summ_state %>%
+  group_by(Month, INorOUT, region) %>%
+  summarise(airline = sum(airline))
+
+P7_1 = ggplot(data = Air_summ_state, aes(x = Month, y = airline, col = region))+
+  geom_point()+
+  geom_line()+
+  facet_grid(~INorOUT)+
+  labs(title = "Month vs Number of Flight", x = "Month", y = "Number of Flight")+
+  scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12),labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec"))+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+P7_1
+
 Air_summA = subset(Air_summ, Air_summ$INorOUT=="Arrival")
 Air_summD = subset(Air_summ, Air_summ$INorOUT=="Departure")
+```
 
+```{r Q1.2.7, echo = FALSE, warning=FALSE}
 p7 = ggplot(data = Air_summA)+
   geom_point(aes(O_long,O_lat))+
   geom_point(aes(D_long,D_lat))+
