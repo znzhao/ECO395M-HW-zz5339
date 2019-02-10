@@ -113,10 +113,6 @@ p5 = ggplot(data = Air_summ)+
   facet_wrap(~ Month)
 p5
 
-Air_summJan = subset(Air_summ, Air_summ$Month==1) 
-Air_summFeb = subset(Air_summ, Air_summ$Month==2) 
-Air_summOut = subset(Air_summ, Air_summ$INorOUT=="Departure") 
-
 p5half = ggplot(data = Air_summ)+
   geom_point(aes(O_long,O_lat))+
   geom_point(aes(D_long,D_lat))+
