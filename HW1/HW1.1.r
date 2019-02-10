@@ -207,11 +207,6 @@ p8
 GB_summ3 <-GB_cleaned %>%
   group_by(cluster) %>%
   summarise(building_num = length(cluster), leasing_rate = mean(leasing_rate))
-# # ???? do you think there is any corelation?
-# p9 = ggplot()+
-#   geom_point(data = GB_summ3, aes(x = building_num, y = leasing_rate))
-# p9
-
 # Age of the Building and leasing rate
 GB_summ4 <-GB_cleaned %>%
   group_by(age, Green) %>%
