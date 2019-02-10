@@ -11,13 +11,16 @@ knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(RColorBrewer)
 library(FNN)
+library(maps)
+library(gganimate)
+library(gifski)
 ```
 
 # Exercise 1
 By Chong Wang, Tinaping Wu, Zhenning Zhao
 
 ## Exercise 1.1
-The environmentally conscious buildings have some obvious advantages, not only from an eco-friendly view, but also from the financial view, but the "data guru" clearly didn't make an reasonable argument to show the advantages clearly. To be more specific, we conclude that the duration that he calculated to recover the cost is wrong.
+The environmentally friendly buildings have some obvious advantages, not only from an eco-friendly view, but also from the financial aspect. The "data guru" did not make a reasonable argument to quantity the advantages clearly. To be more specific, we believe that the duration that he/she calculated to recover the cost may be mistaken.
 
 ```{r p1.1, echo=FALSE, warning=FALSE, fig.align='center'}
 urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW1/greenbuildings.csv'
@@ -38,9 +41,9 @@ p1 <- ggplot(data = greenbuildings) +
 p1
 ```
 
-The first step is to clean the data. The "data guru" noticed that a handful of the buildings in the data set had very low occupancy rates. Although this is a true fact, which can be shown in the above graph, he didn't provide a ggod reason for why remove the buildings with less than 10% leasing rate from consideration. It might be true that there are something weird happening with the buildings that have an occupancy rate of zero, but there is no good reason to remove 215 data points from the whole data set. According to a [research conducted by IBM](https://www.ibm.com/support/knowledgecenter/en/SSFCZ3_10.5.2/com.ibm.tri.doc/wpm_metrics/r_occupancy_rate.html), the buildings with a zero leasing rate is called not-used buildings. So we decide to exclude these data points fro the original dataset, instead of all the data with a leasing rate less than 10%.
+The first step is to clean the data. The "data guru" noticed that a handful of the buildings in the data set had very low occupancy rates. Although this is a true fact, which can be shown in the graph above, he/she did not provide a satisfactory reason for why the buildings with less than 10% leasing rate should be removed from consideration. Due to this fact, we disagree to simply delete these 215 data points. Instead, we were able to identify a reason to delete buildings with 0% occupancy rate. According to a [research conducted by IBM](https://www.ibm.com/support/knowledgecenter/en/SSFCZ3_10.5.2/com.ibm.tri.doc/wpm_metrics/r_occupancy_rate.html), buildings with a 0% leasing rate is called “not-used buildings”. Since our new building will certainly be used, we can comfortably exclude these data points from the original data set.
 
-After that, we tried to clean the data further from the view that the "data guru" didn't think of. We noticed that this new project is in Austin. Since we checked from the internet that the tallest building in Austin is 56 floors, it makes no sense to do the analysis with the building that are too tall for Austin. Hence, we exclude all the buildings whose cluster has a building taller than 56 stories, and we end up with 6,618 data in the dataset.
+After that, we tried to clean the data even furthur. Since this new project is in Austin with the tallest building at 56 floors, clusters with buildings higher than this value are clearly not in Austin and therefore should be removed from the data set. As the result, we are left with 6,618 data points.
 
 ```{r p1.2, echo=FALSE, warning=FALSE, fig.align='center'}
 # clean data by deleting the data with occupacy rate equal to 0% and taller than 56 floor
@@ -64,23 +67,8 @@ p2 = ggplot(data = GB_cleaned, aes(x = Green, y = Rent)) +
   theme(plot.title = element_text(hjust = 0.5))
 p2
 ```
+According to the "data guru", there are still many outliers after data cleaning, so he/she chooses to use the median instead of the mean to calculate the expected rent to compare green and non-green buildings. We plot the boxplot of green and non-green buildings to get a overview of the data. It seems that the "data guru" was right about the outliers, but it is unclear why there are so many outliers. So we digged deeper, and got some interesting findings.
 
-According to the "data guru", there are still many outlier from the dataset after the data cleaning, so he choose to use the median instead of the mean to calculate the expected rent for green buildings and non-green buildings. We plot the boxplot of green buildings and non-green buildings, to give a basic taste of the data. it seems that the "data guru" was right about the outliers, but it is unclear why there are so many outliers. So we digged deeper, and got some interesting findings.
-
-```{r p1.3, echo=FALSE, warning=FALSE, fig.align='center'}
-# Size density
-summary(GB_cleaned$size)
-p3 = ggplot(data = GB_cleaned, aes(x = size))+
-  geom_density(aes(fill=Green),alpha = 0.9)+
-  geom_vline(xintercept = 250000)+
-  geom_label(aes(x=400000, y=3e-06, label="Our Project"),stat = "identity")+
-  scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
-  labs(title = "Size vs Density", x = "Size", y = "Density")+
-  theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5))
-p3
-# Building is concentrating in small size
-```
 
 ```{r p1.4, echo=FALSE, warning=FALSE, fig.align='center'}
 NG <- subset(GB_cleaned, (GB_cleaned$Green == "Non-Green"))
@@ -88,29 +76,32 @@ p4 <- ggplot(data = GB_cleaned)+
   geom_point(mapping = aes(y = stories, x = size),alpha = 0.3, col = brewer.pal(6, "Greens")[5])+
   facet_wrap(~ Green)+
   geom_point(data = NG, mapping = aes(y = stories, x = size), alpha = 0.3, col = brewer.pal(6, "Reds")[5])+
-  labs(title = "Size vs Stories Plot", 
+  labs(title = "Size vs Story", 
        x = "Size",
-       y = "Stories")+
+       y = "Story")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p4
 ```
 
-```{r p1.5, echo=FALSE, warning=FALSE, fig.align='center'}
-#Stories Densities
-p5 = ggplot(data = GB_cleaned, aes(x = stories))+
-  geom_density(aes(fill = Green),alpha = 0.7)+
-  geom_vline(xintercept = 15)+
-  geom_label(aes(x=25, y=0.06, label="Our Project"),stat = "identity")+
-  labs(title = "Stories vs Density", x = "Stories", y = "Density",col="grey")+
-  theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5)) + 
-  scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))
-p5
-# Building is concentrating in medium size 
-```
+In order to narrow down existing data set further and only use data points that are relevant and comparable to our project, we looked for market standards to categorize buildings.  According to [the Commercial Real Estate Terms and Definitions] (https://www.naiop.org/-/media/Research/Research/Research-Reports/Terms-and-Definitions/CRE-Terms-and-Definitions-2017.ashx?la=en) by The NAIOP Research Foundation, commercial buildings can be divided into 3 types: low rise, mid rise, and high rise. Our 15-story building falls into the mid-rise category. The plot above confirms that story is positively correlated with size in our data set and there are many mid rise buildings with similar attributes that can be used to estimate our building’s rent. 
 
 ```{r p1.6, echo=FALSE, warning=FALSE, fig.align='center'}
+# Age of the Building
+p7 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, col = Green)) + 
+  geom_point(aes(x = age, y = Rent, col = Green), alpha =0.3)+
+#  geom_smooth(se = TRUE)+
+  scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
+  labs(title = "Age vs Rent", x = "Age", y = "Rent")+
+  facet_wrap(~ Green, labeller = label_parsed)+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+p7
+```
+
+Next, we were curious if building’s age has any impact on rent. As shown in the plot above, rent shows no distinct trend as building’s age goes up, at least up to 100 years. This let us treat all buildings with different age equally for rent estimation.
+
+```{r p1.7, echo=FALSE, warning=FALSE, fig.align='center'}
 # category: https://en.wikipedia.org/wiki/List_of_building_types
 GB_cleaned$size_category = cut(GB_cleaned$size, breaks = c(0,125000,400000,800000,10000000000))
 GB_cleaned$stories_category = cut(GB_cleaned$stories, breaks = c("0","7","25","150"))
@@ -133,18 +124,10 @@ p6 = ggplot(GB_summ_a, aes(x=amenities, y=Rent_mean,fill=Green)) +
 p6
 ```
 
-```{r p1.7, echo=FALSE, warning=FALSE, fig.align='center'}
-# Age of the Building
-p7 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, col = Green)) + 
-  geom_point(aes(x = age, y = Rent, col = Green), alpha =0.3)+
-#  geom_smooth(se = TRUE)+
-  scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
-  labs(title = "Age vs Rent", x = "Age", y = "Rent")+
-  facet_wrap(~ Green, labeller = label_parsed)+
-  theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5))
-p7
-```
+Lastly we added one more dimension to identify data points that are relevant to our building: Amenities. Our building is for mix use with amenities such as on-site bank, convenience store, dry cleaner, restaurant, retail shops, and fitness center. It is reasonable to assume these buildings would set rent differently than ones without amenities, as more value is added.
+
+
+To our surprise, mid rise and high rise green buildings with amenities actually had higher rent than green buildings without amenities, as shown in the plot above. Putting this strange result aside, we will focus on the green and non-green buildings within the mid-rise group. It turns out that both types cost the same at $31 per square foot per year.
 
 ```{r p1.8, echo=FALSE, warning=FALSE, fig.align='center'}
 # Which occupancy rate should be chosen?
@@ -193,7 +176,381 @@ p9 = ggplot(GB_summ4,aes(x = age, y = leasing_rate, fill = Green))+
 p9
 ```
 
+
 ## Exercise 1.2
+```{r setup1.2, echo = FALSE, warning=FALSE}
+urlfile <- 'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW1/ABIA.csv'
+ABIA <- read.csv(url(urlfile), stringsAsFactors=FALSE)
+urlfile2 = 'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW1/airports.csv'
+airports <- read.csv(url(urlfile2), stringsAsFactors=FALSE)
+
+myABIA = ABIA
+USairports <- subset(airports,(airports$iso_country =="US"))
+
+# Q1: What is the best time of day to fly to minimize delays?
+```
+
+```{r Q1.2.1, echo = FALSE, warning=FALSE}
+# Calculate delaying departure time:
+myABIA$TWindow = floor(myABIA$DepTime/100)
+myABIA$CRSTWindow_D = floor(myABIA$CRSDepTime/100)
+myABIA$CRSTWindow_A = floor(myABIA$CRSArrTime/100)
+myABIA$INorOUT[myABIA$Dest == "AUS"] = "Arrival"
+myABIA$INorOUT[myABIA$Origin == "AUS"] = "Departure"
+myABIA_fly <- subset(myABIA,(myABIA$Cancelled == "0"))
+myABIA_fly <- subset(myABIA_fly,!(myABIA_fly$Diverted == 1))
+myABIA_cancel <- subset(myABIA,(myABIA$Cancelled == "1"))
+
+# plot the summ for all the airline companies 
+myABIA_CRSsumm_D_total <- myABIA_fly %>%
+  group_by(CRSTWindow_D,INorOUT) %>%
+  summarise(DepDelay_mean = mean(DepDelay))
+
+myABIA_CRSsumm_A_total <- myABIA_fly %>%
+  group_by(CRSTWindow_A,INorOUT) %>%
+  summarise(ArrDelay_mean = mean(ArrDelay))
+
+p1 = ggplot(data = subset(myABIA_CRSsumm_D_total,(myABIA_CRSsumm_D_total$INorOUT == "Departure")))+
+  geom_bar(aes(x = CRSTWindow_D, y = DepDelay_mean),stat='identity',position='dodge')+
+  labs(title = "CRS Time vs Average Departure Delay", x = "CRS Time", y = "Departure Delay")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+p1
+```
+
+
+```{r Q1.2.2, echo = FALSE, warning=FALSE}
+p2 = ggplot(data = subset(myABIA_CRSsumm_A_total,(myABIA_CRSsumm_A_total$INorOUT == "Arrival")))+
+  geom_bar(aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity',position='dodge')+
+  labs(title = "CRS Time vs Average Arrival Delay", x = "CRS Time", y = "Arrival Delay")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+p2
+```
+
+
+```{r Q1.2.3, echo = FALSE, warning=FALSE}
+# Now for different airline companies
+# myABIA_CRSsumm_Departure <- subset(myABIA_CRSsumm_Departure,(myABIA_CRSsumm_Departure$UniqueCarrier != "YV"))
+myABIA_CRSsumm_Departure <- myABIA_fly %>%
+  group_by(CRSTWindow_D,INorOUT,UniqueCarrier) %>%
+  summarise(DepDelay_mean = mean(DepDelay))
+myABIA_CRSsumm_Departure <- subset(myABIA_CRSsumm_Departure,(myABIA_CRSsumm_Departure$INorOUT == "Departure"))
+myABIA_CRSsumm_Arrival <- myABIA_fly %>%
+  group_by(CRSTWindow_A,INorOUT,UniqueCarrier) %>%
+  summarise(ArrDelay_mean = mean(ArrDelay))
+myABIA_CRSsumm_Arrival <- subset(myABIA_CRSsumm_Arrival,(myABIA_CRSsumm_Arrival$INorOUT == "Arrival"))
+
+# calculate the max point for D
+Delay_D_max = aggregate(myABIA_CRSsumm_Departure$DepDelay_mean,by=list(name=myABIA_CRSsumm_Departure$UniqueCarrier),FUN=max)
+for (i in Delay_D_max$name) {
+  x = myABIA_CRSsumm_Departure$CRSTWindow_D[which((myABIA_CRSsumm_Departure$DepDelay_mean == Delay_D_max$x[Delay_D_max$name == i]))]
+  Delay_D_max$time[Delay_D_max$name == i] <- x
+}
+colnames(Delay_D_max)[1:3] <- c("UniqueCarrier", "Vmax", "CRSTWindow_D")
+p3 = ggplot()+
+  geom_bar(data = myABIA_CRSsumm_Departure, aes(x = CRSTWindow_D, y = DepDelay_mean),stat='identity')+
+  facet_wrap(~UniqueCarrier) +
+  geom_bar(data = Delay_D_max, aes(x = CRSTWindow_D, y = Vmax),stat='identity', fill = "red")+
+  labs(title = "CRS Time vs Average Departure Delay for Different Airline Company", x = "CRS Time", y = "Departure Delay")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+p3
+```
+
+
+```{r Q1.2.4, echo = FALSE, warning=FALSE}
+Delay_A_max = aggregate(myABIA_CRSsumm_Arrival$ArrDelay_mean,by=list(name=myABIA_CRSsumm_Arrival$UniqueCarrier),FUN=max)
+for (i in Delay_A_max$name) {
+  x = myABIA_CRSsumm_Arrival$CRSTWindow_A[which((myABIA_CRSsumm_Arrival$ArrDelay_mean == Delay_A_max$x[Delay_A_max$name == i]))]
+  Delay_A_max$time[Delay_A_max$name == i] <- x
+}
+colnames(Delay_A_max)[1:3] <- c("UniqueCarrier", "Vmax", "CRSTWindow_A")
+
+p4 = ggplot()+
+  geom_bar(data = myABIA_CRSsumm_Arrival, aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity')+
+  facet_wrap(~UniqueCarrier) +
+  geom_bar(data = Delay_A_max, aes(x = CRSTWindow_A, y = Vmax),stat='identity', fill = "red")+
+  labs(title = "CRS Time vs Average Arrival Delay for Different Airline Company", x = "CRS Time", y = "Arrival Delay")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+p4
+```
+
+```{r Q1.2.5, echo = FALSE, warning=FALSE}
+# Q2: What is the best time of year to fly to minimize delays?
+# plot the summ for all the airline companies 
+myABIA_summ_Month <- myABIA_fly %>%
+  group_by(Month,INorOUT) %>%
+  summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
+
+p5 = ggplot(data = subset(myABIA_summ_Month,(myABIA_summ_Month$INorOUT == "Departure")))+
+  geom_bar(aes(x = Month, y = DepDelay_mean),stat='identity',position='dodge')+
+  labs(title = "Month vs Average Departure Delay", x = "Month", y = "Departure Delay")+
+  theme_bw()+
+  scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12),labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec"))+
+  theme(plot.title = element_text(hjust = 0.5))
+p5
+```
+
+
+```{r Q1.2.6, echo = FALSE, warning=FALSE}
+p6 = ggplot(data = subset(myABIA_summ_Month,(myABIA_summ_Month$INorOUT == "Arrival")))+
+  geom_bar(aes(x = Month, y = ArrDelay_mean),stat='identity',position='dodge')+
+  labs(title = "Month vs Average Arrival Delay", x = "Month", y = "Arrival Delay")+
+  scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12),labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec"))+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+p6
+```
+
+
+```{r Q1.2.7_1, echo = FALSE, warning=FALSE}
+# Q3: How do patterns of flights to different destinations or parts of the country change over the course of the year?
+# first get the location of the Destination and the Origin
+USairportLocation = USairports[ , c("local_code","name","latitude_deg","longitude_deg")]
+# add missing value:
+USairportLocation <- rbind(USairportLocation, c("PHL","Philadelphia International Airport", 39.874400, -75.242400))
+USairportLocation <- rbind(USairportLocation, c("PHX","Phoenix Sky Harbor International Airport", 33.448400, -112.07400))
+# link airport location
+myABIA2 = merge(myABIA_fly,USairportLocation,by.x = "Dest", by.y = "local_code", all.x = TRUE)
+colnames(myABIA2)[34:36] <- c("DestAirport", "D_lat", "D_long")
+myABIA3 = merge(myABIA2,USairportLocation,by.x = "Origin", by.y = "local_code", all.x = TRUE)
+colnames(myABIA3)[37:39] <- c("OriginAirport", "O_lat", "O_long")
+
+myABIA3$D_lat <- as.numeric(myABIA3$D_lat)
+myABIA3$O_lat <- as.numeric(myABIA3$O_lat)
+myABIA3$D_long <- as.numeric(myABIA3$D_long)
+myABIA3$O_long <- as.numeric(myABIA3$O_long)
+
+# Mapping of different month
+Air_summ <- myABIA3 %>%
+  group_by(Month, INorOUT, Origin, Dest) %>%
+  summarise(O_long = mean(O_long),D_long = mean(D_long),O_lat = mean(O_lat),D_lat = mean(D_lat),airline = length(INorOUT), Delay = mean(DepDelay))
+Air_summ$airport[Air_summ$INorOUT == "Arrival"] <- Air_summ$Origin[Air_summ$INorOUT == "Arrival"]
+Air_summ$airport[Air_summ$INorOUT == "Departure"] <- Air_summ$Dest[Air_summ$INorOUT == "Departure"]
+
+Air_summ$OriginState <- map.where(database = "state", x = Air_summ$O_long, y = Air_summ$O_lat)
+Air_summ$DestState <- map.where(database = "state", x = Air_summ$D_long, y = Air_summ$D_lat)
+Air_summ$OriginState[Air_summ$Origin == "BOS"] <- "massachusetts"
+Air_summ$DestState[Air_summ$Dest == "BOS"] <- "massachusetts"
+Air_summ$OriginState[Air_summ$Origin == "OAK"] <- "california"
+Air_summ$DestState[Air_summ$Dest == "OAK"] <- "california"
+Air_summ$State[Air_summ$INorOUT == "Arrival"] <- Air_summ$OriginState[Air_summ$INorOUT == "Arrival"]
+Air_summ$State[Air_summ$INorOUT == "Departure"] <- Air_summ$DestState[Air_summ$INorOUT == "Departure"]
+
+Air_summ_state <- Air_summ %>%
+  group_by(Month, INorOUT, State) %>%
+  summarise(airline = sum(airline))
+
+# https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf
+# https://www2.census.gov/geo/docs/maps-data/maps/reg_div.txt
+Regions <- data.frame(region = "New England", state = "connecticut", stringsAsFactors = FALSE)
+Regions <- rbind(Regions, c("New England", "maine"))
+Regions <- rbind(Regions, c("New England", "massachusetts"))
+Regions <- rbind(Regions, c("New England", "new hampshire"))
+Regions <- rbind(Regions, c("New England", "rhode island"))
+Regions <- rbind(Regions, c("New England", "vermont"))
+
+Regions <- rbind(Regions, c("Middle Atlantic", "new jersey"))
+Regions <- rbind(Regions, c("Middle Atlantic", "new york"))
+Regions <- rbind(Regions, c("Middle Atlantic", "new york:long island"))
+Regions <- rbind(Regions, c("Middle Atlantic", "pennsylvania"))
+
+Regions <- rbind(Regions, c("East North Central", "illinois"))
+Regions <- rbind(Regions, c("East North Central", "indiana"))
+Regions <- rbind(Regions, c("East North Central", "michigan"))
+Regions <- rbind(Regions, c("East North Central", "michigan:south"))
+Regions <- rbind(Regions, c("East North Central", "ohio"))
+Regions <- rbind(Regions, c("East North Central", "wisconsin"))
+
+Regions <- rbind(Regions, c("West North Central", "iowa"))
+Regions <- rbind(Regions, c("West North Central", "kansas"))
+Regions <- rbind(Regions, c("West North Central", "minnesota"))
+Regions <- rbind(Regions, c("West North Central", "missouri"))
+Regions <- rbind(Regions, c("West North Central", "nebraska"))
+Regions <- rbind(Regions, c("West North Central", "north Dakota"))
+Regions <- rbind(Regions, c("West North Central", "south Dakota"))
+
+Regions <- rbind(Regions, c("South Atlantic", "Delaware"))
+Regions <- rbind(Regions, c("South Atlantic", "district of columbia"))
+Regions <- rbind(Regions, c("South Atlantic", "florida"))
+Regions <- rbind(Regions, c("South Atlantic", "georgia"))
+Regions <- rbind(Regions, c("South Atlantic", "maryland"))
+Regions <- rbind(Regions, c("South Atlantic", "north carolina"))
+Regions <- rbind(Regions, c("South Atlantic", "north carolina:main"))
+Regions <- rbind(Regions, c("South Atlantic", "south carolina"))
+Regions <- rbind(Regions, c("South Atlantic", "virginia"))
+Regions <- rbind(Regions, c("South Atlantic", "virginia:main"))
+Regions <- rbind(Regions, c("South Atlantic", "west virginia"))
+
+Regions <- rbind(Regions, c("East South Central", "alabama"))
+Regions <- rbind(Regions, c("East South Central", "kentucky"))
+Regions <- rbind(Regions, c("East South Central", "mississippi"))
+Regions <- rbind(Regions, c("East South Central", "tennessee"))
+
+Regions <- rbind(Regions, c("West South Central", "arkansas"))
+Regions <- rbind(Regions, c("West South Central", "louisiana"))
+Regions <- rbind(Regions, c("West South Central", "oklahoma"))
+Regions <- rbind(Regions, c("West South Central", "texas"))
+
+Regions <- rbind(Regions, c("Mountain", "arizona"))
+Regions <- rbind(Regions, c("Mountain", "colorado"))
+Regions <- rbind(Regions, c("Mountain", "idaho"))
+Regions <- rbind(Regions, c("Mountain", "montana"))
+Regions <- rbind(Regions, c("Mountain", "nevada"))
+Regions <- rbind(Regions, c("Mountain", "new mexico"))
+Regions <- rbind(Regions, c("Mountain", "utah"))
+Regions <- rbind(Regions, c("Mountain", "wyoming"))
+
+Regions <- rbind(Regions, c("Pacific", "alaska"))
+Regions <- rbind(Regions, c("Pacific", "california"))
+Regions <- rbind(Regions, c("Pacific", "hawaii"))
+Regions <- rbind(Regions, c("Pacific", "oregon"))
+Regions <- rbind(Regions, c("Pacific", "washington"))
+Regions <- rbind(Regions, c("Pacific", "washington:main"))
+
+Air_summ_state = merge(Air_summ_state,Regions,by.x = "State", by.y = "state", all.x = TRUE)
+Air_summ_state <- Air_summ_state %>%
+  group_by(Month, INorOUT, region) %>%
+  summarise(airline = sum(airline))
+
+P7_1 = ggplot(data = Air_summ_state, aes(x = Month, y = airline, col = region))+
+  geom_point()+
+  geom_line()+
+  facet_wrap(~INorOUT, nrow = 2)+
+  labs(title = "Month vs Number of Flight", x = "Month", y = "Number of Flight")+
+  scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12),labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec"))+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+P7_1
+
+Air_summA = subset(Air_summ, Air_summ$INorOUT=="Arrival")
+Air_summD = subset(Air_summ, Air_summ$INorOUT=="Departure")
+```
+
+```{r Q1.2.7, echo = FALSE, warning=FALSE}
+# Mapping of all year
+Air_summ2 <- myABIA3 %>%
+  group_by(INorOUT, Origin, Dest) %>%
+  summarise(O_long = mean(O_long),D_long = mean(D_long),O_lat = mean(O_lat),D_lat = mean(D_lat),airline = length(INorOUT), DepDelay = mean(DepDelay),ArrDelay = mean(ArrDelay))
+Air_summ2$airport[Air_summ2$INorOUT == "Arrival"] <- Air_summ2$Origin[Air_summ2$INorOUT == "Arrival"]
+Air_summ2$airport[Air_summ2$INorOUT == "Departure"] <- Air_summ2$Dest[Air_summ2$INorOUT == "Departure"]
+Air_summ2$Delay[Air_summ2$INorOUT == "Departure"] <- Air_summ2$DepDelay[Air_summ2$INorOUT == "Arrival"]
+Air_summ2$Delay[Air_summ2$INorOUT == "Arrival"] <- Air_summ2$ArrDelay[Air_summ2$INorOUT == "Departure"]
+# num of flight
+p9 = ggplot(data = Air_summ2)+
+  geom_point(aes(O_long,O_lat))+
+  geom_point(aes(D_long,D_lat))+
+  geom_segment(aes(x = O_long, y = O_lat, xend = D_long, yend = D_lat, col = airline),size = 0.8)+
+  facet_wrap(~ INorOUT)+
+  labs(title = "Flight Volume Heat Map", x = " ", y = " ")+
+  theme_gray()+
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  scale_x_discrete()+
+  scale_y_discrete()+
+  scale_colour_gradient2(low="green", high="Purple")+
+  borders("state")+
+  scale_size_area()+
+  coord_quickmap()
+p9
+```
+
+Overall, the top 5 airports with most flights to Austin in 2008 are Dallas Love Field, Dallas/Fort Worth International, George Bush Intercontinental, Phoenix Sky Harbor International and Denver International airport with 5,464, 5,344, 3,651, 2,778 and 2,708 flights respectively. The top 5 destinations from Austin are exactly the same 5 in the same order with 5,442, 5,347, 3,636, 2,765 and 2,653 flights respectively. This result is represented in the heat map above.
+
+```{r Q1.2.8, echo = FALSE, warning=FALSE}
+p7 = ggplot(data = Air_summA)+
+  geom_point(aes(O_long,O_lat))+
+  geom_point(aes(D_long,D_lat))+
+  geom_segment(aes(x = O_long, y = O_lat, xend = D_long, yend = D_lat, col = airline),size = 0.8)+
+  theme_gray()+
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  scale_x_discrete()+
+  scale_y_discrete()+
+  scale_colour_gradient2(low="green", high="Purple")+
+  borders("state")+
+  scale_size_area()+
+  coord_quickmap()+
+  transition_states(
+    Month,
+    transition_length = 0,
+    state_length = 1
+    ) + 
+  labs(title = 'Arrival Flight Volume Heat Map by Month: {closest_state}', x = " ", y = " ") +
+  ease_aes('sine-in-out')
+p7
+```
+
+```{r Q1.2.9, echo = FALSE, warning=FALSE}
+p8 = ggplot(data = Air_summD)+
+  geom_point(aes(O_long,O_lat))+
+  geom_point(aes(D_long,D_lat))+
+  geom_segment(aes(x = O_long, y = O_lat, xend = D_long, yend = D_lat, col = airline),size = 0.8)+
+  theme_gray()+
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  scale_x_discrete()+
+  scale_y_discrete()+
+  scale_colour_gradient2(low="green", high="Purple")+
+  borders("state")+
+  scale_size_area()+
+  coord_quickmap()+
+  transition_states(
+    Month,
+    transition_length = 0,
+    state_length = 1
+  ) + 
+  labs(title = 'Departure Flight Volume Heat Map by Month: {closest_state}', x = ' ', y = ' ') +
+  ease_aes('sine-in-out')
+p8
+```
+
+In terms of the patterns of flights to Austin over the course of the year, it is clear from the heat map above that flight volume increases at the beginning of the year and over the summer. This is partially due to with more airports with direct flights to Austin during this period. For example, Birmingham-Shuttlesworth International Airport and McGhee Tyson Airport only fly to Austin at the beginning of the year. And In the summer, Fort Lauderdale-Hollywood, Seattle-Tacoma International, and Indianapolis International are adding new services to Austin. Flights from Austin share the same pattern, with more flights at the beginning of year and in the summertime. 
+
+(Graph)Flights Volume by Region:
+From the flight volume by region graph listed above, it can be seen that flights from West South Central contributed significantly to the high volume at the beginning of the year, and volume pops up in the summertime for Mountain, South Atlantic, Pacific, and East North Central regions. For detailed information about how the regions are divided, please visit: [Census Bureau Regions and Divisions with State FIPS Codes] (https://www2.census.gov/geo/docs/maps-data/maps/reg_div.txt) 
+
+```{r Q1.2.10, echo = FALSE, warning=FALSE}
+# Q4: 
+# delay of flight
+
+Air_delay_departure = subset(Air_summ2, (Air_summ2$INorOUT == "Departure"))
+p10 = ggplot(data = Air_delay_departure)+
+  geom_bar(aes(x = reorder(airport, Delay), y = Delay),stat='identity',position='dodge')+
+  coord_flip()+
+  labs(title = "Average Departure Delay for Different Airport", y = "Departure Delay", x = "Airport")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+p10
+```
+
+```{r Q1.2.11, echo = FALSE, warning=FALSE}
+Air_delay_arrival = subset(Air_summ2, (Air_summ2$INorOUT == "Arrival"))
+p11 = ggplot(data = Air_delay_arrival)+
+  geom_bar(aes(x = reorder(airport, Delay), y = Delay),stat='identity',position='dodge')+
+  coord_flip()+
+  labs(title = "Average Arrival Delay for Different Airport", y = "Arrival Delay", x = "Airport")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+p11
+```
+
+```{r Q1.2.12, echo = FALSE, warning=FALSE}
+# delay of flight: mapping
+p12 = ggplot(data = Air_summ2)+
+  geom_point(aes(O_long,O_lat))+
+  geom_point(aes(D_long,D_lat))+
+  geom_segment(aes(x = O_long, y = O_lat, xend = D_long, yend = D_lat, col = Delay),size = 0.8)+
+  facet_wrap(~ INorOUT)+
+  scale_colour_gradient2(low="white", high="red")+
+  borders("state")+
+  labs(title = "Flight Count Heat Map", x = " ", y = " ")+
+  scale_size_area()+
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  scale_x_discrete()+
+  scale_y_discrete()+
+  coord_quickmap()
+p12
+```
 
 ## Exercise 1.3
 ```{r Ex3setup, include=FALSE}
