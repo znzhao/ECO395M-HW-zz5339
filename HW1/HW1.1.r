@@ -65,6 +65,7 @@ f2
 
 
 # Size density
+<<<<<<< HEAD
 #summary(GB_cleaned$size)
 #p3 = ggplot(data = GB_cleaned, aes(x = size))+
   #geom_density(aes(fill=Green),alpha = 0.9)+
@@ -75,6 +76,18 @@ f2
   #theme_bw()+
   #theme(plot.title = element_text(hjust = 0.5))
 #p3
+=======
+summary(GB_cleaned$size)
+p3 = ggplot(data = GB_cleaned, aes(x = size))+
+  geom_density(aes(fill=Green),alpha = 0.9)+
+  geom_vline(xintercept = 250000)+
+  geom_label(aes(x=400000, y=3e-06, label="Our Project"),stat = "identity")+
+  scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
+  labs(title = "Size vs Density Plot", x = "Size", y = "Density")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+p3
+>>>>>>> 0c465d635358f7d47bb4ae8ad18464e944217dd1
 # Building is concentrating in small size 
 
 
