@@ -73,7 +73,7 @@ summary(GB_cleaned$size)
 p3 = ggplot(data = GB_cleaned, aes(x = size))+
   geom_density(aes(fill=Green),alpha = 0.9)+
   geom_vline(xintercept = 250000)+
-  geom_label(aes(x=400000, y=3e-06, label="Aim Project"),stat = "identity")+
+  geom_label(aes(x=400000, y=3e-06, label="Our Project"),stat = "identity")+
   scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
   labs(title = "Size vs Density", x = "Size", y = "Density")+
   theme_bw()+
@@ -88,7 +88,7 @@ p4 <- ggplot(data = GB_cleaned)+
   geom_point(mapping = aes(y = stories, x = size),alpha = 0.3, col = brewer.pal(6, "Greens")[5])+
   facet_wrap(~ Green)+
   geom_point(data = NG, mapping = aes(y = stories, x = size), alpha = 0.3, col = brewer.pal(6, "Reds")[5])+
-  labs(title = "Size vs Stories", 
+  labs(title = "Size vs Stories Plot", 
        x = "Size",
        y = "Stories")+
   theme_bw()+
@@ -101,7 +101,7 @@ p4
 p5 = ggplot(data = GB_cleaned, aes(x = stories))+
   geom_density(aes(fill = Green),alpha = 0.7)+
   geom_vline(xintercept = 15)+
-  geom_label(aes(x=25, y=0.06, label="Aim Project"),stat = "identity")+
+  geom_label(aes(x=25, y=0.06, label="Our Project"),stat = "identity")+
   labs(title = "Stories vs Density", x = "Stories", y = "Density",col="grey")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5)) + 
@@ -137,6 +137,7 @@ p6
 # Age of the Building
 p7 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, col = Green)) + 
   geom_point(aes(x = age, y = Rent, col = Green), alpha =0.3)+
+#  geom_smooth(se = TRUE)+
   scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
   labs(title = "Age vs Rent", x = "Age", y = "Rent")+
   facet_wrap(~ Green, labeller = label_parsed)+
@@ -147,6 +148,7 @@ p7
 
 ```{r p1.8, echo=FALSE, warning=FALSE, fig.align='center'}
 # Which occupancy rate should be chosen?
+
 # Stories & Occupancy Rate Plot
   GB_summ2 <- GB_cleaned %>%
   group_by(stories_category,Green) %>%
@@ -181,6 +183,7 @@ p9 = ggplot(GB_summ4,aes(x = age, y = leasing_rate, fill = Green))+
   scale_y_continuous(labels = scales::percent,limits = c(0,1))+
   geom_point(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
   geom_line(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
+  #geom_text(aes(x=age,y=leasing_rate,col = Green, label=scales::percent(round(leasing_rate,2))), vjust = -0.5,check_overlap = TRUE)+
   scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
   labs(title = "Age vs Occupancy Rate",
        y = "Occupancy rate",
