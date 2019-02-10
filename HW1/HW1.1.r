@@ -6,19 +6,24 @@ library(RColorBrewer)
 
 summary(greenbuildings)
 #data.frame(table(greenbuildings$cluster)) #group by cluster and count
+#theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+
+greenbuildings$Green[greenbuildings$green_rating==0] <- "Non-Green"
+greenbuildings$Green[greenbuildings$green_rating==1] <- "Green"
 
 # Occupancy Rates & Rent Plot: NonGreen vs Green
-labels <- c("0" = "Non-Green", "1" = "Green")
 NG <- subset(greenbuildings, (greenbuildings$green_rating == "0"))
 p1 <- ggplot(data = greenbuildings) + 
   geom_point(mapping = aes(y = Rent, x = leasing_rate),alpha = 0.3, col = brewer.pal(6, "Greens")[5])+
-  facet_wrap(~ green_rating, labeller=labeller(green_rating = labels))+
+  facet_wrap(~ Green)+
   geom_point(data = NG, mapping = aes(y = Rent, x = leasing_rate), alpha = 0.3, col = brewer.pal(6, "Reds")[5])+
-  labs(title = "Occupancy Rates vs Rent", 
+  labs(title = "Occupancy Rates vs Rent Plot", 
        y = "Rent",
        x = "Occupancy Rates")+
-  theme(plot.title = element_text(hjust = 0.5)) 
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
 p1 
+
 #Note: Occupancy rate as a function of rent, it seems like occupacy rate is positive proportional to the rent,
 #Note:possibly suggesting higher occupancy rate -> higher demand -> higher rent
 
@@ -31,8 +36,7 @@ for (i in 1:39){
   GB_cleaned <-subset(GB_cleaned,(GB_cleaned$cluster!= Clus[i]))
 }
 
-GB_cleaned$Green[GB_cleaned$green_rating==0] <- "Non-Green"
-GB_cleaned$Green[GB_cleaned$green_rating==1] <- "Green"
+
 summary(GB_cleaned$leasing_rate)
 summary(GB_cleaned$green_rating)
 #count(greenbuildings, leasing_rate==0) : 152/7742, count(greenbuildings, leasing_rate<=10) : 215/7742
@@ -40,51 +44,64 @@ summary(GB_cleaned$green_rating)
 
 # basic boxplot
 NG_one <- subset(GB_cleaned, green_rating == "0")
-NG_one$Green[NG_one$green_rating==0] <- "Non-Green"
-NG_one$Green[NG_one$green_rating==1] <- "Green"
 p2 = ggplot(data = GB_cleaned, aes(x = Green, y = Rent)) + 
-  geom_boxplot(fill = brewer.pal(9, "Greens")[3])+
-  labs(title = "Rent vs Green Rating",
-       x = "",
+  geom_boxplot(fill = brewer.pal(6, "Greens")[5], alpha = 0.8)+
+  geom_boxplot(data = NG_one, fill = brewer.pal(6, "Reds")[5], alpha= 0.9)+
+  labs(title = "Green Rating vs Rent Plot",
+       x = "Green Rating",
        y = "Rent")+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
-p2 + geom_boxplot(data = NG_one, fill = brewer.pal(9, "Reds")[3])
+p2
 
 # Size & Rent Plot: NonGreen vs Green
 #p3 = ggplot(data = GB_cleaned) + 
 #  geom_point(mapping = aes(x = size, y = Rent, shape = Green, color = Green),alpha =0.8)+
-#  labs(title = "Size & Rent Plot", 
+#  labs(title = "Size & Density", 
 #       x = "Size",
-#       y = "Rent")+
+#       y = "Density")+
 #  theme(plot.title = element_text(hjust = 0.5))
 #p3
 
+
 # Size density
-x1 = 250000
 summary(GB_cleaned$size)
 p3 = ggplot(data = GB_cleaned, aes(x = size))+
-  geom_density(aes(fill=factor(Green)),alpha = 0.5)+
-  geom_vline(xintercept = x1,alpha = 0.5)+
-  scale_fill_manual( values = c(brewer.pal(9, "Greens")[3],brewer.pal(9, "Reds")[3]))+
-  #scale_fill_brewer(palette= "Greens",direction = -1)+
-  labs(title = "Density of Size", x = "Size", y = "Density")+
+  geom_density(aes(fill=Green),alpha = 0.9)+
+  geom_vline(xintercept = 250000)+
+  geom_label(aes(x=400000, y=3e-06, label="Aim Project"),stat = "identity")+
+  scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
+  labs(title = "Size vs Density Plot", x = "Size", y = "Density")+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p3
 # Building is concentrating in small size 
 
-p4 = ggplot(data = GB_cleaned, aes(x = size, y = stories))+
-  geom_point()
+
+NG <- subset(GB_cleaned, (GB_cleaned$Green == "Non-Green"))
+p4 <- ggplot(data = GB_cleaned)+
+  geom_point(mapping = aes(y = stories, x = size),alpha = 0.3, col = brewer.pal(6, "Greens")[5])+
+  facet_wrap(~ Green)+
+  geom_point(data = NG, mapping = aes(y = stories, x = size), alpha = 0.3, col = brewer.pal(6, "Reds")[5])+
+  labs(title = "Size vs Stories Plot", 
+       x = "Size",
+       y = "Stories")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
 p4
 
+  
 #Stories Densities
 p5 = ggplot(data = GB_cleaned, aes(x = stories))+
-  geom_density(aes(fill=factor(Green)),alpha = 0.5)+
-  geom_vline(xintercept = 15,alpha = 0.5)+
-  labs(title = "Density of Stories", x = "Story", y = "Density")+
+  geom_density(aes(fill = Green),alpha = 0.7)+
+  geom_vline(xintercept = 15)+
+  geom_label(aes(x=25, y=0.06, label="Aim Project"),stat = "identity")+
+  labs(title = "Stories vs Density Plot", x = "Stories", y = "Density",col="grey")+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5)) + 
-  scale_fill_manual( values = c(brewer.pal(9, "Greens")[3],brewer.pal(9, "Reds")[3]))
-
-p5# Building is concentrating in medium size 
+  scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))
+p5
+# Building is concentrating in medium size 
 
 
 # category: https://en.wikipedia.org/wiki/List_of_building_types
@@ -107,45 +124,40 @@ GB_summ <- GB_cleaned %>%
 #   theme(plot.title = element_text(hjust = 0.5)) + 
 #   scale_fill_manual( values = c(brewer.pal(9, "Greens")[3],brewer.pal(9, "Reds")[3]))
 # p6
-###############################
-# need to change label
-###############################
 
-p6 = ggplot(GB_summ, aes(x=amenities, y=Rent_mean)) + 
-  geom_bar(aes(fill = Green),stat='identity',position='dodge')+
-  #scale_fill_brewer(palette= "Greens",direction = -1)+
-  facet_wrap(~ stories_category, labeller = label_parsed) +
-  labs(title = "Mean of Different Size Groups", x = "Size", y = "Rent")+
+GB_summ_a = GB_cleaned %>%
+  group_by(amenities,stories_category, Green) %>%
+  summarise(Rent_mean = mean(Rent))
+p6 = ggplot(GB_summ_a, aes(x=amenities, y=Rent_mean,fill=Green)) + 
+  geom_bar(alpha = 0.8, stat='identity',position='dodge')+
+  geom_text(aes(x=amenities,y=Rent_mean,label=round(Rent_mean)),vjust=-0.1,col="black",position = position_dodge(0.9))+
+  #scale_fill_brewer(palette= "Greens",direction =-1)+
+  facet_wrap(~ stories_category) +
+  labs(title = "Amenities vs Groups", x = "Amenities", y = "Rent")+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5)) + 
-  scale_fill_manual( values = c(brewer.pal(9, "Greens")[3],brewer.pal(9, "Reds")[3]))
+  scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))
 p6
-###############################
-# need to change label
-###############################
 
 # Age of the Building
 p7 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, col = Green)) + 
-  geom_point(aes(x = age, y = Rent, col = Green), alpha =0.7)+
+  geom_point(aes(x = age, y = Rent, col = Green), alpha =0.3)+
 #  geom_smooth(se = TRUE)+
-  scale_colour_brewer(palette= "Accent",direction = 1)+
-  labs(title = "Age & Rent Plot")+
+  scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
+  labs(title = "Age vs Rent Plot", x = "Age", y = "Rent")+
   facet_wrap(~ Green, labeller = label_parsed)+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p7
-###############################
-# need to change color to red
-###############################
-
-
 
 
 # Gas and Electricity Price
-GB_cleaned$Gas_category = cut(GB_cleaned$Gas_Costs, 4)
-GB_cleaned$E_category = cut(GB_cleaned$Electricity_Costs,3)
+#GB_cleaned$Gas_category = cut(GB_cleaned$Gas_Costs, 4)
+#GB_cleaned$E_category = cut(GB_cleaned$Electricity_Costs,3)
 
-GB_summ1 <- GB_cleaned %>%
-  group_by(Gas_category,E_category, Green) %>%
-  summarise(Rent_median = median(Rent), Rent_mean = mean(Rent), leasing_rate = mean(leasing_rate))
+# GB_summ1 <- GB_cleaned %>%
+#   group_by(Gas_category,E_category, Green) %>%
+#   summarise(Rent_median = median(Rent), Rent_mean = mean(Rent), leasing_rate = mean(leasing_rate))
 # p8 = ggplot(GB_summ1, aes(x=Gas_category, y=Rent_median)) + 
 #   geom_bar(aes(fill = Green),stat='identity',position='dodge')+
 #   facet_wrap(~ E_category)+
@@ -173,18 +185,23 @@ GB_summ1 <- GB_cleaned %>%
 # Which occupancy rate should be chosen?
 
 # Stories & Occupancy Rate Plot
-GB_summ2 <- GB_cleaned %>%
+  GB_summ2 <- GB_cleaned %>%
   group_by(stories_category,Green) %>%
-  summarise(Rent_median = median(Rent), Rent_mean = mean(Rent), leasing_rate = mean(leasing_rate))
+  summarise(Rent_median = median(Rent), Rent_mean = mean(Rent), leasing_rate = mean(leasing_rate)/100)
 
-p8 = ggplot(GB_summ2,aes(x = stories_category, y = leasing_rate))+
-  geom_bar(aes(fill = Green),stat='identity',position='dodge')+
-  scale_fill_brewer(palette= "Greens",direction = -1)+
+
+p8 = ggplot(GB_summ2,aes(x = stories_category, y = leasing_rate, fill = Green))+
+  scale_y_continuous(labels = scales::percent)+
+  geom_bar(alpha = 0.8,stat='identity',position= position_dodge())+
+  geom_text(aes(x=stories_category,y=leasing_rate,label=scales::percent(round(leasing_rate,2))),vjust=-0.1,col="black",position = position_dodge(0.9))+
+  scale_fill_manual(values = c(brewer.pal(6, "Greens")[5], brewer.pal(6, "Reds")[5]))+
   labs(title = "Stories & Occupancy Rate Plot",
-       y = "Occupancy rate",
+       y = "Occupancy Rate",
        x = "Stories")+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p8
+
 
 # Occupancy Rate and rich area
 GB_summ3 <-GB_cleaned %>%
@@ -198,22 +215,23 @@ GB_summ3 <-GB_cleaned %>%
 # Age of the Building and leasing rate
 GB_summ4 <-GB_cleaned %>%
   group_by(age, Green) %>%
-  summarise(leasing_rate = mean(leasing_rate))
+  summarise(leasing_rate = mean(leasing_rate)/100)
 GB_summ4$age <- as.numeric(GB_summ4$age)
 GB_summ4 <- subset(GB_summ4, (GB_summ4$age<30))
 
-p9 = ggplot()+
- geom_point(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
-  geom_line(data = GB_summ4, aes( x = age, y = leasing_rate, col = Green))+
-  scale_colour_brewer(palette= "Accent",direction = 1)+
-  ylim(0,100)+
-  labs(title = "Age & Occupancy Rate Plot",
+p9 = ggplot(GB_summ4,aes(x = age, y = leasing_rate, fill = Green))+
+  scale_y_continuous(labels = scales::percent,limits = c(0,1))+
+  geom_point(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
+  geom_line(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
+  #geom_text(aes(x=age,y=leasing_rate,col = Green, label=scales::percent(round(leasing_rate,2))), vjust = -0.5,check_overlap = TRUE)+
+  scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
+  labs(title = "Age vs Occupancy Rate Plot",
        y = "Occupancy rate",
        x = "Age of the building")+
+  theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p9
 ###############################
 # first three years, use P12
 # after that use P10 to calculate leasing rate
 ###############################
-
