@@ -130,7 +130,7 @@ p5half = ggplot(data = Air_summA)+
     transition_length = 0,
     state_length = 1
     ) + 
-  labs(title = 'ARRIVAL Month: {closest_state}', x = 'Longitude', y = 'Latitude') +
+  labs(title = 'Arrival Flight Volume Heat Map by Month: {closest_state}', x = 'Longitude', y = 'Latitude') +
   ease_aes('sine-in-out')
 p5half
 
@@ -147,7 +147,7 @@ p5third = ggplot(data = Air_summD)+
     transition_length = 0,
     state_length = 1
   ) + 
-  labs(title = ' DEPARTURE Month: {closest_state}', x = 'Longitude', y = 'Latitude') +
+  labs(title = 'Departure Flight Volume Heat Map by Month: {closest_state}', x = 'Longitude', y = 'Latitude') +
   ease_aes('sine-in-out')
 p5third
 # Mapping of all year
