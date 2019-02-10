@@ -22,6 +22,7 @@ By Chong Wang, Tinaping Wu, Zhenning Zhao
 ## Exercise 1.1
 The environmentally friendly buildings have some obvious advantages, not only from an eco-friendly view, but also from the financial aspect. The "data guru" did not make a reasonable argument to quantity the advantages clearly. To be more specific, we believe that the duration that he/she calculated to recover the cost may be mistaken.
 
+<center>
 ```{r p1.1, echo=FALSE, warning=FALSE, fig.align='center'}
 urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW1/greenbuildings.csv'
 greenbuildings<-read.csv(url(urlfile))
@@ -34,17 +35,19 @@ p1 <- ggplot(data = greenbuildings) +
   facet_wrap(~ Green)+
   geom_point(data = NG, mapping = aes(y = Rent, x = leasing_rate), alpha = 0.3, col = brewer.pal(6, "Reds")[5])+
   labs(title = "Occupancy Rates vs Rent", 
-       y = "Rent",
-       x = "Occupancy Rates")+
+       y = "Rent ($/sqft)",
+       x = "Occupancy Rates (%)")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p1
 ```
+</center>
 
 The first step is to clean the data. The "data guru" noticed that a handful of the buildings in the data set had very low occupancy rates. Although this is a true fact, which can be shown in the graph above, he/she did not provide a satisfactory reason for why the buildings with less than 10% leasing rate should be removed from consideration. Due to this fact, we disagree to simply delete these 215 data points. Instead, we were able to identify a reason to delete buildings with 0% occupancy rate. According to a [research conducted by IBM](https://www.ibm.com/support/knowledgecenter/en/SSFCZ3_10.5.2/com.ibm.tri.doc/wpm_metrics/r_occupancy_rate.html), buildings with a 0% leasing rate is called “not-used buildings”. Since our new building will certainly be used, we can comfortably exclude these data points from the original data set.
 
 After that, we tried to clean the data even furthur. Since this new project is in Austin with the tallest building at 56 floors, clusters with buildings higher than this value are clearly not in Austin and therefore should be removed from the data set. As the result, we are left with 6,618 data points.
 
+<center>
 ```{r p1.2, echo=FALSE, warning=FALSE, fig.align='center'}
 # clean data by deleting the data with occupacy rate equal to 0% and taller than 56 floor
 GB_test <- subset(greenbuildings,(greenbuildings$stories > 56))
@@ -63,10 +66,11 @@ p2 = ggplot(data = GB_cleaned, aes(x = Green, y = Rent)) +
   theme_bw()+
   labs(title = "Green Rating vs Rent",
        x = "Green Rating",
-       y = "Rent")+
+       y = "Rent ($/sqft)")+
   theme(plot.title = element_text(hjust = 0.5))
 p2
 ```
+</center>
 
 According to the "data guru", there are still many outliers after data cleaning, so he/she chooses to use the median instead of the mean to calculate the expected rent to compare green and non-green buildings. We plot the boxplot of green and non-green buildings to get a overview of the data. It seems that the "data guru" was right about the outliers, but it is unclear why there are so many outliers. So we digged deeper, and got some interesting findings.
 
@@ -77,23 +81,22 @@ p4 <- ggplot(data = GB_cleaned)+
   facet_wrap(~ Green)+
   geom_point(data = NG, mapping = aes(y = stories, x = size), alpha = 0.3, col = brewer.pal(6, "Reds")[5])+
   labs(title = "Size vs Story", 
-       x = "Size",
+       x = "Size (sqft)",
        y = "Story")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p4
 ```
 
-In order to narrow down existing data set further and only use data points that are relevant and comparable to our project, we looked for market standards to categorize buildings.  According to [the Commercial Real Estate Terms and Definitions] (https://www.naiop.org/-/media/Research/Research/Research-Reports/Terms-and-Definitions/CRE-Terms-and-Definitions-2017.ashx?la=en) by The NAIOP Research Foundation, commercial buildings can be divided into 3 types: low rise, mid rise, and high rise. Our 15-story building falls into the mid-rise category. The plot above confirms that story is positively correlated with size in our data set and there are many mid rise buildings with similar attributes that can be used to estimate our building’s rent. 
+In order to narrow down existing data set further and only use data points that are relevant and comparable to our project, we looked for market standards to categorize buildings.  According to [the Commercial Real Estate Terms and Definitions](https://www.naiop.org/-/media/Research/Research/Research-Reports/Terms-and-Definitions/CRE-Terms-and-Definitions-2017.ashx?la=en) by The NAIOP Research Foundation, commercial buildings can be divided into 3 types: low rise, mid rise, and high rise. Our 15-story building falls into the mid-rise category. The plot above confirms that story is positively correlated with size in our data set and there are many mid rise buildings with similar attributes that can be used to estimate our building’s rent. 
 
 ```{r p1.6, echo=FALSE, warning=FALSE, fig.align='center'}
 # Age of the Building
-p7 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, col = Green)) + 
-  geom_point(aes(x = age, y = Rent, col = Green), alpha =0.3)+
-#  geom_smooth(se = TRUE)+
-  scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
-  labs(title = "Age vs Rent", x = "Age", y = "Rent")+
-  facet_wrap(~ Green, labeller = label_parsed)+
+p7 = ggplot() + 
+  geom_point(data = GB_cleaned, aes(x = age, y = Rent), alpha =0.3, col = brewer.pal(6, "Greens")[5])+
+  geom_point(data = NG, mapping = aes(x = age, y = Rent), alpha = 0.3, col = brewer.pal(6, "Reds")[5])+
+  labs(title = "Age vs Rent", x = "Age (year)", y = "Rent ($/sqft)")+
+  facet_wrap(~ Green)+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p7
@@ -105,7 +108,7 @@ Next, we were curious if building’s age has any impact on rent. As shown in th
 # category: https://en.wikipedia.org/wiki/List_of_building_types
 GB_cleaned$size_category = cut(GB_cleaned$size, breaks = c(0,125000,400000,800000,10000000000))
 GB_cleaned$stories_category = cut(GB_cleaned$stories, breaks = c("0","7","25","150"))
-GB_cleaned$stories_category <- factor(GB_cleaned$stories_category, labels = c(expression("Low Rise("<"7)"), "Mid~Rise (7-25)", expression("High Rise(">"25)")))
+GB_cleaned$stories_category <- factor(GB_cleaned$stories_category, labels = c(expression("Low Rise(<7)"), "Mid~Rise (7-25)", expression("High Rise(>25)")))
 GB_summ <- GB_cleaned %>%
   group_by(amenities,size_category,Green,stories_category) %>%
   summarise(Rent_median = median(Rent), Rent_mean = mean(Rent), leasing_rate = mean(leasing_rate))
@@ -115,11 +118,13 @@ GB_summ_a = GB_cleaned %>%
 p6 = ggplot(GB_summ_a, aes(x=amenities, y=Rent_mean,fill=Green)) + 
   geom_bar(alpha = 0.8, stat='identity',position='dodge')+
   geom_text(aes(x=amenities,y=Rent_mean,label=round(Rent_mean)),vjust=-0.1,col="black",position = position_dodge(0.9))+
-  #scale_fill_brewer(palette= "Greens",direction =-1)+
   facet_wrap(~ stories_category) +
-  labs(title = "Amenities vs Groups", x = "Amenities", y = "Rent")+
+  scale_fill_discrete(name = "Green Buildings or Not")+
+  scale_x_continuous(breaks = c(0,1),labels = c("0" = "No", "1" = "Yes"))+
+  labs(title = "Rent for Different Stories and Access of Amenities",
+       x = "Are Amenities Available?", y = "Rent ($/sqft)")+
   theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5)) + 
+  theme(plot.title = element_text(hjust = 0.5),legend.position="bottom") + 
   scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))
 p6
 ```
@@ -142,12 +147,12 @@ p8 = ggplot(GB_summ2,aes(x = stories_category, y = leasing_rate, fill = Green))+
   scale_y_continuous(labels = scales::percent)+
   geom_bar(alpha = 0.8,stat='identity',position= position_dodge())+
   geom_text(aes(x=stories_category,y=leasing_rate,label=scales::percent(round(leasing_rate,2))),vjust=-0.1,col="black",position = position_dodge(0.9))+
-  scale_fill_manual(values = c(brewer.pal(6, "Greens")[5], brewer.pal(6, "Reds")[5]))+
-  labs(title = "Stories & Occupancy Rate",
-       y = "Occupancy Rate",
+  scale_fill_manual(name = "Green Buildings or Not", values = c(brewer.pal(6, "Greens")[5], brewer.pal(6, "Reds")[5]))+
+  labs(title = "Stories vs Occupancy Rate",
+       y = "Occupancy Rate (%)",
        x = "Stories")+
   theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5), legend.position="bottom")
 p8
 ```
 
@@ -170,13 +175,12 @@ p9 = ggplot(GB_summ4,aes(x = age, y = leasing_rate, fill = Green))+
   scale_y_continuous(labels = scales::percent,limits = c(0,1))+
   geom_point(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
   geom_line(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
-  #geom_text(aes(x=age,y=leasing_rate,col = Green, label=scales::percent(round(leasing_rate,2))), vjust = -0.5,check_overlap = TRUE)+
   scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
   labs(title = "Age vs Occupancy Rate",
-       y = "Occupancy rate",
-       x = "Age of the building")+
+       y = "Occupancy rate (%)",
+       x = "Age of the building (year)")+
   theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5), legend.position="bottom")
 p9
 ```
 
@@ -224,7 +228,7 @@ myABIA_CRSsumm_A_total <- myABIA_fly %>%
 
 p1 = ggplot(data = subset(myABIA_CRSsumm_D_total,(myABIA_CRSsumm_D_total$INorOUT == "Departure")))+
   geom_bar(aes(x = CRSTWindow_D, y = DepDelay_mean),stat='identity',position='dodge')+
-  labs(title = "CRS Time vs Average Departure Delay", x = "CRS Time", y = "Departure Delay")+
+  labs(title = "CRS Time vs Average Departure Delay", x = "CRS Time", y = "Departure Delay (min)")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p1
@@ -235,7 +239,7 @@ First, we categorized the data by the scheduled departure time for the flights t
 ```{r Q1.2.2, echo = FALSE, warning=FALSE}
 p2 = ggplot(data = subset(myABIA_CRSsumm_A_total,(myABIA_CRSsumm_A_total$INorOUT == "Arrival")))+
   geom_bar(aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity',position='dodge')+
-  labs(title = "CRS Time vs Average Arrival Delay", x = "CRS Time", y = "Arrival Delay")+
+  labs(title = "CRS Time vs Average Arrival Delay", x = "CRS Time", y = "Arrival Delay (min)")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p2
@@ -538,7 +542,7 @@ Air_summA = subset(Air_summ, Air_summ$INorOUT=="Arrival")
 Air_summD = subset(Air_summ, Air_summ$INorOUT=="Departure")
 ```
 
-From the flight volume by region graph listed above, it can be seen that flights from West South Central contributed significantly to the high volume at the beginning of the year, and volume pops up in the summertime for Mountain, South Atlantic, Pacific, and East North Central regions. For detailed information about how the regions are divided, please visit: [Census Bureau Regions and Divisions with State FIPS Codes] (https://www2.census.gov/geo/docs/maps-data/maps/reg_div.txt) 
+From the flight volume by region graph listed above, it can be seen that flights from West South Central contributed significantly to the high volume at the beginning of the year, and volume pops up in the summertime for Mountain, South Atlantic, Pacific, and East North Central regions. For detailed information about how the regions are divided, please visit: [Census Bureau Regions and Divisions with State FIPS Codes](https://www2.census.gov/geo/docs/maps-data/maps/reg_div.txt) 
 
 
 ### What are the bad airports to fly to?

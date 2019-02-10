@@ -8,14 +8,16 @@ Exercise 1.1
 
 The environmentally friendly buildings have some obvious advantages, not only from an eco-friendly view, but also from the financial aspect. The "data guru" did not make a reasonable argument to quantity the advantages clearly. To be more specific, we believe that the duration that he/she calculated to recover the cost may be mistaken.
 
+<center>
 <img src="Exercise_1_Report_files/figure-markdown_github/p1.1-1.png" style="display: block; margin: auto;" />
-
+</center>
 The first step is to clean the data. The "data guru" noticed that a handful of the buildings in the data set had very low occupancy rates. Although this is a true fact, which can be shown in the graph above, he/she did not provide a satisfactory reason for why the buildings with less than 10% leasing rate should be removed from consideration. Due to this fact, we disagree to simply delete these 215 data points. Instead, we were able to identify a reason to delete buildings with 0% occupancy rate. According to a [research conducted by IBM](https://www.ibm.com/support/knowledgecenter/en/SSFCZ3_10.5.2/com.ibm.tri.doc/wpm_metrics/r_occupancy_rate.html), buildings with a 0% leasing rate is called “not-used buildings”. Since our new building will certainly be used, we can comfortably exclude these data points from the original data set.
 
 After that, we tried to clean the data even furthur. Since this new project is in Austin with the tallest building at 56 floors, clusters with buildings higher than this value are clearly not in Austin and therefore should be removed from the data set. As the result, we are left with 6,618 data points.
 
+<center>
 <img src="Exercise_1_Report_files/figure-markdown_github/p1.2-1.png" style="display: block; margin: auto;" />
-
+</center>
 According to the "data guru", there are still many outliers after data cleaning, so he/she chooses to use the median instead of the mean to calculate the expected rent to compare green and non-green buildings. We plot the boxplot of green and non-green buildings to get a overview of the data. It seems that the "data guru" was right about the outliers, but it is unclear why there are so many outliers. So we digged deeper, and got some interesting findings.
 
 <img src="Exercise_1_Report_files/figure-markdown_github/p1.4-1.png" style="display: block; margin: auto;" />
@@ -25,6 +27,9 @@ In order to narrow down existing data set further and only use data points that 
 <img src="Exercise_1_Report_files/figure-markdown_github/p1.6-1.png" style="display: block; margin: auto;" />
 
 Next, we were curious if building’s age has any impact on rent. As shown in the plot above, rent shows no distinct trend as building’s age goes up, at least up to 100 years. This let us treat all buildings with different age equally for rent estimation.
+
+    ## Scale for 'fill' is already present. Adding another scale for 'fill',
+    ## which will replace the existing scale.
 
 <img src="Exercise_1_Report_files/figure-markdown_github/p1.7-1.png" style="display: block; margin: auto;" />
 
@@ -122,7 +127,7 @@ We splited the data into a training and a testing set. There are 80% of the data
 
 The optimal K for trim level 350 is printed below:
 
-    ## [1] 9
+    ## [1] 50
 
 Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, we can get the optimal K for trim level 350 is about 19. Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
 
@@ -138,7 +143,7 @@ We splited the data into a training and a testing set. There are 80% of the data
 
 The optimal K for trim level 65 AMG is printed below:
 
-    ## [1] 18
+    ## [1] 20
 
 Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, we can get the optimal K for trim level 65 AMG is about 16. Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
 
