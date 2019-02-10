@@ -57,11 +57,11 @@ NG_one <- subset(GB_cleaned, green_rating == "0")
 p2 = ggplot(data = GB_cleaned, aes(x = Green, y = Rent)) + 
   geom_boxplot(fill = brewer.pal(6, "Greens")[5], alpha = 0.8)+
   geom_boxplot(data = NG_one, fill = brewer.pal(6, "Reds")[5], alpha= 0.9)+
+  theme_bw()+
   labs(title = "Green Rating vs Rent Plot",
        x = "Green Rating",
        y = "Rent")+
-  theme(plot.title = element_text(hjust = 0.5))+
-  theme_bw()
+  theme(plot.title = element_text(hjust = 0.5))
 p2
 ```
 
