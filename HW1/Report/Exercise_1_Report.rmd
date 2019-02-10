@@ -22,7 +22,6 @@ By Chong Wang, Tinaping Wu, Zhenning Zhao
 ## Exercise 1.1
 The environmentally friendly buildings have some obvious advantages, not only from an eco-friendly view, but also from the financial aspect. The "data guru" did not make a reasonable argument to quantity the advantages clearly. To be more specific, we believe that the duration that he/she calculated to recover the cost may be mistaken.
 
-<center>
 ```{r p1.1, echo=FALSE, warning=FALSE, fig.align='center'}
 urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW1/greenbuildings.csv'
 greenbuildings<-read.csv(url(urlfile))
@@ -34,20 +33,18 @@ p1 <- ggplot(data = greenbuildings) +
   geom_point(mapping = aes(y = Rent, x = leasing_rate),alpha = 0.3, col = brewer.pal(6, "Greens")[5])+
   facet_wrap(~ Green)+
   geom_point(data = NG, mapping = aes(y = Rent, x = leasing_rate), alpha = 0.3, col = brewer.pal(6, "Reds")[5])+
-  labs(title = "Occupancy Rates vs Rent", 
+  labs(title = "Occupancy Rate vs Rent", 
        y = "Rent ($/sqft)",
-       x = "Occupancy Rates (%)")+
+       x = "Occupancy Rate (%)")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p1
 ```
-</center>
 
 The first step is to clean the data. The "data guru" noticed that a handful of the buildings in the data set had very low occupancy rates. Although this is a true fact, which can be shown in the graph above, he/she did not provide a satisfactory reason for why the buildings with less than 10% leasing rate should be removed from consideration. Due to this fact, we disagree to simply delete these 215 data points. Instead, we were able to identify a reason to delete buildings with 0% occupancy rate. According to a [research conducted by IBM](https://www.ibm.com/support/knowledgecenter/en/SSFCZ3_10.5.2/com.ibm.tri.doc/wpm_metrics/r_occupancy_rate.html), buildings with a 0% leasing rate is called “not-used buildings”. Since our new building will certainly be used, we can comfortably exclude these data points from the original data set.
 
 After that, we tried to clean the data even furthur. Since this new project is in Austin with the tallest building at 56 floors, clusters with buildings higher than this value are clearly not in Austin and therefore should be removed from the data set. As the result, we are left with 6,618 data points.
 
-<center>
 ```{r p1.2, echo=FALSE, warning=FALSE, fig.align='center'}
 # clean data by deleting the data with occupacy rate equal to 0% and taller than 56 floor
 GB_test <- subset(greenbuildings,(greenbuildings$stories > 56))
@@ -65,12 +62,11 @@ p2 = ggplot(data = GB_cleaned, aes(x = Green, y = Rent)) +
   geom_boxplot(data = NG_one, fill = brewer.pal(6, "Reds")[5], alpha= 0.9)+
   theme_bw()+
   labs(title = "Green Rating vs Rent",
-       x = "Green Rating",
+       x = "Green Buildings or Not",
        y = "Rent ($/sqft)")+
   theme(plot.title = element_text(hjust = 0.5))
 p2
 ```
-</center>
 
 According to the "data guru", there are still many outliers after data cleaning, so he/she chooses to use the median instead of the mean to calculate the expected rent to compare green and non-green buildings. We plot the boxplot of green and non-green buildings to get a overview of the data. It seems that the "data guru" was right about the outliers, but it is unclear why there are so many outliers. So we digged deeper, and got some interesting findings.
 
@@ -108,7 +104,7 @@ Next, we were curious if building’s age has any impact on rent. As shown in th
 # category: https://en.wikipedia.org/wiki/List_of_building_types
 GB_cleaned$size_category = cut(GB_cleaned$size, breaks = c(0,125000,400000,800000,10000000000))
 GB_cleaned$stories_category = cut(GB_cleaned$stories, breaks = c("0","7","25","150"))
-GB_cleaned$stories_category <- factor(GB_cleaned$stories_category, labels = c(expression("Low Rise(<7)"), "Mid~Rise (7-25)", expression("High Rise(>25)")))
+GB_cleaned$stories_category <- factor(GB_cleaned$stories_category, labels = c(expression("Low Rise(<7)"), "Mid Rise(7-25)", expression("High Rise(>25)")))
 GB_summ <- GB_cleaned %>%
   group_by(amenities,size_category,Green,stories_category) %>%
   summarise(Rent_median = median(Rent), Rent_mean = mean(Rent), leasing_rate = mean(leasing_rate))
@@ -119,13 +115,12 @@ p6 = ggplot(GB_summ_a, aes(x=amenities, y=Rent_mean,fill=Green)) +
   geom_bar(alpha = 0.8, stat='identity',position='dodge')+
   geom_text(aes(x=amenities,y=Rent_mean,label=round(Rent_mean)),vjust=-0.1,col="black",position = position_dodge(0.9))+
   facet_wrap(~ stories_category) +
-  scale_fill_discrete(name = "Green Buildings or Not")+
   scale_x_continuous(breaks = c(0,1),labels = c("0" = "No", "1" = "Yes"))+
-  labs(title = "Rent for Different Stories and Access of Amenities",
-       x = "Are Amenities Available?", y = "Rent ($/sqft)")+
+  labs(title = "Different Stories and Access of Amenity vs Rent",
+       x = "Is Amenity Available?", y = "Rent ($/sqft)")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5),legend.position="bottom") + 
-  scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))
+  scale_fill_manual(name = "Green Buildings or Not", values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))
 p6
 ```
 
@@ -142,15 +137,14 @@ To our surprise, mid rise and high rise green buildings with amenities actually 
   group_by(stories_category,Green) %>%
   summarise(Rent_median = median(Rent), Rent_mean = mean(Rent), leasing_rate = mean(leasing_rate)/100)
 
-
 p8 = ggplot(GB_summ2,aes(x = stories_category, y = leasing_rate, fill = Green))+
   scale_y_continuous(labels = scales::percent)+
   geom_bar(alpha = 0.8,stat='identity',position= position_dodge())+
   geom_text(aes(x=stories_category,y=leasing_rate,label=scales::percent(round(leasing_rate,2))),vjust=-0.1,col="black",position = position_dodge(0.9))+
   scale_fill_manual(name = "Green Buildings or Not", values = c(brewer.pal(6, "Greens")[5], brewer.pal(6, "Reds")[5]))+
-  labs(title = "Stories vs Occupancy Rate",
+  labs(title = "Story vs Occupancy Rate",
        y = "Occupancy Rate (%)",
-       x = "Stories")+
+       x = "Story")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5), legend.position="bottom")
 p8
@@ -171,11 +165,17 @@ GB_summ4 <-GB_cleaned %>%
 GB_summ4$age <- as.numeric(GB_summ4$age)
 GB_summ4 <- subset(GB_summ4, (GB_summ4$age<30))
 
-p9 = ggplot(GB_summ4,aes(x = age, y = leasing_rate, fill = Green))+
+p9 = ggplot(GB_summ4,aes(x = age, y = leasing_rate))+
   scale_y_continuous(labels = scales::percent,limits = c(0,1))+
   geom_point(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
   geom_line(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
-  scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
+  annotate("text", x = -0.1, y = 0.49, label = "47%", col=brewer.pal(6, "Reds")[5])+
+  annotate("text", x = -0.1, y = 0.58, label = "56%", col=brewer.pal(6, "Greens")[5])+
+  annotate("text", x = 1, y = 0.67, label = "65%", col=brewer.pal(6, "Reds")[5])+
+  annotate("text", x = 1, y = 0.81, label = "79%", col=brewer.pal(6, "Greens")[5] )+
+  annotate("text", x = 1.9, y = 0.69, label = "67%", col=brewer.pal(6, "Reds")[5])+
+  annotate("text", x = 2, y = 0.91, label = "89%", col=brewer.pal(6, "Greens")[5])+
+  scale_color_manual(name = "Green Buildings or Not", values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
   labs(title = "Age vs Occupancy Rate",
        y = "Occupancy rate (%)",
        x = "Age of the building (year)")+
@@ -226,8 +226,12 @@ myABIA_CRSsumm_A_total <- myABIA_fly %>%
   group_by(CRSTWindow_A,INorOUT) %>%
   summarise(ArrDelay_mean = mean(ArrDelay))
 
+temp1 <- subset(myABIA_CRSsumm_D_total,(myABIA_CRSsumm_D_total$INorOUT == "Departure"))
+
 p1 = ggplot(data = subset(myABIA_CRSsumm_D_total,(myABIA_CRSsumm_D_total$INorOUT == "Departure")))+
   geom_bar(aes(x = CRSTWindow_D, y = DepDelay_mean),stat='identity',position='dodge')+
+  geom_bar(aes(x = temp1$CRSTWindow_D[which.max(temp1$DepDelay_mean)], 
+               y = temp1$DepDelay_mean[which.max(temp1$DepDelay_mean)]),stat='identity',position='dodge', fill = "red")+
   labs(title = "CRS Time vs Average Departure Delay", x = "CRS Time", y = "Departure Delay (min)")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
@@ -237,8 +241,12 @@ p1
 First, we categorized the data by the scheduled departure time for the flights that depart Austin. And it gave us the above picture. According to the bar plot, the flights that depart Austin at midnight (at 12:00 AM) have the most departure delay. The average delay time for each flight is 23 minutes. It goes well with our intuition, since the ticket for the night flight is usually cheaper, the airline company don’t pay much attention to the schedule. The best time to depart Austin, on the other hand, is the morning. The flights at 6:00 AM actually departed earlier than the scheduled time.
 
 ```{r Q1.2.2, echo = FALSE, warning=FALSE}
+temp2 <- subset(myABIA_CRSsumm_A_total,(myABIA_CRSsumm_A_total$INorOUT == "Arrival"))
+
 p2 = ggplot(data = subset(myABIA_CRSsumm_A_total,(myABIA_CRSsumm_A_total$INorOUT == "Arrival")))+
   geom_bar(aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity',position='dodge')+
+  geom_bar(aes(x = temp2$CRSTWindow_A[which.max(temp2$ArrDelay_mean)], 
+               y = temp2$ArrDelay_mean[which.max(temp2$ArrDelay_mean)]),stat='identity',position='dodge', fill = "red")+
   labs(title = "CRS Time vs Average Arrival Delay", x = "CRS Time", y = "Arrival Delay (min)")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
@@ -270,7 +278,8 @@ p3 = ggplot()+
   geom_bar(data = myABIA_CRSsumm_Departure, aes(x = CRSTWindow_D, y = DepDelay_mean),stat='identity')+
   facet_wrap(~UniqueCarrier) +
   geom_bar(data = Delay_D_max, aes(x = CRSTWindow_D, y = Vmax),stat='identity', fill = "red")+
-  labs(title = "CRS Time vs Average Departure Delay for Different Airline Company", x = "CRS Time", y = "Departure Delay")+
+  labs(title = "CRS Time vs Average Departure Delay for Different Airline Companies", 
+       x = "CRS Time", y = "Departure Delay (min)")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p3
@@ -290,7 +299,8 @@ p4 = ggplot()+
   geom_bar(data = myABIA_CRSsumm_Arrival, aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity')+
   facet_wrap(~UniqueCarrier) +
   geom_bar(data = Delay_A_max, aes(x = CRSTWindow_A, y = Vmax),stat='identity', fill = "red")+
-  labs(title = "CRS Time vs Average Arrival Delay for Different Airline Company", x = "CRS Time", y = "Arrival Delay")+
+  labs(title = "CRS Time vs Average Arrival Delay for Different Airline Companies", 
+       x = "CRS Time", y = "Arrival Delay (min)")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p4
@@ -309,8 +319,12 @@ myABIA_summ_Month <- myABIA_fly %>%
   group_by(Month,INorOUT) %>%
   summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
 
+temp3 = subset(myABIA_summ_Month,(myABIA_summ_Month$INorOUT == "Departure"))
+
 p5 = ggplot(data = subset(myABIA_summ_Month,(myABIA_summ_Month$INorOUT == "Departure")))+
   geom_bar(aes(x = Month, y = DepDelay_mean),stat='identity',position='dodge')+
+  geom_bar(aes(x = temp3$Month[which.max(temp3$DepDelay_mean)], 
+               y = temp3$DepDelay_mean[which.max(temp3$DepDelay_mean)]),stat='identity',position='dodge', fill = "red")+
   labs(title = "Month vs Average Departure Delay", x = "Month", y = "Departure Delay")+
   theme_bw()+
   scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12),labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec"))+
@@ -321,9 +335,13 @@ p5
 Clearly, December and March are the two worst months to fly out of Austin. Each flight delays about 13 minutes in December, and 12 minutes in March on average. The best time to departure Austin, on the other hand, is September and October.
 
 ```{r Q1.2.6, echo = FALSE, warning=FALSE}
+temp4 <- subset(myABIA_summ_Month,(myABIA_summ_Month$INorOUT == "Arrival"))
+
 p6 = ggplot(data = subset(myABIA_summ_Month,(myABIA_summ_Month$INorOUT == "Arrival")))+
   geom_bar(aes(x = Month, y = ArrDelay_mean),stat='identity',position='dodge')+
-  labs(title = "Month vs Average Arrival Delay", x = "Month", y = "Arrival Delay")+
+  geom_bar(aes(x = temp4$Month[which.max(temp4$ArrDelay_mean)], 
+               y = temp4$ArrDelay_mean[which.max(temp4$ArrDelay_mean)]),stat='identity',position='dodge', fill = "red")+
+  labs(title = "Month vs Average Arrival Delay", x = "Month", y = "Arrival Delay (min)")+
   scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12),labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec"))+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
@@ -467,10 +485,11 @@ p9 = ggplot(data = Air_summ2)+
   facet_wrap(~ INorOUT)+
   labs(title = "Flight Volume Heat Map", x = " ", y = " ")+
   theme_gray()+
-  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  theme(plot.title = element_text(hjust = 0.5), 
+        panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
   scale_x_discrete()+
   scale_y_discrete()+
-  scale_colour_gradient2(low="green", high="Purple")+
+  scale_colour_gradient2(low="white", high="Purple")+
   borders("state")+
   scale_size_area()+
   coord_quickmap()
@@ -485,7 +504,8 @@ p7 = ggplot(data = Air_summA)+
   geom_point(aes(D_long,D_lat))+
   geom_segment(aes(x = O_long, y = O_lat, xend = D_long, yend = D_lat, col = airline),size = 0.8)+
   theme_gray()+
-  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
   scale_x_discrete()+
   scale_y_discrete()+
   scale_colour_gradient2(low="green", high="Purple")+
@@ -508,7 +528,8 @@ p8 = ggplot(data = Air_summD)+
   geom_point(aes(D_long,D_lat))+
   geom_segment(aes(x = O_long, y = O_lat, xend = D_long, yend = D_lat, col = airline),size = 0.8)+
   theme_gray()+
-  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  theme(plot.title = element_text(hjust = 0.5), 
+        panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
   scale_x_discrete()+
   scale_y_discrete()+
   scale_colour_gradient2(low="green", high="Purple")+
@@ -555,7 +576,7 @@ Air_delay_departure = subset(Air_summ2, (Air_summ2$INorOUT == "Departure"))
 p10 = ggplot(data = Air_delay_departure)+
   geom_bar(aes(x = reorder(airport, Delay), y = Delay),stat='identity',position='dodge')+
   coord_flip()+
-  labs(title = "Average Departure Delay for Different Airport", y = "Departure Delay", x = "Airport")+
+  labs(title = "Average Departure Delay for Different Airport", y = "Departure Delay (min)", x = "Airport")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p10
@@ -568,7 +589,7 @@ Air_delay_arrival = subset(Air_summ2, (Air_summ2$INorOUT == "Arrival"))
 p11 = ggplot(data = Air_delay_arrival)+
   geom_bar(aes(x = reorder(airport, Delay), y = Delay),stat='identity',position='dodge')+
   coord_flip()+
-  labs(title = "Average Arrival Delay for Different Airport", y = "Arrival Delay", x = "Airport")+
+  labs(title = "Average Arrival Delay for Different Airport", y = "Arrival Delay (min)", x = "Airport")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p11
@@ -585,9 +606,10 @@ p12 = ggplot(data = Air_summ2)+
   facet_wrap(~ INorOUT)+
   scale_colour_gradient2(low="white", high="red")+
   borders("state")+
-  labs(title = "Flight Count Heat Map", x = " ", y = " ")+
+  labs(title = "Flight Delay Heat Map", x = " ", y = " ")+
   scale_size_area()+
-  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
   scale_x_discrete()+
   scale_y_discrete()+
   coord_quickmap()
