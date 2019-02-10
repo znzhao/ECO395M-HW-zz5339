@@ -65,14 +65,12 @@ p2
 
 
 # Size density
-x1 = 250000
 summary(GB_cleaned$size)
 p3 = ggplot(data = GB_cleaned, aes(x = size))+
   geom_density(aes(fill=Green),alpha = 0.9)+
-  geom_vline(xintercept = x1)+
-  geom_text(x=x1, y=3e-06, label="Our Building",adj=-0.05,size=5, col ="black")+
+  geom_vline(xintercept = 250000)+
+  geom_label(aes(x=400000, y=3e-06, label="Aim Project"),stat = "identity")+
   scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
-  #scale_fill_brewer(palette= "Greens",direction = -1)+
   labs(title = "Size vs Density Plot", x = "Size", y = "Density")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
@@ -97,13 +95,13 @@ p4
 p5 = ggplot(data = GB_cleaned, aes(x = stories))+
   geom_density(aes(fill = Green),alpha = 0.7)+
   geom_vline(xintercept = 15)+
+  geom_label(aes(x=25, y=0.06, label="Aim Project"),stat = "identity")+
   labs(title = "Stories vs Density Plot", x = "Stories", y = "Density",col="grey")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5)) + 
-  scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
-  geom_text(x=16, y=0.06, label="Our Building",adj=-0.05,alpha = 0.5)
-
-p5# Building is concentrating in medium size 
+  scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))
+p5
+# Building is concentrating in medium size 
 
 
 # category: https://en.wikipedia.org/wiki/List_of_building_types
