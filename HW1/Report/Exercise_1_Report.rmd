@@ -69,20 +69,6 @@ p2
 ```
 According to the "data guru", there are still many outliers after data cleaning, so he/she chooses to use the median instead of the mean to calculate the expected rent to compare green and non-green buildings. We plot the boxplot of green and non-green buildings to get a overview of the data. It seems that the "data guru" was right about the outliers, but it is unclear why there are so many outliers. So we digged deeper, and got some interesting findings.
 
-```{r p1.3, echo=FALSE, warning=FALSE, fig.align='center'}
-# Size density
-summary(GB_cleaned$size)
-p3 = ggplot(data = GB_cleaned, aes(x = size))+
-  geom_density(aes(fill=Green),alpha = 0.9)+
-  geom_vline(xintercept = 250000)+
-  geom_label(aes(x=400000, y=3e-06, label="Our Project"),stat = "identity")+
-  scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
-  labs(title = "Size vs Density", x = "Size", y = "Density")+
-  theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5))
-p3
-# Building is concentrating in small size
-```
 
 ```{r p1.4, echo=FALSE, warning=FALSE, fig.align='center'}
 NG <- subset(GB_cleaned, (GB_cleaned$Green == "Non-Green"))
@@ -90,29 +76,32 @@ p4 <- ggplot(data = GB_cleaned)+
   geom_point(mapping = aes(y = stories, x = size),alpha = 0.3, col = brewer.pal(6, "Greens")[5])+
   facet_wrap(~ Green)+
   geom_point(data = NG, mapping = aes(y = stories, x = size), alpha = 0.3, col = brewer.pal(6, "Reds")[5])+
-  labs(title = "Size vs Stories Plot", 
+  labs(title = "Size vs Story", 
        x = "Size",
-       y = "Stories")+
+       y = "Story")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p4
 ```
 
-```{r p1.5, echo=FALSE, warning=FALSE, fig.align='center'}
-#Stories Densities
-p5 = ggplot(data = GB_cleaned, aes(x = stories))+
-  geom_density(aes(fill = Green),alpha = 0.7)+
-  geom_vline(xintercept = 15)+
-  geom_label(aes(x=25, y=0.06, label="Our Project"),stat = "identity")+
-  labs(title = "Stories vs Density", x = "Stories", y = "Density",col="grey")+
-  theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5)) + 
-  scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))
-p5
-# Building is concentrating in medium size 
-```
+In order to narrow down existing data set further and only use data points that are relevant and comparable to our project, we looked for market standards to categorize buildings.  According to [the Commercial Real Estate Terms and Definitions] (https://www.naiop.org/-/media/Research/Research/Research-Reports/Terms-and-Definitions/CRE-Terms-and-Definitions-2017.ashx?la=en) by The NAIOP Research Foundation, commercial buildings can be divided into 3 types: low rise, mid rise, and high rise. Our 15-story building falls into the mid-rise category. The plot above confirms that story is positively correlated with size in our data set and there are many mid rise buildings with similar attributes that can be used to estimate our building’s rent. 
 
 ```{r p1.6, echo=FALSE, warning=FALSE, fig.align='center'}
+# Age of the Building
+p7 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, col = Green)) + 
+  geom_point(aes(x = age, y = Rent, col = Green), alpha =0.3)+
+#  geom_smooth(se = TRUE)+
+  scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
+  labs(title = "Age vs Rent", x = "Age", y = "Rent")+
+  facet_wrap(~ Green, labeller = label_parsed)+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+p7
+```
+
+Next, we were curious if building’s age has any impact on rent. As shown in the plot above, rent shows no distinct trend as building’s age goes up, at least up to 100 years. This let us treat all buildings with different age equally for rent estimation.
+
+```{r p1.7, echo=FALSE, warning=FALSE, fig.align='center'}
 # category: https://en.wikipedia.org/wiki/List_of_building_types
 GB_cleaned$size_category = cut(GB_cleaned$size, breaks = c(0,125000,400000,800000,10000000000))
 GB_cleaned$stories_category = cut(GB_cleaned$stories, breaks = c("0","7","25","150"))
@@ -135,18 +124,10 @@ p6 = ggplot(GB_summ_a, aes(x=amenities, y=Rent_mean,fill=Green)) +
 p6
 ```
 
-```{r p1.7, echo=FALSE, warning=FALSE, fig.align='center'}
-# Age of the Building
-p7 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, col = Green)) + 
-  geom_point(aes(x = age, y = Rent, col = Green), alpha =0.3)+
-#  geom_smooth(se = TRUE)+
-  scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
-  labs(title = "Age vs Rent", x = "Age", y = "Rent")+
-  facet_wrap(~ Green, labeller = label_parsed)+
-  theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5))
-p7
-```
+Lastly we added one more dimension to identify data points that are relevant to our building: Amenities. Our building is for mix use with amenities such as on-site bank, convenience store, dry cleaner, restaurant, retail shops, and fitness center. It is reasonable to assume these buildings would set rent differently than ones without amenities, as more value is added.
+
+
+To our surprise, mid rise and high rise green buildings with amenities actually had higher rent than green buildings without amenities, as shown in the plot above. Putting this strange result aside, we will focus on the green and non-green buildings within the mid-rise group. It turns out that both types cost the same at $31 per square foot per year.
 
 ```{r p1.8, echo=FALSE, warning=FALSE, fig.align='center'}
 # Which occupancy rate should be chosen?
@@ -449,6 +430,35 @@ Air_summD = subset(Air_summ, Air_summ$INorOUT=="Departure")
 ```
 
 ```{r Q1.2.7, echo = FALSE, warning=FALSE}
+# Mapping of all year
+Air_summ2 <- myABIA3 %>%
+  group_by(INorOUT, Origin, Dest) %>%
+  summarise(O_long = mean(O_long),D_long = mean(D_long),O_lat = mean(O_lat),D_lat = mean(D_lat),airline = length(INorOUT), DepDelay = mean(DepDelay),ArrDelay = mean(ArrDelay))
+Air_summ2$airport[Air_summ2$INorOUT == "Arrival"] <- Air_summ2$Origin[Air_summ2$INorOUT == "Arrival"]
+Air_summ2$airport[Air_summ2$INorOUT == "Departure"] <- Air_summ2$Dest[Air_summ2$INorOUT == "Departure"]
+Air_summ2$Delay[Air_summ2$INorOUT == "Departure"] <- Air_summ2$DepDelay[Air_summ2$INorOUT == "Arrival"]
+Air_summ2$Delay[Air_summ2$INorOUT == "Arrival"] <- Air_summ2$ArrDelay[Air_summ2$INorOUT == "Departure"]
+# num of flight
+p9 = ggplot(data = Air_summ2)+
+  geom_point(aes(O_long,O_lat))+
+  geom_point(aes(D_long,D_lat))+
+  geom_segment(aes(x = O_long, y = O_lat, xend = D_long, yend = D_lat, col = airline),size = 0.8)+
+  facet_wrap(~ INorOUT)+
+  labs(title = "Flight Volume Heat Map", x = " ", y = " ")+
+  theme_gray()+
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  scale_x_discrete()+
+  scale_y_discrete()+
+  scale_colour_gradient2(low="green", high="Purple")+
+  borders("state")+
+  scale_size_area()+
+  coord_quickmap()
+p9
+```
+
+Overall, the top 5 airports with most flights to Austin in 2008 are Dallas Love Field, Dallas/Fort Worth International, George Bush Intercontinental, Phoenix Sky Harbor International and Denver International airport with 5,464, 5,344, 3,651, 2,778 and 2,708 flights respectively. The top 5 destinations from Austin are exactly the same 5 in the same order with 5,442, 5,347, 3,636, 2,765 and 2,653 flights respectively. This result is represented in the heat map above.
+
+```{r Q1.2.8, echo = FALSE, warning=FALSE}
 p7 = ggplot(data = Air_summA)+
   geom_point(aes(O_long,O_lat))+
   geom_point(aes(D_long,D_lat))+
@@ -466,12 +476,12 @@ p7 = ggplot(data = Air_summA)+
     transition_length = 0,
     state_length = 1
     ) + 
-  labs(title = 'ARRIVAL Month: {closest_state}', x = " ", y = " ") +
+  labs(title = 'Arrival Flight Volume Heat Map by Month: {closest_state}', x = " ", y = " ") +
   ease_aes('sine-in-out')
 p7
 ```
 
-```{r Q1.2.8, echo = FALSE, warning=FALSE}
+```{r Q1.2.9, echo = FALSE, warning=FALSE}
 p8 = ggplot(data = Air_summD)+
   geom_point(aes(O_long,O_lat))+
   geom_point(aes(D_long,D_lat))+
@@ -489,37 +499,15 @@ p8 = ggplot(data = Air_summD)+
     transition_length = 0,
     state_length = 1
   ) + 
-  labs(title = ' DEPARTURE Month: {closest_state}', x = ' ', y = ' ') +
+  labs(title = 'Departure Flight Volume Heat Map by Month: {closest_state}', x = ' ', y = ' ') +
   ease_aes('sine-in-out')
 p8
 ```
 
-```{r Q1.2.9, echo = FALSE, warning=FALSE}
-# Mapping of all year
-Air_summ2 <- myABIA3 %>%
-  group_by(INorOUT, Origin, Dest) %>%
-  summarise(O_long = mean(O_long),D_long = mean(D_long),O_lat = mean(O_lat),D_lat = mean(D_lat),airline = length(INorOUT), DepDelay = mean(DepDelay),ArrDelay = mean(ArrDelay))
-Air_summ2$airport[Air_summ2$INorOUT == "Arrival"] <- Air_summ2$Origin[Air_summ2$INorOUT == "Arrival"]
-Air_summ2$airport[Air_summ2$INorOUT == "Departure"] <- Air_summ2$Dest[Air_summ2$INorOUT == "Departure"]
-Air_summ2$Delay[Air_summ2$INorOUT == "Departure"] <- Air_summ2$DepDelay[Air_summ2$INorOUT == "Arrival"]
-Air_summ2$Delay[Air_summ2$INorOUT == "Arrival"] <- Air_summ2$ArrDelay[Air_summ2$INorOUT == "Departure"]
-# num of flight
-p9 = ggplot(data = Air_summ2)+
-  geom_point(aes(O_long,O_lat))+
-  geom_point(aes(D_long,D_lat))+
-  geom_segment(aes(x = O_long, y = O_lat, xend = D_long, yend = D_lat, col = airline),size = 0.8)+
-  facet_wrap(~ INorOUT)+
-  labs(title = "Flight Count Heat Map", x = " ", y = " ")+
-  theme_gray()+
-  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
-  scale_x_discrete()+
-  scale_y_discrete()+
-  scale_colour_gradient2(low="green", high="Purple")+
-  borders("state")+
-  scale_size_area()+
-  coord_quickmap()
-p9
-```
+In terms of the patterns of flights to Austin over the course of the year, it is clear from the heat map above that flight volume increases at the beginning of the year and over the summer. This is partially due to with more airports with direct flights to Austin during this period. For example, Birmingham-Shuttlesworth International Airport and McGhee Tyson Airport only fly to Austin at the beginning of the year. And In the summer, Fort Lauderdale-Hollywood, Seattle-Tacoma International, and Indianapolis International are adding new services to Austin. Flights from Austin share the same pattern, with more flights at the beginning of year and in the summertime. 
+
+(Graph)Flights Volume by Region:
+From the flight volume by region graph listed above, it can be seen that flights from West South Central contributed significantly to the high volume at the beginning of the year, and volume pops up in the summertime for Mountain, South Atlantic, Pacific, and East North Central regions. For detailed information about how the regions are divided, please visit: [Census Bureau Regions and Divisions with State FIPS Codes] (https://www2.census.gov/geo/docs/maps-data/maps/reg_div.txt) 
 
 ```{r Q1.2.10, echo = FALSE, warning=FALSE}
 # Q4: 
