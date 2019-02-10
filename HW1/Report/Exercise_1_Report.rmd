@@ -437,7 +437,7 @@ Air_summ_state <- Air_summ_state %>%
 P7_1 = ggplot(data = Air_summ_state, aes(x = Month, y = airline, col = region))+
   geom_point()+
   geom_line()+
-  facet_grid(~INorOUT)+
+  facet_wrap(~INorOUT, nrow = 2)+
   labs(title = "Month vs Number of Flight", x = "Month", y = "Number of Flight")+
   scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12),labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec"))+
   theme_bw()+
