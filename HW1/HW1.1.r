@@ -50,8 +50,8 @@ p2 = ggplot(data = GB_cleaned, aes(x = Green, y = Rent)) +
   labs(title = "Green Rating vs Rent Plot",
        x = "Green Rating",
        y = "Rent")+
-  theme(plot.title = element_text(hjust = 0.5))+
-  theme_bw()
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
 p2
 
 # Size & Rent Plot: NonGreen vs Green
@@ -127,16 +127,19 @@ GB_summ <- GB_cleaned %>%
 #   scale_fill_manual( values = c(brewer.pal(9, "Greens")[3],brewer.pal(9, "Reds")[3]))
 # p6
 
-p6 = ggplot(GB_summ, aes(x=amenities, y=Rent_mean)) + 
-  geom_bar(aes(fill = Green),stat='identity',position='dodge')+
-  #scale_fill_brewer(palette= "Greens",direction = -1)+
-  facet_wrap(~ stories_category, labeller = label_parsed) +
-  labs(title = "Mean of Different Size Groups vs Rent Plot", x = "Size", y = "Rent")+
+GB_summ_a = GB_cleaned %>%
+  group_by(amenities,stories_category, Green) %>%
+  summarise(Rent_mean = mean(Rent))
+p6 = ggplot(GB_summ_a, aes(x=amenities, y=Rent_mean,fill=Green)) + 
+  geom_bar(alpha = 0.8, stat='identity',position='dodge')+
+  geom_text(aes(x=amenities,y=Rent_mean,label=round(Rent_mean)),vjust=-0.1,col="black",position = position_dodge(0.9))+
+  #scale_fill_brewer(palette= "Greens",direction =-1)+
+  facet_wrap(~ stories_category) +
+  labs(title = "Amenities vs Groups", x = "Amenities", y = "Rent")+
   theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5)) 
-  scale_fill_manual(values=c(brewer.pal(9, "Greens")[5],brewer.pal(9, "Reds")[5]))
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  scale_fill_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))
 p6
-
 
 # Age of the Building
 p7 = ggplot(data = GB_cleaned, aes(x = age, y = Rent, col = Green)) + 
@@ -184,20 +187,23 @@ p7
 # Which occupancy rate should be chosen?
 
 # Stories & Occupancy Rate Plot
-GB_summ2 <- GB_cleaned %>%
+  GB_summ2 <- GB_cleaned %>%
   group_by(stories_category,Green) %>%
-  summarise(Rent_median = median(Rent), Rent_mean = mean(Rent), leasing_rate = mean(leasing_rate))
+  summarise(Rent_median = median(Rent), Rent_mean = mean(Rent), leasing_rate = mean(leasing_rate)/100)
 
-p8 = ggplot(GB_summ2,aes(x = stories_category, y = leasing_rate))+
-  geom_bar(aes(fill = Green),stat='identity',position='dodge')+
+
+p8 = ggplot(GB_summ2,aes(x = stories_category, y = leasing_rate, fill = Green))+
+  scale_y_continuous(labels = scales::percent)+
+  geom_bar(alpha = 0.8,stat='identity',position= position_dodge())+
+  geom_text(aes(x=stories_category,y=leasing_rate,label=scales::percent(round(leasing_rate,2))),vjust=-0.1,col="black",position = position_dodge(0.9))+
   scale_fill_manual(values = c(brewer.pal(6, "Greens")[5], brewer.pal(6, "Reds")[5]))+
-  geom_text(x=stories, y=leasing_rate, label="leasing_rate",adj=-0.05)
   labs(title = "Stories & Occupancy Rate Plot",
        y = "Occupancy Rate",
        x = "Stories")+
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5))
 p8
+
 
 # Occupancy Rate and rich area
 GB_summ3 <-GB_cleaned %>%
@@ -211,15 +217,16 @@ GB_summ3 <-GB_cleaned %>%
 # Age of the Building and leasing rate
 GB_summ4 <-GB_cleaned %>%
   group_by(age, Green) %>%
-  summarise(leasing_rate = mean(leasing_rate))
+  summarise(leasing_rate = mean(leasing_rate)/100)
 GB_summ4$age <- as.numeric(GB_summ4$age)
 GB_summ4 <- subset(GB_summ4, (GB_summ4$age<30))
 
-p9 = ggplot()+
- geom_point(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
-  geom_line(data = GB_summ4, aes( x = age, y = leasing_rate, col = Green))+
+p9 = ggplot(GB_summ4,aes(x = age, y = leasing_rate, fill = Green))+
+  scale_y_continuous(labels = scales::percent,limits = c(0,1))+
+  geom_point(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
+  geom_line(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
+  #geom_text(aes(x=age,y=leasing_rate,col = Green, label=scales::percent(round(leasing_rate,2))), vjust = -0.5,check_overlap = TRUE)+
   scale_color_manual( values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
-  ylim(0,100)+
   labs(title = "Age vs Occupancy Rate Plot",
        y = "Occupancy rate",
        x = "Age of the building")+
