@@ -185,6 +185,13 @@ p9
 ```
 
 Then we compared the difference of occupancy rate between green and non-green buildings in different ages. We selected the buildings that are below 30 years. The average occupancy rate of green buildings are almost higher than non-green buildings every year in the first 30 years from the line chart. In the first 5 years, except year 3 and year 4, the occupancy rate of green buildings is significantly below 80%. Therefore, the average occupancy rate in the first ten years will be highly likely lower than 90%, the most pessimistic estimation by the staff. With such low occupancy rate, we will most likley recover the costs longer than 9 years.
+Finally, we calculated the duration of payback. We used the function below to calculate the duration. 
+
+<img src="Exercise_1_Report_files/figure-markdown_github/formula.PNG" style="display: block; margin: auto;" />
+
+C represents baseline construction costs. For green building, C is equal to $105 million; for non-green building, C is equal to $100 million. S represents size, which is 250,000 square feet for both green and non-green buildings. R is the average market rent per square foot. According to our result above, the rent of 15-story building, which falls into the mid-rise category, is $31 per square foot per year for both green and non-green buildings. O represents the occupancy rate. The long term occupancy rates for green and non-green building are 91% and 86% respectively. Because occupancy rates for both green and non-green building in the first three years are significantly lower than 90%, we selected start-up occupancy rates for the first three years. Thus, after calculation, the duration of payback for green building is approximately 15.4 years, while the duration for non-green building is about 15.9 years.
+
+Thus, we support to build the green building for its shorter payback duration. This is much longer than the "data guru"'s estimation.
 
 ## Exercise 1.2
 
