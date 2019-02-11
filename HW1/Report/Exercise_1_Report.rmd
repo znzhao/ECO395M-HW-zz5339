@@ -1,6 +1,6 @@
 ---
 title: "Exercise 1"
-author: "Chong Wang, Tinaping Wu, Zhenning Zhao"
+author: "Chong Wang, Tianping Wu, Zhenning Zhao"
 date: "2019/2/9"
 output:
   md_document:
@@ -127,7 +127,7 @@ p6
 Lastly we added one more dimension to identify data points that are relevant to our building: Amenities. Our building is for mix use with amenities such as on-site bank, convenience store, dry cleaner, restaurant, retail shops, and fitness center. It is reasonable to assume these buildings would set rent differently than ones without amenities, as more value is added.
 
 
-To our surprise, mid rise and high rise green buildings with amenities actually had higher rent than green buildings without amenities, as shown in the plot above. Putting this strange result aside, we will focus on the green and non-green buildings within the mid-rise group. It turns out that both types cost the same at $31 per square foot per year.
+To our surprise, mid rise and high rise green buildings with amenities actually had higher rent than green buildings without amenities, as shown in the plot above. Putting this strange result aside, we will focus on the green and non-green buildings within the mid-rise group. It turns out that rent for both types are $31 per square foot per year.
 
 ```{r p1.8, echo=FALSE, warning=FALSE, fig.align='center'}
 # Which occupancy rate should be chosen?
@@ -698,7 +698,7 @@ The output of the optimal K for trim level 350 is printed below:
 ```{r showK1, echo=FALSE}
 print(Kmin)
 ```
-Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, the optimal K for trim level 350 is about 19.
+Since the training set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, the optimal K for trim level 350 is about 19.
 Then for the optimal value of K in this run, a plot of the fitted model is shown below:
 
 ```{r s350p_optimalplot, echo=FALSE, warning=FALSE, fig.align='center'}
@@ -785,7 +785,7 @@ The output of the optimal K for trim level 65 AMG is printed below:
 print(Kmin)
 ```
 
-Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, the optimal K for trim level 65 AMG is about 16.
+Since the training set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, the optimal K for trim level 65 AMG is about 16.
 Then for the optimal value of K in this run, a plot of the fitted model is shown below:
 
 ```{r s65p_optimalplot, echo=FALSE, warning=FALSE, fig.align='center'}

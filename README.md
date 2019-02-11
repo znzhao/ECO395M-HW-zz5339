@@ -11,3 +11,8 @@ To-do list:
 - flight heat maps margin
 - 1.2 link
 - grammar
+
+testing
+
+
+<img src="HW1/Report/Exercise_1_Report_files/figure-markdown_github/formula.PNG" style="display: block; margin: auto;" />
