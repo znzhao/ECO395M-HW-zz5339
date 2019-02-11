@@ -122,7 +122,7 @@ We splited the data into a training and a testing set. There are 80% of the data
 
 The optimal K for trim level 350 is printed below:
 
-    ## [1] 9
+    ## [1] 5
 
 Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, we can get the optimal K for trim level 350 is about 19. Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
 
@@ -138,7 +138,7 @@ We splited the data into a training and a testing set. There are 80% of the data
 
 The optimal K for trim level 65 AMG is printed below:
 
-    ## [1] 26
+    ## [1] 7
 
 Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, we can get the optimal K for trim level 65 AMG is about 16. Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
 
