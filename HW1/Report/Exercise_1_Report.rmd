@@ -1,6 +1,6 @@
 ---
 title: "Exercise 1"
-author: "Chong Wang, Tinaping Wu, Zhenning Zhao"
+author: "Chong Wang, Tianping Wu, Zhenning Zhao"
 date: "2019/2/9"
 output:
   md_document:
@@ -127,7 +127,7 @@ p6
 Lastly we added one more dimension to identify data points that are relevant to our building: Amenities. Our building is for mix use with amenities such as on-site bank, convenience store, dry cleaner, restaurant, retail shops, and fitness center. It is reasonable to assume these buildings would set rent differently than ones without amenities, as more value is added.
 
 
-To our surprise, mid rise and high rise green buildings with amenities actually had higher rent than green buildings without amenities, as shown in the plot above. Putting this strange result aside, we will focus on the green and non-green buildings within the mid-rise group. It turns out that both types cost the same at $31 per square foot per year.
+To our surprise, mid rise and high rise green buildings with amenities actually had higher rent than green buildings without amenities, as shown in the plot above. Putting this strange result aside, we will focus on the green and non-green buildings within the mid-rise group. It turns out that rent for both types are $31 per square foot per year.
 
 ```{r p1.8, echo=FALSE, warning=FALSE, fig.align='center'}
 # Which occupancy rate should be chosen?
@@ -496,7 +496,7 @@ p9 = ggplot(data = Air_summ2)+
 p9
 ```
 
-Overall, the top 5 airports with most flights to Austin in 2008 are Dallas Love Field, Dallas/Fort Worth International, George Bush Intercontinental, Phoenix Sky Harbor International and Denver International airport with 5,464, 5,344, 3,651, 2,778 and 2,708 flights respectively. The top 5 destinations from Austin are exactly the same 5 in the same order with 5,442, 5,347, 3,636, 2,765 and 2,653 flights respectively. This result is represented in the heat map above.
+Overall, the top 5 airports with the most flights to Austin in 2008 are Dallas Love Field, Dallas/Fort Worth International, George Bush Intercontinental, Phoenix Sky Harbor International and Denver International airport with 5,464, 5,344, 3,651, 2,778 and 2,708 flights respectively. The top 5 destinations from Austin are exactly the same 5 in the same order with 5,442, 5,347, 3,636, 2,765 and 2,653 flights respectively. This result is represented in the heat map above.
 
 ```{r Q1.2.8, echo = FALSE, warning=FALSE}
 p7 = ggplot(data = Air_summA)+
@@ -546,7 +546,7 @@ p8 = ggplot(data = Air_summD)+
 p8
 ```
 
-In terms of the patterns of flights to Austin over the course of the year, it is clear from the heat map above that flight volume increases at the beginning of the year and over the summer. This is partially due to with more airports with direct flights to Austin during this period. For example, Birmingham-Shuttlesworth International Airport and McGhee Tyson Airport only fly to Austin at the beginning of the year. And In the summer, Fort Lauderdale-Hollywood, Seattle-Tacoma International, and Indianapolis International are adding new services to Austin. Flights from Austin share the same pattern, with more flights at the beginning of year and in the summertime. 
+In terms of the patterns of flights to Austin over the course of the year, it is clear from the heat map above that flight volume increases at the beginning of the year and over the summer. This is partially due to more airports with direct flights to Austin during this period. For example, Birmingham-Shuttlesworth International Airport and McGhee Tyson Airport only fly to Austin at the beginning of the year. And In the summer, Fort Lauderdale-Hollywood, Seattle-Tacoma International, and Indianapolis International are adding new services to Austin. Flights from Austin share the same pattern, with more flights at the beginning of year and in the summertime. 
 
 ```{r Q1.2.7_1, echo = FALSE, warning=FALSE}
 P7_1 = ggplot(data = Air_summ_state, aes(x = Month, y = airline, col = region))+
@@ -582,7 +582,7 @@ p10 = ggplot(data = Air_delay_departure)+
 p10
 ```
 
-Firstly, we considered the bad airports to fly to in terms of departure delay. We calculated average departure delay time for each airport and plot the bar chart to demonstrate average departure delay for different airports. From the graph, we can clearly see that Tucson international airport (TUS) had the longest departure delay time, which is almost 70 minutes. Nashville international airport (BNA), Harlingen Valley international airport (HRL), Phoenix Sky Harbor International Airport (PHX), Chicago O’Hare international airport (ORD) ranked 2nd, 3rd, 4th and 5th among the most departure delay airports, which departure delay time is approximately 38 minutes, 28 minutes, 21 minutes and 20 minutes. Therefore, if we want to fly from Austin to above five cities, especially Tucson, we need to get preparation for the departure delay, like watching movies to kill off boring waiting time.
+First, we considered the bad airports to fly to in terms of departure delay. We calculated average departure delay time for each airport during the year and plotted the bar chart to demonstrate average departure delay for different airports. From the graph, we can clearly see that Tucson international airport (TUS) had the longest departure delay time, almost 70 minutes. Nashville international airport (BNA), Harlingen Valley international airport (HRL), Phoenix Sky Harbor International Airport (PHX), Chicago O’Hare international airport (ORD) ranked 2nd, 3rd, 4th and 5th among the most departure delay airports, which departure delay time is approximately 38 minutes, 28 minutes, 21 minutes and 20 minutes respectively. Therefore, if we want to fly from Austin to the five cities aforementioned, especially Tucson, we need to have some preparation for departure delay, like watching a movie to kill off boring waiting time.
 
 ```{r Q1.2.11, echo = FALSE, warning=FALSE}
 Air_delay_arrival = subset(Air_summ2, (Air_summ2$INorOUT == "Arrival"))
@@ -595,7 +595,7 @@ p11 = ggplot(data = Air_delay_arrival)+
 p11
 ```
 
-Secondly, we got the bad airports to fly to in terms of arrival delay. We calculated average departure arrival time for each airport and plot the bar chart of average arrival delay of different airports. From the graph, We can clearly see that top five most arrival delay airports are Dallas/Fort Worth International Airport (DFW),  Louis Armstrong New Orleans International Airport(MSY), Hartsfield-Jackson Atlanta International Airport (ATL), Fort Lauderdale-Hollywood International Airport (FLL) and El Paso International Airport (ELP). The airport at Dallas has the longest arrival delay time, which is almost 100 minutes. As a result, if we want to fly to above five cities from Austin, especially Dallas, we need to get preparation for the arrival delay. I suffered from terrible arrival delay at Dallas. Because of over 2-hour arrival delay, I missed transfer and stayed at airport overnight. Thus, for those people who want to make a transfer at Dallas, it’s better for them to leave enough time between two flights.
+Second, we got the bad airports to fly to in terms of arrival delay. We calculated average arrival time for each airport and plotted the bar chart for average arrival delay of different airports. From the graph, We can clearly see that top 5 airports with most arrival delay are Dallas/Fort Worth International Airport (DFW),  Louis Armstrong New Orleans International Airport(MSY), Hartsfield-Jackson Atlanta International Airport (ATL), Fort Lauderdale-Hollywood International Airport (FLL) and El Paso International Airport (ELP). The airport at Dallas has the longest arrival delay time, which is almost 100 minutes. As a result, if we want to fly to these five cities from Austin, especially Dallas, we should take arrival delay time into consideration, by leaving enough time especially for transfer flights.
 
 ```{r Q1.2.12, echo = FALSE, warning=FALSE}
 # delay of flight: mapping
@@ -616,7 +616,7 @@ p12 = ggplot(data = Air_summ2)+
 p12
 ```
 
-Finally, we drew Austin Flight Count Heat Map to show average arrival delay and departure delay of different airports around U.S.. On the map, the deeper the color of line is, the more delay time including departure and arrival delay of airport has. According to arrival delay, the worst airport to fly to from Austin is Dallas/Fort Worth International Airport, which is consistent with our conclusion before. Regarding to departure delay, Arizona state is the worst state to fly to, since both two biggest cities - Tucson and Phoenix have the longest delay time. 
+Finally, we drew Austin Flight Delay Heat Map to show average arrival delay and departure delay of different airports around U.S.. On the map, the deeper the line color, the more delay time. According to arrival delay, the worst airport to fly to from Austin is Dallas/Fort Worth International Airport, which is consistent with our conclusion before. Regarding to departure delay, Arizona is the worst state to fly to, since its two biggest cities - Tucson and Phoenix have the worst delay time. 
 
 ## Exercise 1.3
 ```{r Ex3setup, include=FALSE}
@@ -647,7 +647,7 @@ p_350 = ggplot(data = My_data) +
 p_350
 ```
 
-We splited the data into a training and a testing set. There are 80% of the data are in the training set. Then we run the  K-nearest-neighbors, for many different values of K, starting at K=3 and going as high as the sample size. For each value of K, fit the model to the training set and make predictions on the test set, and calculate the out-of-sample root mean-squared error (RMSE) for each value of K. The plot of K versus RSME is showed below:
+We splited the data into a training and a testing set. 80% of the data are in the training set. Then we run the  K-nearest-neighbors, for many different values of K, starting at K=3 and going as high as the sample size. For each value of K, we fit the model to the training set and make predictions on the test set, and calculate the out-of-sample root mean-squared error (RMSE) for each K. The plot of K versus RSME is shown below:
 
 ```{r s350p_KNNplot, echo=FALSE, warning=FALSE, fig.align='center'}
 # Make a train-test split
@@ -693,13 +693,13 @@ P_KNNresult_350 = ggplot(data = KNN_result)+
 P_KNNresult_350
 ```
 
-The optimal K for trim level 350 is printed below:
+The output of the optimal K for trim level 350 is printed below:
 
 ```{r showK1, echo=FALSE}
 print(Kmin)
 ```
-Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, we can get the optimal K for trim level 350 is about 19.
-Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
+Since the training set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, the optimal K for trim level 350 is about 19.
+Then for the optimal value of K in this run, a plot of the fitted model is shown below:
 
 ```{r s350p_optimalplot, echo=FALSE, warning=FALSE, fig.align='center'}
 knn_K = knn.reg(train = X_train, test = X_test, y = y_train, k=Kmin)
@@ -716,7 +716,7 @@ p_test_350 = ggplot(data = D_test) +
 p_test_350
 ```
 
-Second, we run the KNN models for the trim level of 65 AMG similarly. Here is the plot for mileage vs price for the trim level of 65 AMG:
+Second, we run the KNN models for the trim level of 65 AMG in a similar manner. Here is the plot for mileage vs price for the 65 AMG trim level:
 
 ```{r s65AMG, echo=FALSE, warning= FALSE, fig.align='center'}
 # sclass_65AMG
@@ -732,7 +732,7 @@ p_65 = ggplot(data = My_data) +
 p_65
 ```
 
-We splited the data into a training and a testing set. There are 80% of the data are in the training set. Then we run the  K-nearest-neighbors, for many different values of K, starting at K=3 and going as high as the sample size. For each value of K, fit the model to the training set and make predictions on the test set, and calculate the out-of-sample root mean-squared error (RMSE) for each value of K. The plot of K versus RSME is showed below:
+We splited the data into a training and a testing set. 80% of the data are in the training set. Then we run the  K-nearest-neighbors, for many different values of K, starting at K=3 and going as high as the sample size. For each value of K, fit the model to the training set and make predictions on the test set, and calculate the out-of-sample root mean-squared error (RMSE) for each value of K. The plot of K versus RSME is showed below:
 
 ```{r s65AMGp_KNNplot, echo=FALSE, warning=FALSE, fig.align='center'}
 # Make a train-test split
@@ -779,14 +779,14 @@ p_test_65AMG = ggplot(data = KNN_result)+
 p_test_65AMG
 ```
 
-The optimal K for trim level 65 AMG is printed below:
+The output of the optimal K for trim level 65 AMG is printed below:
 
 ```{r showK2, echo=FALSE}
 print(Kmin)
 ```
 
-Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, we can get the optimal K for trim level 65 AMG is about 16.
-Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
+Since the training set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, the optimal K for trim level 65 AMG is about 16.
+Then for the optimal value of K in this run, a plot of the fitted model is shown below:
 
 ```{r s65p_optimalplot, echo=FALSE, warning=FALSE, fig.align='center'}
 knn_K = knn.reg(train = X_train, test = X_test, y = y_train, k=Kmin)
@@ -805,7 +805,7 @@ p_test_65 = ggplot(data = D_test) +
 p_test_65 
 ```
 
-In the end, it is showed that the average optimal K for trim level 350 is 19, which is larger than optimal K = 16 for trim level 65 AMG. We think that this is because that the sample size for the first data subset is larger than the second, and hence has a larger optimal K.
+In the end, we show that the average optimal K for trim level 350 is 19, which is larger than optimal K = 16 for trim level 65 AMG. We think that this is because the sample size for the first data subset is larger than the second, and hence has a larger optimal K.
 
 
 
