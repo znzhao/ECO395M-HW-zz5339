@@ -15,4 +15,4 @@ To-do list:
 testing
 
 
-<img src="ECO395M-HW-zz5339/HW1/Report/Exercise_1_Report_files/figure-markdown_github/formula.PNG" style="display: block; margin: auto;" />
+<img src="HW1/Report/Exercise_1_Report_files/figure-markdown_github/formula.PNG" style="display: block; margin: auto;" />
