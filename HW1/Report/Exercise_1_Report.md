@@ -1,18 +1,18 @@
 Exercise 1
 ==========
 
-By Chong Wang, Tinaping Wu, Zhenning Zhao
+By Chong Wang, Tianping Wu, Zhenning Zhao
 
 Exercise 1.1
 ------------
 
-The environmentally friendly buildings have some obvious advantages, not only from an eco-friendly view, but also from the financial aspect. The "data guru" did not make a reasonable argument to quantity the advantages clearly. To be more specific, we believe that the duration that he/she calculated to recover the cost may be mistaken.
+The environmentally friendly buildings have some obvious advantages, not only from an eco-friendly view, but also from the financial aspect. The "data guru" did not make a reasonable argument to quantify the advantages clearly. To be more specific, we believe that the duration that he/she calculated to recover the cost may be mistaken.
 
 <img src="Exercise_1_Report_files/figure-markdown_github/p1.1-1.png" style="display: block; margin: auto;" />
 
 The first step is to clean the data. The "data guru" noticed that a handful of the buildings in the data set had very low occupancy rates. Although this is a true fact, which can be shown in the graph above, he/she did not provide a satisfactory reason for why the buildings with less than 10% leasing rate should be removed from consideration. Due to this fact, we disagree to simply delete these 215 data points. Instead, we were able to identify a reason to delete buildings with 0% occupancy rate. According to a [research conducted by IBM](https://www.ibm.com/support/knowledgecenter/en/SSFCZ3_10.5.2/com.ibm.tri.doc/wpm_metrics/r_occupancy_rate.html), buildings with a 0% leasing rate is called “not-used buildings”. Since our new building will certainly be used, we can comfortably exclude these data points from the original data set.
 
-After that, we tried to clean the data even furthur. Since this new project is in Austin with the tallest building at 56 floors, clusters with buildings higher than this value are clearly not in Austin and therefore should be removed from the data set. As the result, we are left with 6,618 data points.
+After that, we tried to clean the data even further. Since this new project is in Austin with the tallest building at 56 floors, clusters with buildings higher than this value are clearly not in Austin and therefore should be removed from the data set. As the result, we are left with 6,618 data points.
 
 <img src="Exercise_1_Report_files/figure-markdown_github/p1.2-1.png" style="display: block; margin: auto;" />
 
@@ -128,7 +128,7 @@ We splited the data into a training and a testing set. 80% of the data are in th
 
 The output of the optimal K for trim level 350 is printed below:
 
-    ## [1] 11
+    ## [1] 18
 
 Since the training set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, the optimal K for trim level 350 is about 19. Then for the optimal value of K in this run, a plot of the fitted model is shown below:
 
@@ -144,7 +144,7 @@ We splited the data into a training and a testing set. 80% of the data are in th
 
 The output of the optimal K for trim level 65 AMG is printed below:
 
-    ## [1] 5
+    ## [1] 4
 
 Since the training set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, the optimal K for trim level 65 AMG is about 16. Then for the optimal value of K in this run, a plot of the fitted model is shown below:
 
