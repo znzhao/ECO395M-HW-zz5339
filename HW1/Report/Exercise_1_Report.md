@@ -20,7 +20,7 @@ According to the "data guru", there are still many outliers after data cleaning,
 
 <img src="Exercise_1_Report_files/figure-markdown_github/p1.4-1.png" style="display: block; margin: auto;" />
 
-In order to narrow down existing data set further and only use data points that are relevant and comparable to our project, we looked for market standards to categorize buildings. According to \[the Commercial Real Estate Terms and Definitions\] (<https://www.naiop.org/-/media/Research/Research/Research-Reports/Terms-and-Definitions/CRE-Terms-and-Definitions-2017.ashx?la=en>) by The NAIOP Research Foundation, commercial buildings can be divided into 3 types: low rise, mid rise, and high rise. Our 15-story building falls into the mid-rise category. The plot above confirms that story is positively correlated with size in our data set and there are many mid rise buildings with similar attributes that can be used to estimate our building’s rent.
+In order to narrow down existing data set further and only use data points that are relevant and comparable to our project, we looked for market standards to categorize buildings. According to [the Commercial Real Estate Terms and Definitions](https://www.naiop.org/-/media/Research/Research/Research-Reports/Terms-and-Definitions/CRE-Terms-and-Definitions-2017.ashx?la=en) by The NAIOP Research Foundation, commercial buildings can be divided into 3 types: low rise, mid rise, and high rise. Our 15-story building falls into the mid-rise category. The plot above confirms that story is positively correlated with size in our data set and there are many mid rise buildings with similar attributes that can be used to estimate our building’s rent.
 
 <img src="Exercise_1_Report_files/figure-markdown_github/p1.6-1.png" style="display: block; margin: auto;" />
 
@@ -93,7 +93,7 @@ In terms of the patterns of flights to Austin over the course of the year, it is
 
 ![](Exercise_1_Report_files/figure-markdown_github/Q1.2.7_1-1.png)
 
-From the flight volume by region graph listed above, it can be seen that flights from West South Central contributed significantly to the high volume at the beginning of the year, and volume pops up in the summertime for Mountain, South Atlantic, Pacific, and East North Central regions. For detailed information about how the regions are divided, please visit: \[Census Bureau Regions and Divisions with State FIPS Codes\] (<https://www2.census.gov/geo/docs/maps-data/maps/reg_div.txt>)
+From the flight volume by region graph listed above, it can be seen that flights from West South Central contributed significantly to the high volume at the beginning of the year, and volume pops up in the summertime for Mountain, South Atlantic, Pacific, and East North Central regions. For detailed information about how the regions are divided, please visit: [Census Bureau Regions and Divisions with State FIPS Codes](https://www2.census.gov/geo/docs/maps-data/maps/reg_div.txt)
 
 ### What are the bad airports to fly to?
 
@@ -122,7 +122,7 @@ We splited the data into a training and a testing set. There are 80% of the data
 
 The optimal K for trim level 350 is printed below:
 
-    ## [1] 9
+    ## [1] 5
 
 Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, we can get the optimal K for trim level 350 is about 19. Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
 
@@ -138,7 +138,7 @@ We splited the data into a training and a testing set. There are 80% of the data
 
 The optimal K for trim level 65 AMG is printed below:
 
-    ## [1] 18
+    ## [1] 7
 
 Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, we can get the optimal K for trim level 65 AMG is about 16. Then for the optimal value of K in this one running, a plot of the fitted modelis shown below:
 
