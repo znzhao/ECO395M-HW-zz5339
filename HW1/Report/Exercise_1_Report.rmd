@@ -1,6 +1,6 @@
 ---
 title: "Exercise 1"
-author: "Chong Wang, Tinaping Wu, Zhenning Zhao"
+author: "Chong Wang, Tianping Wu, Zhenning Zhao"
 date: "2019/2/9"
 output:
   md_document:
@@ -698,7 +698,7 @@ The output of the optimal K for trim level 350 is printed below:
 ```{r showK1, echo=FALSE}
 print(Kmin)
 ```
-Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, the optimal K for trim level 350 is about 19.
+Since the training set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, the optimal K for trim level 350 is about 19.
 Then for the optimal value of K in this run, a plot of the fitted model is shown below:
 
 ```{r s350p_optimalplot, echo=FALSE, warning=FALSE, fig.align='center'}
@@ -785,7 +785,7 @@ The output of the optimal K for trim level 65 AMG is printed below:
 print(Kmin)
 ```
 
-Since the traning set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, the optimal K for trim level 65 AMG is about 16.
+Since the training set is chosen randomly, if we run the KNN for several times, we will get different result. But generally, the optimal K for trim level 65 AMG is about 16.
 Then for the optimal value of K in this run, a plot of the fitted model is shown below:
 
 ```{r s65p_optimalplot, echo=FALSE, warning=FALSE, fig.align='center'}
