@@ -113,7 +113,7 @@ GB_summ_a = GB_cleaned %>%
   summarise(Rent_mean = mean(Rent))
 p6 = ggplot(GB_summ_a, aes(x=amenities, y=Rent_mean,fill=Green)) + 
   geom_bar(alpha = 0.8, stat='identity',position='dodge')+
-  geom_text(aes(x=amenities,y=Rent_mean,label=round(Rent_mean, 2)),vjust=-0.1,col="black",position = position_dodge(0.9))+
+  geom_text(aes(x=amenities,y=Rent_mean,label=round(Rent_mean)),vjust=-0.1,col="black",position = position_dodge(0.9))+
   facet_wrap(~ stories_category) +
   scale_x_continuous(breaks = c(0,1),labels = c("0" = "No", "1" = "Yes"))+
   labs(title = "Different Stories and Access of Amenity vs Rent",
@@ -150,9 +150,9 @@ p8 = ggplot(GB_summ2,aes(x = stories_category, y = leasing_rate, fill = Green))+
 p8
 ```
 
-In final step, we aimed to explore the relationship between stories and occupancy rate, as well as age and occupancy rate in green and non-green buildings separately.
+In our final step, we aimed to explore the relationship between stories and occupancy rate, as well as age and occupancy rate in green and non-green buildings separately.
 
-First, using all of occupancy rate data, we compared the difference of occupancy rate between green and non-green buildings, divided by low rise, medium rise and high rise category. By plotting bar charts above, we could clearly see the occupancy rate of green building building is higher than that of non-green building in each height category. Since our 15-story building falls into the mid-rise category, we can see that the occupancy rate of green building is 5% higher than that of non-green building in the long run. Thus, if we invest a 15-story green building instead of a non-green one, we can receive more occupancy rate. 
+First, using all of occupancy rate data, we compared the difference of occupancy rate between green and non-green buildings, divided by low rise, medium rise and high rise category. By plotting bar charts above, we could clearly see the occupancy rate of green building is higher than non-green building in each height category. Since our 15-story building falls into the mid-rise category, we can see that the occupancy rate of green building is 5% higher than non-green building in the long run. Thus, if we invest a 15-story green building instead of a non-green one, we can expect higher occupancy rate. 
 
 ```{r p1.9, echo=FALSE, warning=FALSE, fig.align='center'}
 # Occupancy Rate and rich area
@@ -169,12 +169,12 @@ p9 = ggplot(GB_summ4,aes(x = age, y = leasing_rate))+
   scale_y_continuous(labels = scales::percent,limits = c(0,1))+
   geom_point(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
   geom_line(data = GB_summ4, aes(x = age, y = leasing_rate, col = Green))+
-  annotate("text", x = 0, y = 0.43, label = "47%", col=brewer.pal(6, "Reds")[5])+
-  annotate("text", x = -0.6, y = 0.60, label = "56%", col=brewer.pal(6, "Greens")[5])+
-  annotate("text", x = 1.7, y = 0.62, label = "65%", col=brewer.pal(6, "Reds")[5])+
-  annotate("text", x = 0.5, y = 0.82, label = "79%", col=brewer.pal(6, "Greens")[5])+
-  annotate("text", x = 3, y = 0.67, label = "67%", col=brewer.pal(6, "Reds")[5])+
-  annotate("text", x = 1.5, y = 0.93, label = "89%", col=brewer.pal(6, "Greens")[5])+
+  annotate("text", x = -0.1, y = 0.49, label = "47%", col=brewer.pal(6, "Reds")[5])+
+  annotate("text", x = -0.1, y = 0.58, label = "56%", col=brewer.pal(6, "Greens")[5])+
+  annotate("text", x = 1, y = 0.67, label = "65%", col=brewer.pal(6, "Reds")[5])+
+  annotate("text", x = 1, y = 0.81, label = "79%", col=brewer.pal(6, "Greens")[5] )+
+  annotate("text", x = 1.9, y = 0.69, label = "67%", col=brewer.pal(6, "Reds")[5])+
+  annotate("text", x = 2, y = 0.91, label = "89%", col=brewer.pal(6, "Greens")[5])+
   scale_color_manual(name = "Green Buildings or Not", values = c(brewer.pal(6, "Greens")[5],brewer.pal(6, "Reds")[5]))+
   labs(title = "Age vs Occupancy Rate",
        y = "Occupancy rate (%)",
@@ -184,7 +184,7 @@ p9 = ggplot(GB_summ4,aes(x = age, y = leasing_rate))+
 p9
 ```
 
-Then we compared the difference of occupancy rate between green and non-green buildings in different ages. We selected the buildings that are below 30 years. The occupancy rate of green buildings are almost higher than that of non-green buildings in the first 30 years from the line chart. In the first 5 years, except age 3 and age 4, the occupancy rate of green buildings is significantly below 80%. Therefore, the average occupancy rate in the first ten years will be highly likely lower than 90%, which the most pessimistic estimation by the staff. With such a lower occupancy rate, we have a great opportunity to recuperate the costs over 9 years.
+Then we compared the difference of occupancy rate between green and non-green buildings in different ages. We selected the buildings that are below 30 years. The average occupancy rate of green buildings are almost higher than non-green buildings every year in the first 30 years from the line chart. In the first 5 years, except year 3 and year 4, the occupancy rate of green buildings is significantly below 80%. Therefore, the average occupancy rate in the first ten years will be highly likely lower than 90%, the most pessimistic estimation by the staff. With such low occupancy rate, we will most likley recover the costs longer than 9 years.
 
 ## Exercise 1.2
 
@@ -200,7 +200,7 @@ USairports <- subset(airports,(airports$iso_country =="US"))
 # Q1: What is the best time of day to fly to minimize delays?
 ```
 
-In this Question, we have the data of all the flight information of the airlines flying in and out of Austin.
+In this question, we have the data of all the flight information of the airlines flying in and out of Austin.
 
 ### What is the best time of day to fly to minimize delays?
 
@@ -238,7 +238,7 @@ p1 = ggplot(data = subset(myABIA_CRSsumm_D_total,(myABIA_CRSsumm_D_total$INorOUT
 p1
 ```
 
-First, we categorized the data by the scheduled departure time for the flights that depart Austin. And it gave us the above picture. According to the bar plot, the flights that depart Austin at midnight (at 12:00 AM) have the most departure delay. The average delay time for each flight is 23 minutes. It goes well with our intuition, since the ticket for the night flight is usually cheaper, the airline company don’t pay much attention to the schedule. The best time to depart Austin, on the other hand, is the morning. The flights at 6:00 AM actually departed earlier than the scheduled time.
+First, we categorized the data by the scheduled departure time for the flights that depart Austin. And it gave us the above picture. According to the bar plot, the flights that depart Austin at midnight (at 12:00 AM) have the most departure delay. The average delay time for each flight is 23 minutes. It goes well with our intuition, since the ticket for the night flight is usually cheaper, the airline company don’t pay much attention to the schedule. The best time to depart Austin, on the other hand, is in the morning. The flights at 6:00 AM actually departed earlier than the scheduled time.
 
 ```{r Q1.2.2, echo = FALSE, warning=FALSE}
 temp2 <- subset(myABIA_CRSsumm_A_total,(myABIA_CRSsumm_A_total$INorOUT == "Arrival"))
@@ -253,7 +253,7 @@ p2 = ggplot(data = subset(myABIA_CRSsumm_A_total,(myABIA_CRSsumm_A_total$INorOUT
 p2
 ```
 
-Second, we categorized the data by the scheduled arrival time for the flights that arrive Austin. And it gave us the above picture. According to the bar plot, the flights that arrive Austin at 10:00 PM have the most arrival delay, and the average delay time for each flight is 18 minutes.The best time to arrive in Austin is the morning again. The flights at 7:00 AM arrived a little earlier than the scheduled time.
+Second, we categorized the data by the scheduled arrival time for the flights that arrive Austin. And it gave us the above picture. According to the bar plot, the flights that arrive Austin at 10:00 PM have the most arrival delay, and the average delay time for each flight is 18 minutes.The best time to arrive in Austin is in the morning again. The flights at 7:00 AM arrived a little earlier than the scheduled time.
 
 ```{r Q1.2.3, echo = FALSE, warning=FALSE}
 # Now for different airline companies
@@ -285,7 +285,7 @@ p3 = ggplot()+
 p3
 ```
 
-After checking the overall data, we seperated the data by airline companies, and gained the barplots for the departure delay and the arrival delay for each airline company, and the time window in which the flight has the most delay on average is labeled in red. Clearly the YV airlines has the most departure delay at 2:00 PM, which is obviously longer than any other companies’ flight.
+After checking the overall data, we seperated the data by airline companies, and gained the bar plots for the departure delay and the arrival delay for each airline company, and the time window in which the flight has the most delay on average is labeled in red. Clearly the YV airlines has the most departure delay at 2:00 PM, which is longer than any other companies’ flight.
 
 ```{r Q1.2.4, echo = FALSE, warning=FALSE}
 Delay_A_max = aggregate(myABIA_CRSsumm_Arrival$ArrDelay_mean,by=list(name=myABIA_CRSsumm_Arrival$UniqueCarrier),FUN=max)
@@ -306,7 +306,7 @@ p4 = ggplot()+
 p4
 ```
 
-From the view of arrival delay, the time for delay of OH, OO and UA are longer than other companies. The OH flights that arrive in Austin at 7:00PM have the most arrival delay. The OH flights that arrive in Austin at 7:00 PM have the most arrival delay. The OO flights that arrive in Austin at 9:00 PM have the most arrival delay. And the UA flights that arrive in Austin at 12:00 AM have the most arrival delay.
+From the view of arrival delay, the time for delay of OH, OO and UA significantly worse than other companies. The OH flights have worst arrival delay at 7:00PM; The OO flights have worst arrival delay at 9:00PM. And the UA flights have worst arrival delay at 12:00AM.
 
 ### What is the best time of year to fly to minimize delays?
 
@@ -332,7 +332,7 @@ p5 = ggplot(data = subset(myABIA_summ_Month,(myABIA_summ_Month$INorOUT == "Depar
 p5
 ```
 
-Clearly, December and March are the two worst months to fly out of Austin. Each flight delays about 13 minutes in December, and 12 minutes in March on average. The best time to departure Austin, on the other hand, is September and October.
+Clearly, December and March are the two worst months to fly out of Austin. Each flight delays about 13 minutes in December, and 12 minutes in March on average. The best months to fly out of Austin, on the other hand, is September and October.
 
 ```{r Q1.2.6, echo = FALSE, warning=FALSE}
 temp4 <- subset(myABIA_summ_Month,(myABIA_summ_Month$INorOUT == "Arrival"))
@@ -348,7 +348,7 @@ p6 = ggplot(data = subset(myABIA_summ_Month,(myABIA_summ_Month$INorOUT == "Arriv
 p6
 ```
 
-When we look at the flight arriving in Austin, things didn’t change much. December and March are still the two worst months to fly into Austin. Each flight delays about 15 minutes in December, and 12 minutes in March on average. The best time to departure Austin is still September and October. Hence if you want to visit Austin, try to come in the fall, so that there will be no annoying flight delays!
+When we look at the flights arriving in Austin, things did not change much. December and March are still the two worst months to fly to Austin. Each flight delays about 15 minutes in December, and 12 minutes in March on average. The best time to fly out of Austin is still September and October. Hence if you want to visit Austin, try to come in the fall, so that there will be no annoying flight delays!
 
 ### How do patterns of flights to different destinations or parts of the country change over the course of the year?
 
@@ -464,7 +464,7 @@ Air_summ_state <- Air_summ_state %>%
 ```
 
 
-```{r Q1.2.7, echo = FALSE, warning=FALSE}
+```{r Q1.2.7, echo = FALSE, warning=FALSE, fig.width=12, fig.height=8}
 
 Air_summA = subset(Air_summ, Air_summ$INorOUT=="Arrival")
 Air_summD = subset(Air_summ, Air_summ$INorOUT=="Departure")
@@ -485,7 +485,7 @@ p9 = ggplot(data = Air_summ2)+
   facet_wrap(~ INorOUT)+
   labs(title = "Flight Volume Heat Map", x = " ", y = " ")+
   theme_gray()+
-  theme(plot.title = element_text(hjust = 0.5),
+  theme(plot.title = element_text(hjust = 0.5), plot.margin = unit(c(1,1,1,1), "cm"),
         panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
   scale_x_discrete()+
   scale_y_discrete()+
