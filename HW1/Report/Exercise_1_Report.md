@@ -1,7 +1,7 @@
 Exercise 1
 ==========
 
-By Chong Wang, Tinaping Wu, Zhenning Zhao
+By Chong Wang, Tianping Wu, Zhenning Zhao
 
 Exercise 1.1
 ------------

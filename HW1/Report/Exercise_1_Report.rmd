@@ -17,7 +17,7 @@ library(gifski)
 ```
 
 # Exercise 1
-By Chong Wang, Tinaping Wu, Zhenning Zhao
+By Chong Wang, Tianping Wu, Zhenning Zhao
 
 ## Exercise 1.1
 The environmentally friendly buildings have some obvious advantages, not only from an eco-friendly view, but also from the financial aspect. The "data guru" did not make a reasonable argument to quantity the advantages clearly. To be more specific, we believe that the duration that he/she calculated to recover the cost may be mistaken.
