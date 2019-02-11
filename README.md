@@ -14,14 +14,5 @@ To-do list:
 
 testing
 
-$\alpha$
 
-<script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
-});
-</script>
+<img src="ECO395M-HW-zz5339/HW1/Report/Exercise_1_Report_files/figure-markdown_github/formula.PNG" style="display: block; margin: auto;" />
