@@ -58,6 +58,9 @@ SaratogaHouses$n_centralAir = as.numeric(SaratogaHouses$centralAir)
 
 KNN_result <- data.frame(K=c(), rsme=c())
 
+X = select(SaratogaHouses,lotSize , age , livingArea , pctCollege , bedrooms , fireplaces , bathrooms , rooms , n_heating , n_fuel , n_centralAir )
+y = select(SaratogaHouses, price)
+
 for(v in c(3:20)){
 rmse_vals_K = do(50)*{
 n = nrow(SaratogaHouses)
