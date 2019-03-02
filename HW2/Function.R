@@ -28,7 +28,7 @@ lm_avgrmse = function(fo, data, Ntimes = 50){
     
     # predict on this testing set
     yhat_test = predict(lm_result, DF_test)
-    c(rmse(DF_test[as.character(fo[[2]])], yhat_test))
+    rmse(unlist(DF_test[as.character(fo[[2]])]), yhat_test)
   }
   
   colMeans(rmse_vals)
@@ -55,7 +55,7 @@ glm_C_error = function(fo, data, Family = binomial, threshold = 0.5, Ntimes = 50
     # predict on this testing set
     phat_test = predict(glm_result, DF_test, type='response')
     yhat_test = ifelse(phat_test > threshold, 1, 0)
-    sum(yhat_test != DF_test[as.character(fo[[2]])])/n_test 
+    sum(yhat_test != unlist(DF_test[as.character(fo[[2]])]))/n_test 
   }
   colMeans(rmse_vals)
 }
