@@ -10,7 +10,7 @@ OnlineNews$viral = ifelse(OnlineNews$shares > 1400, 1, 0)
 summary(OnlineNews)
 
   p1 <- ggplot(data = OnlineNews) + 
-    geom_point(mapping = aes(y = shares, x =num_imgs),alpha = 0.01) + ylim(0, 2000)
+    geom_point(mapping = aes(y = shares, x =title_sentiment_polarity),alpha = 0.01) + ylim(0, 10000)
   p1
 
 ### Split into training and testing sets
@@ -63,15 +63,14 @@ lm_OnlineNews_4 = lm(viral ~ (n_tokens_title + n_tokens_content + num_hrefs +
                        weekday_is_thursday + weekday_is_friday + weekday_is_saturday)^2, data=OnlineNews_train)
 
 
-lm_OnlineNews_5 = lm(viral ~ poly(n_tokens_title, 3) + n_tokens_content + num_hrefs + 
-                       num_imgs + num_videos + 
-                       poly(average_token_length, 3) + num_keywords + data_channel_is_lifestyle + 
-                       data_channel_is_entertainment + data_channel_is_bus + 
+lm_OnlineNews_5 = lm(viral ~ poly(n_tokens_title, 3) + poly(num_hrefs, 2) + poly(num_imgs, 2) + poly(num_videos, 2) + 
+                       poly(average_token_length, 3) + poly(num_keywords, 2) + poly(n_tokens_content, 2) + 
+                        data_channel_is_lifestyle + data_channel_is_entertainment + data_channel_is_bus + 
                        + data_channel_is_socmed + data_channel_is_tech + 
-                       data_channel_is_world + self_reference_avg_sharess + 
+                       data_channel_is_world + poly(self_reference_avg_sharess,2) + 
                        weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
                        weekday_is_thursday + weekday_is_friday + weekday_is_saturday + 
-                       poly(avg_positive_polarity, 3) + poly(avg_negative_polarity, 3), data=OnlineNews_train)
+                       poly(max_positive_polarity, 3) + poly(max_negative_polarity, 3), data=OnlineNews_train)
 
 coef(lm_OnlineNews_5) %>% round(3)
 
@@ -81,7 +80,7 @@ lm_OnlineNews_SetModel <- lm_OnlineNews_5
 ### Predictions in sample
 yhat_train_test1 = predict(lm_OnlineNews_SetModel, OnlineNews_train)
 #summary(yhat_train_test1)
-class_train_test1 = ifelse(yhat_train_test1 > 0.5, 1, 0)
+class_train_test1 = ifelse(yhat_train_test1 > 0.50, 1, 0)
 
 ###in sample performance
 confusion_in = table(y = OnlineNews_train$viral, yhat = class_train_test1)
@@ -94,7 +93,7 @@ sum(OnlineNews_test$viral)/count(OnlineNews_test)
 ### Predictions out of sample
 yhat_test_test1 = predict(lm_OnlineNews_SetModel, OnlineNews_test)
 #summary(yhat_test_test1)
-class_test_test1 = ifelse(yhat_test_test1 > 0.5, 1, 0)
+class_test_test1 = ifelse(yhat_test_test1 > 0.50, 1, 0)
 
 ###out of sample performance
 confusion_out = table(y = OnlineNews_test$viral, yhat = class_test_test1)
@@ -111,3 +110,42 @@ sum(OnlineNews_train$viral)/count(OnlineNews_train)
 # rmse(OnlineNews_test$shares, yhat_test1)
 
 
+#####KNN
+# construct the training and test-set feature matrices
+# note the "-1": this says "don't add a column of ones for the intercept"
+Xtrain = model.matrix(~ n_tokens_title + n_tokens_content + num_hrefs + 
+                        num_self_hrefs + num_imgs + num_videos + 
+                        average_token_length + num_keywords + data_channel_is_lifestyle + 
+                        data_channel_is_entertainment + data_channel_is_bus + 
+                        + data_channel_is_socmed + data_channel_is_tech + 
+                        data_channel_is_world + self_reference_avg_sharess + 
+                        weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                        weekday_is_thursday + weekday_is_friday + weekday_is_saturday - 1, data=OnlineNews_train)
+
+Xtest = model.matrix(~ n_tokens_title + n_tokens_content + num_hrefs + 
+                       num_self_hrefs + num_imgs + num_videos + 
+                       average_token_length + num_keywords + data_channel_is_lifestyle + 
+                       data_channel_is_entertainment + data_channel_is_bus + 
+                       + data_channel_is_socmed + data_channel_is_tech + 
+                       data_channel_is_world + self_reference_avg_sharess + 
+                       weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                       weekday_is_thursday + weekday_is_friday + weekday_is_saturday - 1, data=OnlineNews_test)
+
+# training and testing set responses
+ytrain = OnlineNews_train$viral
+ytest = OnlineNews_test$viral
+
+# now rescale:
+scale_train = apply(Xtrain, 2, sd)  # calculate std dev for each column
+Xtilde_train = scale(Xtrain, scale = scale_train)
+Xtilde_test = scale(Xtest, scale = scale_train)  # use the training set scales!
+
+K = 100
+
+# fit the model
+knn_model = knn.reg(Xtilde_train, Xtilde_test, ytrain, k=K)
+KNN_train_test1 = ifelse(knn_model$pred > 0.5, 1, 0)
+
+confusion_in_KNN = table(y = OnlineNews_test$viral, yhat = KNN_train_test1)
+confusion_in_KNN
+sum(diag(confusion_in_KNN))/sum(confusion_in_KNN)
