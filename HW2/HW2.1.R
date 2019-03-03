@@ -26,7 +26,7 @@ summary(lm_big)
 
 # performance check
 temp = model.matrix( ~ heating-1,SaratogaHouses)
-colnames(temp)<- c("heating_hotair", "heating_watersteam", "heatingelectric")
+colnames(temp)<- c("heatinghotair", "heatingwatersteam", "heatingelectric")
 SaratogaHouses = cbind(SaratogaHouses,temp)
 temp = model.matrix( ~ fuel-1,SaratogaHouses)
 SaratogaHouses = cbind(SaratogaHouses,temp)
@@ -35,28 +35,31 @@ SaratogaHouses = cbind(SaratogaHouses,temp)
 
 c(
 # model 1
-lm_avgrmse(price ~ lotSize + age + livingArea + pctCollege + bedrooms + fireplaces + bathrooms + rooms + heating + fuel + centralAir, SaratogaHouses, Ntimes = 500),
+lm_avgrmse(price ~ lotSize + age + livingArea + pctCollege + bedrooms + fireplaces + bathrooms + rooms + heating + fuel + centralAir, SaratogaHouses, Ntimes = 100),
 # model 2
-lm_avgrmse(price ~ lotSize + age + livingArea + pctCollege*fireplaces + bedrooms  + bathrooms + rooms + heating + centralAir, SaratogaHouses, Ntimes = 500),
+lm_avgrmse(price ~ lotSize + age + livingArea + pctCollege*fireplaces + bedrooms  + bathrooms + rooms + heating + centralAir, SaratogaHouses, Ntimes = 100),
 # model 3
-lm_avgrmse(price ~ landValue + livingArea + pctCollege + bedrooms + fireplaces + bathrooms + rooms + heating + fuel + centralAir, SaratogaHouses, Ntimes = 500),
+lm_avgrmse(price ~ landValue + livingArea + pctCollege + bedrooms + fireplaces + bathrooms + rooms + heating + fuel + centralAir, SaratogaHouses, Ntimes = 100),
 # model 4
-lm_avgrmse(price ~ landValue + livingArea + bedrooms + bathrooms + rooms + heating + fuel + centralAir, SaratogaHouses, Ntimes = 500),
+lm_avgrmse(price ~ landValue + livingArea + bedrooms + bathrooms + rooms + heating + fuel + centralAir, SaratogaHouses, Ntimes = 100),
 # model 5, which is the best
-lm_avgrmse(price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + bathrooms + rooms + heating + centralAir, SaratogaHouses, Ntimes = 500),
+lm_avgrmse(price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + bathrooms + rooms + heating + centralAir, SaratogaHouses, Ntimes = 100),
 # model 6
-lm_avgrmse(price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + centralAir, SaratogaHouses, Ntimes = 500)
+lm_avgrmse(price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + centralAir, SaratogaHouses, Ntimes = 100)
 )
 
 
 
 
-X = subset(SaratogaHouses, select=c(-waterfront,-sewer,-newConstruction,-heating, -fuel, -centralAir, -centralAirNo, -fueloil, -heating_hotair))
+X = subset(SaratogaHouses, select=c(-price,-waterfront,-sewer,-newConstruction,-heating, -fuel, -centralAir, -centralAirNo, -fueloil, -heatinghotair))
+x = subset(X, select=c(-heatingelectric, -heatingwatersteam, -fuelgas,-fuelelectric, -centralAirYes))
+
 y = subset(SaratogaHouses, select=c(price))
 
 KNN_result <- data.frame(K=c(), rsme=c())
-for(v in c(3:20)){
-avgrmse = KNN_avgrmse(data_X = X, data_y = y, K = v, Ntimes = 100)
+k_grid = seq(3, 30, by=1)
+for(v in k_grid){
+avgrmse = KNN_avgrmse(data_X = X, data_y = y, K = v, Ntimes = 50)
 KNN_result <- rbind(KNN_result,c(v,avgrmse))
 }
 
