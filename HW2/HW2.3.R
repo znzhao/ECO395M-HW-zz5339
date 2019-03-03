@@ -154,9 +154,9 @@ x = subset(OnlineNews,select = c(num_self_hrefs,n_tokens_title,n_tokens_content,
 Y = subset(OnlineNews,select = c(viral))
 
 KNN_result <- data.frame(K=c(), rsme=c())
-k_grid = seq(53, 250, by=30)
+k_grid = seq(3, 150, by=20)
 for(v in k_grid){
-  avgrmse = KNN_C_error(x,Y, K = v,Ntimes = 5)
+  avgrmse = KNN_C_error(data_X = X,data_y = Y, K = v,Ntimes = 5)
 KNN_result <- rbind(KNN_result,c(v,avgrmse))
 }
 colnames(KNN_result) <- c("K","AVG_RMSE")

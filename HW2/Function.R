@@ -122,10 +122,10 @@ KNN_C_error = function(data_X, data_y, K = 2, Ntimes = 50){
     n_train = round(0.8*n)
     n_test = n - n_train
     train_ind = sample.int(n, n_train)
-    X_train = X[train_ind,]
-    X_test = X[-train_ind,]
-    y_train = y[train_ind,]
-    y_test = y[-train_ind,]
+    X_train = data_X[train_ind,]
+    X_test = data_X[-train_ind,]
+    y_train = data_y[train_ind,]
+    y_test = data_y[-train_ind,]
     
     # scaling
     scale_factors = apply(X_train, 2, sd)
