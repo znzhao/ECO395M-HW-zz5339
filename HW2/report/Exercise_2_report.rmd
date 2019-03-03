@@ -1,0 +1,20 @@
+---
+title: "Exercise 1"
+author: "Chong Wang, Tianping Wu, Zhenning Zhao"
+date: "2019/3/3"
+output:
+  md_document:
+    variant: markdown_github
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(RColorBrewer)
+library(FNN)
+library(maps)
+library(gganimate)
+library(gifski)
+```
+
+# Exercise 2
+By Chong Wang, Tianping Wu, Zhenning Zhao

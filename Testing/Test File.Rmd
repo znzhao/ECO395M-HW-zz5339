@@ -1,7 +1,7 @@
 ---
-title: "Testing"
-author: "Zhenning Zhao"
-date: "2019年1月27日"
+title: "Exercise 1"
+author: "Chong Wang, Tianping Wu, Zhenning Zhao"
+date: "2019/3/3"
 output:
   md_document:
     variant: markdown_github
