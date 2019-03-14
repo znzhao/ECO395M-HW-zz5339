@@ -8,13 +8,74 @@ output:
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(knitr)
 library(tidyverse)
-library(RColorBrewer)
+library(mosaic)
+library(class)
 library(FNN)
-library(maps)
-library(gganimate)
-library(gifski)
 ```
 
 # Exercise 2
 By Chong Wang, Tianping Wu, Zhenning Zhao
+
+```{r setup_2.1, include=FALSE}
+data(SaratogaHouses)
+summary(SaratogaHouses)
+
+rmse = function(y, yhat) {
+  sqrt( mean( (y - yhat)^2 ) )
+}
+# Setup for KNN: change from string to numeric
+temp = model.matrix( ~ heating-1,SaratogaHouses)
+colnames(temp)<- c("heatinghotair", "heatingwatersteam", "heatingelectric")
+SaratogaHouses = cbind(SaratogaHouses,temp)
+temp = model.matrix( ~ fuel-1,SaratogaHouses)
+SaratogaHouses = cbind(SaratogaHouses,temp)
+temp = model.matrix( ~ centralAir-1,SaratogaHouses)
+SaratogaHouses = cbind(SaratogaHouses,temp)
+
+data = SaratogaHouses
+
+n = nrow(SaratogaHouses)
+Ntimes = 100
+# performance check
+rmse_vals = do(Ntimes)*{
+  # re-split into train and test cases
+  n_train = round(0.8*n)  # round to nearest integer
+  n_test = n - n_train
+  train_cases = sample.int(n, n_train, replace=FALSE)
+  test_cases = setdiff(1:n, train_cases)
+  DF_train = data[train_cases,]
+  DF_test = data[test_cases,]
+  
+  # fit to this training set
+  lm_result1 = lm(price ~ lotSize + age + livingArea + pctCollege + bedrooms + fireplaces + bathrooms + rooms + heating + fuel + centralAir, data=DF_train)
+  lm_result2 = lm(price ~ lotSize + age + livingArea + pctCollege*fireplaces + bedrooms  + bathrooms + rooms + heating + centralAir, data=DF_train)
+  lm_result3 = lm(price ~ landValue + livingArea + pctCollege + bedrooms + fireplaces + bathrooms + rooms + heating + fuel + centralAir, data=DF_train)
+  lm_result4 = lm(price ~ landValue + livingArea + bedrooms + bathrooms + rooms + heating + fuel + centralAir, data=DF_train)
+  # the best regression
+  lm_result5 = lm(price ~ landValue + lotSize*(bedrooms + bathrooms) + livingArea*(fuel+ heating + centralAir) + pctCollege*(fireplaces+age) + rooms, data=DF_train)
+  lm_result6 = lm(price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + bathrooms + rooms + heating + centralAir, data=DF_train)
+  lm_result7 = lm(price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + centralAir, data=DF_train)
+  
+  # predict on this testing set
+  yhat_test1 = predict(lm_result1, DF_test)
+  yhat_test2 = predict(lm_result2, DF_test)
+  yhat_test3 = predict(lm_result3, DF_test)
+  yhat_test4 = predict(lm_result4, DF_test)
+  yhat_test5 = predict(lm_result5, DF_test)
+  yhat_test6 = predict(lm_result6, DF_test)
+  yhat_test7 = predict(lm_result7, DF_test)
+  
+  c(rmse(unlist(DF_test$price), yhat_test1), rmse(unlist(DF_test$price), yhat_test2), rmse(unlist(DF_test$price), yhat_test3), rmse(unlist(DF_test$price), yhat_test4), rmse(unlist(DF_test$price), yhat_test5), rmse(unlist(DF_test$price), yhat_test6), rmse(unlist(DF_test$price), yhat_test7))
+}
+```
+
+```{r table_2.1.1, echo=FALSE}
+colnames(rmse_vals) <- c("model 1", "model 2", "model 3", "model 4", "model 5", "model 6", "model 7")
+kable(colMeans(rmse_vals), col.names = c("AVG RMSE"), caption = "Table 2.1.1: The Average RMSE for Different Models",padding = 2, align = "c")
+```
+
+```{r table_2.1.2, echo=TRUE}
+summary(lm(price ~ landValue + lotSize*(bedrooms + bathrooms) + livingArea*(fuel+ heating + centralAir) + pctCollege*(fireplaces+age) + rooms, data=data))
+```
