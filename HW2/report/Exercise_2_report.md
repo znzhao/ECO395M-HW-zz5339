@@ -3,15 +3,26 @@ Exercise 2
 
 By Chong Wang, Tianping Wu, Zhenning Zhao
 
+Exercise 2.1
+============
+
+Long story short, we "hand-build" a model for price that outperforms the "medium" model that we considered in class, and the KNN model did not beat the “hand-build” model that we selected.
+
+The models that we checked are listed below.
+
+The performance of the models are mesured with average out-of-sample RMSE. We use the 80% of the data to do regressions and calculate RMSE for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average RMSE. The result of the models are listed below.
+
 |         | AVG RMSE |
 |---------|:--------:|
-| model 1 | 66672.28 |
-| model 2 | 66517.61 |
-| model 3 | 60733.17 |
-| model 4 | 60646.93 |
-| model 5 | 60097.08 |
-| model 6 | 60478.64 |
-| model 7 | 61195.41 |
+| model 1 | 66445.34 |
+| model 2 | 66273.29 |
+| model 3 | 60521.15 |
+| model 4 | 60442.53 |
+| model 5 | 59826.62 |
+| model 6 | 60213.68 |
+| model 7 | 60966.02 |
+
+The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 60000, while the average RMSE of the baseline model is around 66000. The regression result is:
 
 |                                   |  coefficients.Estimate|  coefficients.Std..Error|  coefficients.t.value|  coefficients.Pr...t..|
 |-----------------------------------|----------------------:|------------------------:|---------------------:|----------------------:|
@@ -39,3 +50,19 @@ By Chong Wang, Tianping Wu, Zhenning Zhao
 | livingArea:centralAirNo           |          -2.527276e+01|             5.479314e+00|            -4.6123959|              0.0000043|
 | pctCollege:fireplaces             |          -7.022711e+02|             2.601372e+02|            -2.6996180|              0.0070106|
 | pctCollege:age                    |           1.042842e+01|             4.879803e+00|             2.1370580|              0.0327353|
+
+From the regression we can find many factors that could influence the house price.
+
+First of all, the most important factor is the land value. When we include the land value into account, the RMSE dropped dramatically. It is clearly true that the higher the land value is, the higher the house price is.
+
+Second, the room with more bedrooms have a lower price. This makes sense because more bedrooms means there are more people sharing the apartment, hence the utility of each person is dropping. On the other hand, the apartment with more bathrooms have a higher price. The apartment with larger living area have a higher price, and the price of the apartment drops as the age of the apartment grows. These conclusions matches our intuition.
+
+Third, comparing with the apartments fueling with gas, the apartments fueling with oil have higher prices. comparing with the apartments having a central air conditioner, the apartments with separate air conditioner have higher price. What’s more, the apartments with a fireplace is more expensive, and the older the apartment is the lower the price is.
+
+Forth, the interactions between the number of bedrooms or bathrooms and the lotsize are not significant, but the interactions between the living area and the fuel and whether the house has a central air conditioner is significant. To be more specific, the effect of the living area on the price of the room fueled with oil is lower than the room fueled with gas. And it is also true that the effect of the living area on the price of the room without a central air conditioner is lower than the room that has a central air conditioner.The interactions between whether the apartment is close to a college and the age of the house and the number of fireplaces are significant.
+
+By using exactly same variables in the linear regression model it is very hard to beat the linear regression with the KNN model.
+
+![](Exercise_2_report_files/figure-markdown_github/graph2.1.1-1.png)
+
+From the plot of average RMSE vs K we can tell the optimal K for the KNN model is about 10-15. The lowest average RMSE that we can get with KNN model is about 63000, which is still higher than the average RMSE that we conclude using a linear model with interactions.
