@@ -5,82 +5,56 @@ By Chong Wang, Tianping Wu, Zhenning Zhao
 
 |         | AVG RMSE |
 |---------|:--------:|
-| model 1 | 66068.44 |
-| model 2 | 65825.60 |
-| model 3 | 59765.10 |
-| model 4 | 59677.72 |
-| model 5 | 59126.45 |
-| model 6 | 59432.07 |
-| model 7 | 60182.50 |
+| model 1 | 66449.78 |
+| model 2 | 66240.06 |
+| model 3 | 60237.71 |
+| model 4 | 60178.42 |
+| model 5 | 59470.66 |
+| model 6 | 59828.10 |
+| model 7 | 60585.05 |
 
 ``` r
-summary(lm(price ~ landValue + lotSize*(bedrooms + bathrooms) + livingArea*(fuel+ heating + centralAir) + pctCollege*(fireplaces+age) + rooms, data=data))
+table1 = summary(lm(price ~ landValue + 
+                      lotSize*(bedrooms + bathrooms) + 
+                      livingArea*(fuel+ heating + centralAir) + 
+                      pctCollege*(fireplaces+age) + 
+                      rooms, data=data))
+
+kable(table1["coefficients"])
 ```
 
-    ## 
-    ## Call:
-    ## lm(formula = price ~ landValue + lotSize * (bedrooms + bathrooms) + 
-    ##     livingArea * (fuel + heating + centralAir) + pctCollege * 
-    ##     (fireplaces + age) + rooms, data = data)
-    ## 
-    ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -231721  -34928   -5458   27010  453713 
-    ## 
-    ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       -8.643e+03  1.770e+04  -0.488 0.625456
-    ## landValue                          8.332e-01  4.816e-02  17.302  < 2e-16
-    ## lotSize                            8.886e+03  8.083e+03   1.099 0.271757
-    ## bedrooms                          -9.011e+03  3.052e+03  -2.953 0.003192
-    ## bathrooms                          2.423e+04  3.873e+03   6.257 4.95e-10
-    ## livingArea                         9.013e+01  5.690e+00  15.841  < 2e-16
-    ## fuelelectric                      -4.945e+04  4.874e+04  -1.015 0.310437
-    ## fueloil                            3.909e+04  1.311e+04   2.981 0.002913
-    ## heatinghot water/steam             1.278e+04  1.277e+04   1.001 0.317140
-    ## heatingelectric                    4.674e+04  4.936e+04   0.947 0.343806
-    ## centralAirNo                       3.461e+04  1.046e+04   3.308 0.000960
-    ## pctCollege                         1.983e+01  2.603e+02   0.076 0.939288
-    ## fireplaces                         4.139e+04  1.479e+04   2.798 0.005203
-    ## age                               -5.980e+02  2.613e+02  -2.288 0.022234
-    ## rooms                              2.540e+03  9.777e+02   2.598 0.009466
-    ## lotSize:bedrooms                   1.639e+03  2.743e+03   0.598 0.550087
-    ## lotSize:bathrooms                 -3.076e+03  3.420e+03  -0.899 0.368534
-    ## livingArea:fuelelectric            2.421e+01  2.804e+01   0.863 0.388031
-    ## livingArea:fueloil                -2.464e+01  7.455e+00  -3.306 0.000967
-    ## livingArea:heatinghot water/steam -1.069e+01  6.774e+00  -1.577 0.114871
-    ## livingArea:heatingelectric        -2.825e+01  2.860e+01  -0.988 0.323433
-    ## livingArea:centralAirNo           -2.527e+01  5.479e+00  -4.612 4.28e-06
-    ## pctCollege:fireplaces             -7.023e+02  2.601e+02  -2.700 0.007011
-    ## pctCollege:age                     1.043e+01  4.880e+00   2.137 0.032735
-    ##                                      
-    ## (Intercept)                          
-    ## landValue                         ***
-    ## lotSize                              
-    ## bedrooms                          ** 
-    ## bathrooms                         ***
-    ## livingArea                        ***
-    ## fuelelectric                         
-    ## fueloil                           ** 
-    ## heatinghot water/steam               
-    ## heatingelectric                      
-    ## centralAirNo                      ***
-    ## pctCollege                           
-    ## fireplaces                        ** 
-    ## age                               *  
-    ## rooms                             ** 
-    ## lotSize:bedrooms                     
-    ## lotSize:bathrooms                    
-    ## livingArea:fuelelectric              
-    ## livingArea:fueloil                ***
-    ## livingArea:heatinghot water/steam    
-    ## livingArea:heatingelectric           
-    ## livingArea:centralAirNo           ***
-    ## pctCollege:fireplaces             ** 
-    ## pctCollege:age                    *  
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 59090 on 1704 degrees of freedom
-    ## Multiple R-squared:  0.6445, Adjusted R-squared:  0.6397 
-    ## F-statistic: 134.3 on 23 and 1704 DF,  p-value: < 2.2e-16
+<table class="kable_wrapper">
+<tbody>
+<tr>
+<td>
+|                                   |       Estimate|    Std. Error|     t value|  Pr(&gt;|t|)|
+|-----------------------------------|--------------:|-------------:|-----------:|------------:|
+| (Intercept)                       |  -8.643001e+03|  1.770303e+04|  -0.4882215|    0.6254558|
+| landValue                         |   8.332313e-01|  4.815750e-02|  17.3022099|    0.0000000|
+| lotSize                           |   8.886326e+03|  8.083021e+03|   1.0993817|    0.2717569|
+| bedrooms                          |  -9.010594e+03|  3.051553e+03|  -2.9527897|    0.0031923|
+| bathrooms                         |   2.423306e+04|  3.872891e+03|   6.2571003|    0.0000000|
+| livingArea                        |   9.013328e+01|  5.689994e+00|  15.8406634|    0.0000000|
+| fuelelectric                      |  -4.945208e+04|  4.874015e+04|  -1.0146066|    0.3104374|
+| fueloil                           |   3.908867e+04|  1.311235e+04|   2.9810578|    0.0029133|
+| heatinghot water/steam            |   1.277797e+04|  1.276971e+04|   1.0006468|    0.3171397|
+| heatingelectric                   |   4.673921e+04|  4.935837e+04|   0.9469359|    0.3438057|
+| centralAirNo                      |   3.461381e+04|  1.046454e+04|   3.3077241|    0.0009602|
+| pctCollege                        |   1.982960e+01|  2.603112e+02|   0.0761765|    0.9392876|
+| fireplaces                        |   4.139041e+04|  1.479376e+04|   2.7978287|    0.0052026|
+| age                               |  -5.979931e+02|  2.613114e+02|  -2.2884313|    0.0222343|
+| rooms                             |   2.539648e+03|  9.776609e+02|   2.5976782|    0.0094665|
+| lotSize:bedrooms                  |   1.639476e+03|  2.742749e+03|   0.5977493|    0.5500866|
+| lotSize:bathrooms                 |  -3.076214e+03|  3.420065e+03|  -0.8994609|    0.3685343|
+| livingArea:fuelelectric           |   2.420885e+01|  2.803848e+01|   0.8634150|    0.3880308|
+| livingArea:fueloil                |  -2.464235e+01|  7.454578e+00|  -3.3056672|    0.0009672|
+| livingArea:heatinghot water/steam |  -1.068582e+01|  6.773995e+00|  -1.5774770|    0.1148714|
+| livingArea:heatingelectric        |  -2.824654e+01|  2.859791e+01|  -0.9877132|    0.3234334|
+| livingArea:centralAirNo           |  -2.527276e+01|  5.479314e+00|  -4.6123959|    0.0000043|
+| pctCollege:fireplaces             |  -7.022711e+02|  2.601372e+02|  -2.6996180|    0.0070106|
+| pctCollege:age                    |   1.042842e+01|  4.879803e+00|   2.1370580|    0.0327353|
+
+</td>
+</tr>
+</tbody>
+</table>

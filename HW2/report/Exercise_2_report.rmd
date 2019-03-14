@@ -77,5 +77,11 @@ kable(colMeans(rmse_vals), col.names = c("AVG RMSE"), caption = "Table 2.1.1: Th
 ```
 
 ```{r table_2.1.2, echo=TRUE}
-summary(lm(price ~ landValue + lotSize*(bedrooms + bathrooms) + livingArea*(fuel+ heating + centralAir) + pctCollege*(fireplaces+age) + rooms, data=data))
+table1 = summary(lm(price ~ landValue + 
+                      lotSize*(bedrooms + bathrooms) + 
+                      livingArea*(fuel+ heating + centralAir) + 
+                      pctCollege*(fireplaces+age) + 
+                      rooms, data=data))
+
+kable(table1["coefficients"])
 ```
