@@ -110,15 +110,40 @@ as.data.frame(t1["coefficients"])
 X = subset(SaratogaHouses, select=c(-price,-waterfront,-sewer,-newConstruction,-heating, -fuel, -centralAir, -centralAirNo, -fuelgas, -heatinghotair))
 y = subset(SaratogaHouses, select=c(price))
 
-KNN_result <- data.frame(K=c(), rsme=c())
 k_grid = seq(3, 30, by=1)
-for(v in k_grid){
-avgrmse = KNN_avgrmse(data_X = X, data_y = y, K = v, Ntimes = 200)
-KNN_result <- rbind(KNN_result,c(v,avgrmse))
-}
 
-colnames(KNN_result) <- c("K","AVG_RMSE")
-ggplot(data = KNN_result, aes(x = K, y = AVG_RMSE)) + 
+data_X = X
+data_y = y
+Ntimes = 200
+n = nrow(data_X)
+KNN_result = do(Ntimes)*{
+  # re-split into train and test cases
+  n_train = round(0.8*n)  # round to nearest integer
+  n_test = n - n_train
+  train_cases = sample.int(n, n_train, replace=FALSE)
+  test_cases = setdiff(1:n, train_cases)
+  X_train = data_X[train_cases,]
+  X_test = data_X[test_cases,]
+  y_train = data_y[train_cases,]
+  y_test = data_y[test_cases,]
+  
+  # scaling
+  scale_factors = apply(X_train, 2, sd)
+  X_train_sc = scale(X_train, scale=scale_factors)
+  # scale the test set features using the same scale factors
+  X_test_sc = scale(X_test, scale=scale_factors)
+  temp = c()
+  for(v in k_grid){
+    # Fit the KNN model (notice the odd values of K)
+    knn_K = FNN::knn.reg(train=X_train_sc, test= X_test_sc, y = y_train, k=v)
+    ypred_knn = knn_K$pred
+    temp = c(temp, rmse(y_test, ypred_knn))
+  }
+  temp
+}
+KNN_result =  KNN_result %>% colMeans() %>% as.data.frame()
+
+ggplot(data = KNN_result, aes(x = c(3:30), y = .)) + 
   geom_point(shape = "O") +
   geom_line(col = "red")
 

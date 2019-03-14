@@ -18,12 +18,10 @@ library(FNN)
 # Exercise 2
 By Chong Wang, Tianping Wu, Zhenning Zhao
 
-# Exercise 2.1
+## Exercise 2.1
 
-```{r setup_2.1, include=FALSE}
+```{r setup_2.1, echo=FALSE}
 data(SaratogaHouses)
-summary(SaratogaHouses)
-
 # define the functions
 rmse = function(y, yhat) {
   sqrt( mean( (y - yhat)^2 ) )
@@ -122,7 +120,7 @@ table1 = summary(lm(price ~ landValue +
                       pctCollege*(fireplaces+age) + 
                       rooms, data=data))
 
-kable(as.data.frame(table1["coefficients"]))
+kable(as.data.frame(table1["coefficients"]), caption = "Table 2.1.2: Regression Result for the Best Model",padding = 2, align = "c")
 ```
 
 From the regression we can find many factors that could influence the house price.
@@ -138,20 +136,46 @@ Forth, the interactions between the number of bedrooms or bathrooms and the lots
 By using exactly same variables in the linear regression model it is very hard to beat the linear regression with the KNN model.
 
 ```{r graph2.1.1, echo=FALSE}
+
 X = subset(SaratogaHouses, select=c(-price,-waterfront,-sewer,-newConstruction,-heating, -fuel, -centralAir, -centralAirNo, -fuelgas, -heatinghotair))
 y = subset(SaratogaHouses, select=c(price))
 
-KNN_result <- data.frame(K=c(), rsme=c())
 k_grid = seq(3, 30, by=1)
-for(v in k_grid){
-avgrmse = KNN_avgrmse(data_X = X, data_y = y, K = v, Ntimes = 100)
-KNN_result <- rbind(KNN_result,c(v,avgrmse))
-}
 
-colnames(KNN_result) <- c("K","AVG_RMSE")
-ggplot(data = KNN_result, aes(x = K, y = AVG_RMSE)) + 
+data_X = X
+data_y = y
+Ntimes = 200
+n = nrow(data_X)
+KNN_result = do(Ntimes)*{
+  # re-split into train and test cases
+  n_train = round(0.8*n)  # round to nearest integer
+  n_test = n - n_train
+  train_cases = sample.int(n, n_train, replace=FALSE)
+  test_cases = setdiff(1:n, train_cases)
+  X_train = data_X[train_cases,]
+  X_test = data_X[test_cases,]
+  y_train = data_y[train_cases,]
+  y_test = data_y[test_cases,]
+  
+  # scaling
+  scale_factors = apply(X_train, 2, sd)
+  X_train_sc = scale(X_train, scale=scale_factors)
+  # scale the test set features using the same scale factors
+  X_test_sc = scale(X_test, scale=scale_factors)
+  temp = c()
+  for(v in k_grid){
+    # Fit the KNN model (notice the odd values of K)
+    knn_K = FNN::knn.reg(train=X_train_sc, test= X_test_sc, y = y_train, k=v)
+    ypred_knn = knn_K$pred
+    temp = c(temp, rmse(y_test, ypred_knn))
+  }
+  temp
+}
+KNN_result =  KNN_result %>% colMeans() %>% as.data.frame()
+
+ggplot(data = KNN_result, aes(x = c(3:30), y = .)) + 
   geom_point(shape = "O") +
-  geom_line(col = "red") +
+  geom_line(col = "red")+
   theme_bw()+
   labs(title = "AVG RMSE vs K (2<K<30)",
        x = "K",
@@ -160,3 +184,89 @@ ggplot(data = KNN_result, aes(x = K, y = AVG_RMSE)) +
 ```
 
 From the plot of average RMSE vs K we can tell the optimal K for the KNN model is about 10-15. The lowest average RMSE that we can get with KNN model is about 63000, which is still higher than the average RMSE that we conclude using a linear model with interactions.
+
+
+## Exercise 2.2
+
+### Exercise 2.2.2
+```{r setup_2.2.2, echo=FALSE}
+urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW2/brca.csv'
+brca<-read.csv(url(urlfile))
+n = nrow(brca)
+threshold = sum(brca$cancer == 1)/n+0.001
+
+# define the deviation function as the judgement
+dev_out = function(ml, y, dataset) {
+  probhat = predict(ml, newdata=dataset, type='response')
+  p0 = 1-probhat
+  phat = data.frame(P0 = p0, p1 = probhat)
+  rc_pairs = cbind(seq_along(y), y)
+  -2*sum(log(phat[rc_pairs]))
+}
+```
+
+The second point that we want to make is that when the radiologists at this hospital interpret a mammogram to make a decision on whether to recall the patient, they should be weighing the history of the patients, the breast cancer symptoms and the menopause status of the patient more heavily than they currently are. Although this means they have to recall more patients back for further checks, it will minimize the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible.
+
+First we build the baseline model, which suggests that when the doctors recall a patient, they tend to think that the patient has a cancer.
+
+To formalize the model by regression, we regressed the patient’s cancer outcome on the radiologist’s recall decision with the logistic regression. The regression model is:
+
+We split the dataset into the training set and the testing set using the standard 80-20 rule, and re-run the regression for 100 times to eliminate the stochasticity, and ending up with similar rates to the ones calculated with the entire database.
+
+If we build a model using the recall decision and all the other clinical risk factors and it significantly performs better than the baseline model, it means that there are some risk factors that the doctors are missing.
+
+We checked (1) the model regressing cancer indicator on the recall indicator and all the risk factors, (2) the model regressing cancer indicator on the recall indicator and all the risk factors and their interactions (3) two hand-build models. The thresholds that we chose for these models are the same as the baseline model, so that we can compare these models on the same level.  The regression models are:
+
+
+
+
+Before we show the result of the models, we need to explain the criteria that we use to judge these model. When we try to identify the patient, different kinds of error has different cost. It might not be a big problem if a healthy woman is recalled to do some further test, but it may cause death if the doctor didn’t identify the patients who have cancer. Hence the accurate rate is not the best criteria. Instead, we calculate the deviance of these model, and choose the model with smaller deviance.
+
+The average deviance of the models are listed in the following table:
+```{r table2.2.1, echo = FALSE}
+
+Err1 = do(50)*{
+  data = brca
+  n = nrow(data)
+  n_train = round(0.8*n)  # round to nearest integer
+  n_test = n - n_train
+  train_cases = sample.int(n, n_train, replace=FALSE)
+  test_cases = setdiff(1:n, train_cases)
+  DF_train = data[train_cases,]
+  DF_test = data[test_cases,]
+  
+  glm_modelA = glm(cancer~ recall, data = DF_train)
+  glm_modelB = glm(cancer~ .-radiologist, data = DF_train)
+  glm_modelC = glm(cancer~ recall + (age + history + symptoms + menopause + density)^2, data = DF_train)
+  glm_modelD = glm(cancer~ recall + history + symptoms + menopause, data = DF_train)
+  
+  c(
+    dev_out(ml = glm_modelA,dataset = DF_test,y = DF_test$cancer),
+    dev_out(ml = glm_modelB,dataset = DF_test,y = DF_test$cancer),
+    dev_out(ml = glm_modelC,dataset = DF_test,y = DF_test$cancer),
+    dev_out(ml = glm_modelD,dataset = DF_test,y = DF_test$cancer))
+  }
+
+colnames(Err1) <- c("Baseline", "Model 1", "Model 2", "Model 3")
+kable(colMeans(Err1), col.names = c("AVG Deviation for Different Models"), caption = "Table 2.2.1: The Average RMSE for Different Models",padding = 2, align = "c")
+
+```
+
+From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3.
+
+The logistic regression of model 3 using the whole dataset is shown below:
+```{r table2.2.2, echo = FALSE}
+glm_modelA = glm(cancer ~ recall, data = brca)
+phatA = predict(glm_modelA, brca, type='response')
+yhatA = ifelse(phatA >= threshold, 1, 0)
+t1 = xtabs(~brca$cancer+yhatA) 
+
+glm_modelB = glm(cancer ~ recall + history + symptoms + menopause, data = brca)
+
+phatB = predict(glm_modelB, brca, type='response')
+yhatB = ifelse(phatB >= threshold, 1, 0)
+t2 = xtabs(~brca$cancer+yhatB)
+
+table2 = summary(glm_modelB)
+kable(as.data.frame(table2["coefficients"]), caption = "Table 2.1.2: Regression Result for the Best Model",padding = 2, align = "c")
+```
