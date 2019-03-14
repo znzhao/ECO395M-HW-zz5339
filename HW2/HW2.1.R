@@ -104,8 +104,8 @@ rmse_vals = do(Ntimes)*{
 colMeans(rmse_vals)
 t = as.data.frame(colMeans(rmse_vals))
 rownames(t) <- c("AVG RMSE")
-summary(lm(price ~ landValue + lotSize*(bedrooms + bathrooms) + livingArea*(fuel+ heating + centralAir) + pctCollege*(fireplaces+age) + rooms, data=data))
-
+t1 = summary(lm(price ~ landValue + lotSize*(bedrooms + bathrooms) + livingArea*(fuel+ heating + centralAir) + pctCollege*(fireplaces+age) + rooms, data=data))
+as.data.frame(t1["coefficients"])
 
 X = subset(SaratogaHouses, select=c(-price,-waterfront,-sewer,-newConstruction,-heating, -fuel, -centralAir, -centralAirNo, -fuelgas, -heatinghotair))
 y = subset(SaratogaHouses, select=c(price))

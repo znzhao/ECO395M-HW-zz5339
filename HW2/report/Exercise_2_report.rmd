@@ -76,12 +76,12 @@ colnames(rmse_vals) <- c("model 1", "model 2", "model 3", "model 4", "model 5", 
 kable(colMeans(rmse_vals), col.names = c("AVG RMSE"), caption = "Table 2.1.1: The Average RMSE for Different Models",padding = 2, align = "c")
 ```
 
-```{r table_2.1.2, echo=TRUE}
+```{r table_2.1.2, echo=FALSE}
 table1 = summary(lm(price ~ landValue + 
                       lotSize*(bedrooms + bathrooms) + 
                       livingArea*(fuel+ heating + centralAir) + 
                       pctCollege*(fireplaces+age) + 
                       rooms, data=data))
 
-kable(table1["coefficients"])
+kable(as.data.frame(table1["coefficients"]))
 ```
