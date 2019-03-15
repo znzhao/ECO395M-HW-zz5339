@@ -14,13 +14,13 @@ The performance of the models are mesured with average out-of-sample RMSE. We us
 
 |         | AVG RMSE |
 |---------|:--------:|
-| model 1 | 65392.66 |
-| model 2 | 65193.93 |
-| model 3 | 59239.88 |
-| model 4 | 59177.84 |
-| model 5 | 58702.07 |
-| model 6 | 58948.48 |
-| model 7 | 59665.28 |
+| model 1 | 65987.22 |
+| model 2 | 65769.93 |
+| model 3 | 59962.30 |
+| model 4 | 59887.17 |
+| model 5 | 59302.17 |
+| model 6 | 59623.05 |
+| model 7 | 60360.83 |
 
 The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 60000, while the average RMSE of the baseline model is around 66000. The regression result is:
 
@@ -72,32 +72,35 @@ Exercise 2.2
 
 ### Exercise 2.2.1
 
-    ##        V1        V2        V3 
-    ## 0.4060914 0.4496954 0.4069543
+|         |  AVG RMSE |
+|---------|:---------:|
+| model 1 | 0.4018274 |
+| model 2 | 0.4461421 |
+| model 3 | 0.4020812 |
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1437837|
-| radiologist34 |     0.1011830|
-| radiologist66 |     0.1709344|
-| radiologist89 |     0.2339846|
-| radiologist95 |     0.1366239|
+| radiologist13 |     0.1296905|
+| radiologist34 |     0.0643040|
+| radiologist66 |     0.1812487|
+| radiologist89 |     0.2595449|
+| radiologist95 |     0.1540658|
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1419596|
-| radiologist34 |     0.0916934|
-| radiologist66 |     0.1889831|
-| radiologist89 |     0.2035743|
-| radiologist95 |     0.1356905|
+| radiologist13 |     0.1452173|
+| radiologist34 |     0.0949511|
+| radiologist66 |     0.1922409|
+| radiologist89 |     0.2068320|
+| radiologist95 |     0.1389482|
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1585519|
-| radiologist34 |     0.0948541|
-| radiologist66 |     0.1992343|
-| radiologist89 |     0.2131996|
-| radiologist95 |     0.1365789|
+| radiologist13 |     0.1330110|
+| radiologist34 |     0.0489468|
+| radiologist66 |     0.1820529|
+| radiologist89 |     0.2453830|
+| radiologist95 |     0.1358177|
 
 ### Exercise 2.2.2
 
@@ -119,10 +122,10 @@ The average deviance of the models are listed in the following table:
 
 |          | AVG Deviation for Different Models |
 |----------|:----------------------------------:|
-| Baseline |              1.507830              |
-| Model 1  |              1.543254              |
-| Model 2  |              1.516609              |
-| Model 3  |              1.434566              |
+| Baseline |              1.532054              |
+| Model 1  |              1.589381              |
+| Model 2  |              1.620747              |
+| Model 3  |              1.450015              |
 
 From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3.
 
@@ -161,3 +164,9 @@ The confusion matrix for the model using the entire dataset is:
 The accuracy rate is (797+23)/987 = 83.1%, the true positive rate is 23/(23+14) = 62.2%, the specificity is 23/(153+23) = 13.1%.
 
 Although this is the insample rates, we can still conclude that the true positive rate is increasing, which means it will minimize the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible, while the specificity is slightly decreasing, meaning the doctors have to be more conservative and hence slightly increase the rate of the false alert.
+
+Exercise 2.3
+------------
+
+    ##        V1        V2        V3        V4        V5 
+    ## 0.4970892 0.5056930 0.6270639 0.6317552 0.3774612
