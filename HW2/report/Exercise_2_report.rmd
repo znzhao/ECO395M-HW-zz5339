@@ -182,13 +182,13 @@ KNN_result = do(Ntimes)*{
   temp
 }
 KNN_result =  KNN_result %>% colMeans() %>% as.data.frame()
-myList = KNN_result$.
+colnames(KNN_result) <- c("rmse")
 myL = c(3:30)
-ggplot(data = KNN_result, aes(x = c(3:30), y = .)) + 
+ggplot(data = KNN_result, aes(x = c(3:30), y = rmse)) + 
   geom_point(shape = "O") +
   geom_line(col = "red")+
   theme_bw()+
-  geom_vline(xintercept = myL[which.max(myList)])+
+  geom_vline(xintercept = myL[which.min(KNN_result$rmse)])+
   labs(title = "AVG RMSE vs K (2<K<30)",
        x = "K",
        y = "AVG RMSE")+
@@ -614,7 +614,7 @@ accrate2 <- data.frame(myList_share, myL)
 ggplot(data = accrate2, aes(x = myL, y = myList_share))+
   geom_point(shape = "O")+
   geom_line(col = "red")+
-  geom_vline(xintercept = myL[which.max(myList)])+
+  geom_vline(xintercept = myL[which.max(myList_share)])+
   labs(title = "AVG Accuracy Rate vs K (5<K<100) Model: KNN regression",
        x = "K",
        y = "AVG Accuracy Rate")+
