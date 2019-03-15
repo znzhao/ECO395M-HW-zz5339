@@ -75,14 +75,14 @@ However, by using exactly same variables in the linear regression model it is ve
 
 ![](Exercise_2_report_files/figure-markdown_github/graph2.1.1-1.png)
 
-From the plot of average RMSE vs K we can tell the optimal K for the KNN model is about 10-12. The lowest average RMSE that we can get with KNN model is about 63000, which is still higher than the average RMSE that we conclude using a linear model with interactions.
+From the plot of average RMSE vs K we can tell the optimal K for the KNN model is about 10-12. The lowest average RMSE that we can get with KNN model is about 63,000, which is still higher than the average RMSE that we conclude using a linear model with interactions.
 
 Exercise 2.2
 ------------
 
 ### Exercise 2.2.1
 
-First, in order to get the most accurate predictions of radiologists’ recall rates, we construct three logistic models. Because we need to take consideration that all the risk factors need to be constant, we choose age, history of breast biopsy/surgery, breast cancer symptom, menopause/hormone-therapy status and breast density classification as independent variables and recall as dependent variable in our logistic model. After considering the chance of interactions, we selected three following models:
+First, in order to get the most accurate predictions of radiologists’ recall rates, we constructed three logistic models. Because we need to take consideration that all the risk factors need to be constant, we choose age, history of breast biopsy/surgery, breast cancer symptom, menopause/hormone-therapy status and breast density classification as independent variables and recall as dependent variable in our logistic model. After considering the chance of interactions, we selected three following models:
 
 ``` r
 model1 = recall~radiologist*(age+history+symptoms+menopause+density)
