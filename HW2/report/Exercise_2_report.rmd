@@ -187,12 +187,41 @@ From the plot of average RMSE vs K we can tell the optimal K for the KNN model i
 
 
 ## Exercise 2.2
-
-### Exercise 2.2.2
-```{r setup_2.2.2, echo=FALSE , warning=FALSE}
+```{r setup_2.2, echo=FALSE , warning=FALSE}
 urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW2/brca.csv'
 brca<-read.csv(url(urlfile))
 n = nrow(brca)
+```
+
+### Exercise 2.2.1
+```{r setup_2.1.2, echo=FALSE , warning=FALSE}
+modelselect=glm(recall~radiologist*(age+history+symptoms+menopause),data=brca)
+table2_1 = summary(modelselect)
+kable(as.data.frame(table2_1["coefficients"]), caption = "Table 2.2.2: Regression Result for the Best Model",padding = 2, align = "c")
+```
+
+```{r setup_2.1.3, echo=FALSE , warning=FALSE}
+# generate the testing set
+n = nrow(brca)
+# get the sample
+pretest_cases = sample.int(n,50,replace=FALSE)
+brca_pretest = brca[pretest_cases,]
+brca_sample=data.frame(brca_pretest)
+# replicate the data for 5 times
+brca_samplerepeat=brca_sample[rep(1:nrow(brca_sample),each=5),-1]
+# assign the same patient to different doctors
+brca_samplerepeat$radiologist=c("radiologist13","radiologist34","radiologist66","radiologist89","radiologist95")
+# get diagnose from doctors 
+yhat_recall = predict(modelselect, brca_samplerepeat)
+brca_samplerepeat=cbind(brca_samplerepeat,yhat_recall)
+# compare doctors 
+brca_predict<-brca_samplerepeat%>%
+group_by(radiologist)%>%
+summarise(Prob_recall = mean(yhat_recall))
+kable(brca_predict)
+```
+### Exercise 2.2.2
+```{r setup_2.2.2, echo=FALSE , warning=FALSE}
 threshold = sum(brca$cancer == 1)/n+0.001
 
 # define the deviation function as the judgement
@@ -279,6 +308,9 @@ To compare the result, we made some predictions with the baseline model and the 
 The confusion matrix for the baseline model using the entire dataset is:
 
 ```{r table2.2.3, echo = FALSE, warning=FALSE}
+df = as.data.frame(t1)
+t1 = data.frame(yhat0 = c(df$Freq[1],df$Freq[2]),yhat1 = c(df$Freq[3],df$Freq[4]))
+row.names(t1) <- c("cancer = 0", "cancer = 1")
 kable(t1, caption = "Table 2.1.3: Confusion Matrix of the Baseline Model",padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
 ```
 
@@ -287,10 +319,12 @@ The accuracy rate is (824+22)/987 = 85.7%, the true positive rate is 22/(22+15) 
 The confusion matrix for the model using the entire dataset is:
 
 ```{r table2.2.4, echo = FALSE, warning=FALSE}
-#kable(t2, caption = "Table 2.1.4: Confusion Matrix of the Improved Model",padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
-t2
+df = as.data.frame(t2)
+t2 = data.frame(yhat0 = c(df$Freq[1],df$Freq[2]),yhat1 = c(df$Freq[3],df$Freq[4]))
+row.names(t2) <- c("cancer = 0", "cancer = 1")
+kable(t2, caption = "Table 2.1.4: Confusion Matrix of the Improved Model",padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
 ```
 
 The accuracy rate is (797+23)/987 = 83.1%, the true positive rate is 23/(23+14) = 62.2%, the specificity is 23/(153+23) = 13.1%.
 
-Although this is the insample rates, we can still conclude that the true positive rate is increasing while the specificity is slightly decreasing, which means it will minimize the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible.
+Although this is the insample rates, we can still conclude that the true positive rate is increasing, which means it will minimize the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible, while the specificity is slightly decreasing, meaning the doctors have to be more conservative and hence slightly increase the rate of the false alert.

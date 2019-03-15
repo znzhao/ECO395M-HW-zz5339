@@ -131,6 +131,9 @@ phatA = predict(glm_modelA, brca, type='response')
 yhatA = ifelse(phatA >= threshold, 1, 0)
 t1 = xtabs(~brca$cancer+yhatA) 
 t1
+df = as.data.frame(t1)
+t1 = data.frame(yhat0 = c(df$Freq[1],df$Freq[2]),yhat0 = c(df$Freq[3],df$Freq[4]))
+row.names(t1) <- c("cancer = 0", "cancer = 1")
 
 glm_modelB = glm(cancer ~ recall + history + symptoms + menopause, data = brca)
 summary(glm_modelB)
