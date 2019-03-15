@@ -24,13 +24,13 @@ The performance of the models are mesured with average out-of-sample RMSE. We us
 
 |         | AVG RMSE |
 |---------|:--------:|
-| model 1 | 66533.09 |
-| model 2 | 66313.60 |
-| model 3 | 60370.43 |
-| model 4 | 60297.81 |
-| model 5 | 59764.41 |
-| model 6 | 60126.98 |
-| model 7 | 60919.28 |
+| model 1 | 67039.96 |
+| model 2 | 66787.10 |
+| model 3 | 60452.47 |
+| model 4 | 60386.43 |
+| model 5 | 59694.41 |
+| model 6 | 60004.13 |
+| model 7 | 60753.29 |
 
 The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 59900, while the average RMSE of the baseline model is around 66000. The regression result is:
 
@@ -94,9 +94,9 @@ The performance of the models are measured with error rate, which is calculated 
 
 |         |  AVG RMSE |
 |---------|:---------:|
-| model 1 | 0.4070051 |
-| model 2 | 0.4521320 |
-| model 3 | 0.4079695 |
+| model 1 | 0.4050254 |
+| model 2 | 0.4426396 |
+| model 3 | 0.3995939 |
 
 After running for several times, we found the error rate of model 1 and model 3 is significantly smaller than that of model 2. We use model 1 to predict in the following as the error rate of model 1 is slightly smaller than that of model 3.
 
@@ -104,11 +104,11 @@ Then, we randomly chosen 100 samples, which consist of around 10% of 987 screeni
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1366580|
-| radiologist34 |     0.0916792|
-| radiologist66 |     0.1895932|
-| radiologist89 |     0.2296438|
-| radiologist95 |     0.1143599|
+| radiologist13 |     0.1535287|
+| radiologist34 |     0.1007484|
+| radiologist66 |     0.2105483|
+| radiologist89 |     0.2356515|
+| radiologist95 |     0.1216130|
 
 From the above table, we can clearly see that radiologist89 is most clinically conservative, whose recall rate is 0.23. Radiologist66, radiologist13, radiologist95 and radiologist34, ranked 2nd, 3rd, 4th and 5th respectivelly in terms of clinically conservative index.
 
@@ -118,21 +118,21 @@ At last, we performed robust test on our results. We predicted recall rates by u
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1377161|
-| radiologist34 |     0.0874498|
-| radiologist66 |     0.1847396|
-| radiologist89 |     0.1993308|
-| radiologist95 |     0.1314470|
+| radiologist13 |     0.1410426|
+| radiologist34 |     0.0907764|
+| radiologist66 |     0.1880662|
+| radiologist89 |     0.2026574|
+| radiologist95 |     0.1347735|
 
     ## [1] "model 3"
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1303232|
-| radiologist34 |     0.0673867|
-| radiologist66 |     0.1874447|
-| radiologist89 |     0.2180612|
-| radiologist95 |     0.1124599|
+| radiologist13 |     0.1415107|
+| radiologist34 |     0.0806531|
+| radiologist66 |     0.2208250|
+| radiologist89 |     0.2562951|
+| radiologist95 |     0.1341621|
 
 In conclusion, holding patient risk factors equal, the order of clinically conservative characteristic in recalling patients is: radiologist89 &gt; radiologist66 &gt; radiologist13 &gt; radiologist95 &gt; radiologist34, when letting radiologists see the same patients.
 
@@ -154,16 +154,22 @@ If we build a model using the recall decision and all the other clinical risk fa
 
 We checked (1) the model regressing cancer indicator on the recall indicator and all the risk factors, (2) the model regressing cancer indicator on the recall indicator and all the risk factors and their interactions (3) two hand-build models. The thresholds that we chose for these models are the same as the baseline model, so that we can compare these models on the same level. The regression models are:
 
+``` r
+model1 = cancer ~ recall + age + history + symptoms + menopause + density
+model2 = cancer ~ recall + (age + history + symptoms + menopause + density)^2
+model3 = cancer ~ recall + history + symptoms + menopause
+```
+
 Before we show the result of the models, we need to explain the criteria that we use to judge these model. When we try to identify the patient, different kinds of error has different cost. It might not be a big problem if a healthy woman is recalled to do some further test, but it may cause death if the doctor didn’t identify the patients who have cancer. Hence the accurate rate is not the best criteria. Instead, we calculate the deviance of these model, and choose the model with smaller deviance.
 
 The average deviance of the models are listed in the following table:
 
 |          | AVG Deviance for Different Models |
 |----------|:---------------------------------:|
-| Baseline |              1.482237             |
-| Model 1  |              1.530817             |
-| Model 2  |              1.522135             |
-| Model 3  |              1.405302             |
+| Baseline |              1.471110             |
+| Model 1  |              1.483570             |
+| Model 2  |              1.467849             |
+| Model 3  |              1.388686             |
 
 From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3. Overall we can say that the doctors did great jobs at identifying the patients who do get cancer. the drop between Model3 and the baseline is very small.
 
@@ -208,20 +214,18 @@ Exercise 2.3
 
 |          |  Accurate Rate|
 |----------|--------------:|
-| share-LM |      0.4963842|
-| viral-LM |      0.5067423|
-| GLM      |      0.6278232|
+| share-LM |      0.4967285|
+| viral-LM |      0.6268735|
+| GLM      |      0.6276668|
 
 |           | prediction = 0 | prediction = 1 |
 |-----------|:--------------:|:--------------:|
-| viral = 0 |      2459      |      1546      |
-| viral = 1 |      1425      |      2499      |
+| viral = 0 |      2475      |      1564      |
+| viral = 1 |      1388      |      2502      |
 
 ![](Exercise_2_report_files/figure-markdown_github/table2.3.3-1.png)
 
-![](Exercise_2_report_files/figure-markdown_github/share2.3.3-1.png)
-
 |           | prediction = 0 | prediction = 1 |
 |-----------|:--------------:|:--------------:|
-| viral = 0 |      2748      |      1245      |
-| viral = 1 |      1641      |      2295      |
+| viral = 0 |      2681      |      1294      |
+| viral = 1 |      1588      |      2366      |
