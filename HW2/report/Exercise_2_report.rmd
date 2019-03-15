@@ -114,14 +114,14 @@ model6 = price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fi
 model7 = price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + centralAir
 ```
 
-The performance of the models are mesured with average out-of-sample RMSE. We use the 80% of the data to do regressions and calculate RMSE for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average RMSE. The result of the models are listed below.
+The performance of the models are measured with average out-of-sample RMSE. We used the 80% of the data to do regressions and calculated RMSE for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average RMSE. The result of the models are listed below.
 
 ```{r table_2.1.1, echo=FALSE, warning=FALSE}
 colnames(rmse_vals) <- c("model 1", "model 2", "model 3", "model 4", "model 5", "model 6", "model 7")
 kable(colMeans(rmse_vals), col.names = c("AVG RMSE"), caption = "Table 2.1.1: The Average RMSE for Different Models",padding = 2, align = "c")
 ```
 
-The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 59900, while the average RMSE of the baseline model is around 66000. The regression result is:
+The best model that we solved is model 5. This model beats all the other models that we chose by having a smaller average RMSE is around 59,900, while the average RMSE of the baseline model is around 66,000. The regression result is:
 
 ```{r table_2.1.2, echo=FALSE, warning=FALSE}
 table1 = summary(lm(price ~ landValue + 
@@ -135,11 +135,11 @@ kable(as.data.frame(table1["coefficients"]), caption = "Table 2.1.2: Regression 
 
 From the regression we can find many factors that could influence the house price.
 
-First of all, the most important factor is the land value. When we include the land value into account, the RMSE dropped dramatically. It is clearly true that the higher the land value is, the higher the house price is.
+First of all, the most important factor is the land value. When we included the land value into account, the RMSE dropped dramatically. It is clearly true that the higher the land value is, the higher the house price is.
 
-Second, the room with more bedrooms have a lower price. This makes sense because more bedrooms means there are more people sharing the apartment, hence the utility of each person is dropping. On the other hand, the apartment with more bathrooms have a higher price. The apartment with larger living area have a higher price, and the price of the apartment drops as the age of the apartment grows. These conclusions matches our intuition.
+Second, the room with more bedrooms have a lower price. This makes sense because more bedrooms means there are more people sharing the apartment, hence the utility of each person is dropping. On the other hand, the apartment with more bathrooms have a higher price. The apartment with larger living area have a higher price, and the price of the apartment drops as the age of the apartment grows. These conclusions match our intuition.
 
-Third, comparing with the apartments fueling with gas, the apartments fueling with oil have higher prices. comparing with the apartments having a central air conditioner, the apartments with separate air conditioner have higher price. What’s more, the apartments with a fireplace is more expensive, and the older the apartment is the lower the price is.
+Third, comparing with the apartments fueled with gas, the apartments fueled with oil have higher prices. Comparing with the apartments having a central air conditioner, the apartments with separate air conditioner have higher price. What’s more, the apartments with a fireplace are more expensive, and the older the apartment is the lower the price is.
 
 Forth, the interactions between the number of bedrooms or bathrooms and the lotsize are not significant, but the interactions between the living area and the fuel and whether the house has a central air conditioner is significant. To be more specific, the effect of the living area on the price of the room fueled with oil is lower than the room fueled with gas. And it is also true that the effect of the living area on the price of the room without a central air conditioner is lower than the room that has a central air conditioner.The interactions between whether the apartment is close to a college and the age of the house and the number of fireplaces are significant.
 
@@ -195,7 +195,7 @@ ggplot(data = KNN_result, aes(x = c(3:30), y = rmse)) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-From the plot of average RMSE vs K we can tell the optimal K for the KNN model is about 10-12. The lowest average RMSE that we can get with KNN model is about 63000, which is still higher than the average RMSE that we conclude using a linear model with interactions.
+From the plot of average RMSE vs K we can tell the optimal K for the KNN model is about 10-12. The lowest average RMSE that we can get with KNN model is about 63,000, which is still higher than the average RMSE that we conclude using a linear model with interactions.
 
 ## Exercise 2.2
 
@@ -216,7 +216,7 @@ dev_out = function(ml, y, dataset) {
 
 ### Exercise 2.2.1
 
-First, in order to get the most accurate predictions of radiologists’ recall rates, we construct three logistic models. Because we need to take consideration that all the risk factors need to be constant, we choose age, history of breast biopsy/surgery, breast cancer symptom, menopause/hormone-therapy status and breast density classification as independent variables and recall as dependent variable in our logistic model. After considering the chance of interactions, we selected three following models:
+First, in order to get the most accurate predictions of radiologists’ recall rates, we constructed three logistic models. Because we need to take consideration that all the risk factors need to be constant, we chose age, history of breast biopsy/surgery, breast cancer symptom, menopause/hormone-therapy status and breast density classification as independent variables and recall as dependent variable in our logistic model. After considering the chance of interactions, we selected three following models:
 
 ```{r model2.2.1,1, echo=TRUE , warning=FALSE}
 model1 = recall~radiologist*(age+history+symptoms+menopause+density)
@@ -224,7 +224,7 @@ model2 = recall~radiologist+age+history+symptoms+menopause+density
 model3 = recall~(radiologist+age+history+symptoms+menopause+density)^2
 ```
 
-The performance of the models are measured with error rate, which is calculated by sum of the right diagonal numbers of confusion matrix divided by 987 screening mammograms. We use the 80% of the data to do logistic regressions and calculate error rate for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average error rate. The threshold that we used for the calculation is about 0.1509, which is the average rate for the recalled patients. The result of the models are listed below:
+The performance of the models are measured with error rate, which is calculated by sum of the right diagonal numbers of confusion matrix divided by 987 screening mammograms. We use the 80% of the data to do logistic regressions and calculate error rate for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average error rate. The threshold that we used for the calculation is about 0.151, which is the average rate for the recalled patients. The result of the models are listed below:
 
 ```{r setup_2.2.1,1, echo=FALSE , warning=FALSE}
 data = brca
@@ -265,9 +265,9 @@ colnames(rmse_vals) <- c("model 1", "model 2", "model 3")
 kable(colMeans(rmse_vals), col.names = c("AVG RMSE"), caption = "Table 2.2.1: The Average RMSE for Different Models",padding = 2, align = "c")
 ```
 
-After running for several times, we found the error rate of model 1 and model 3 is significantly smaller than that of model 2. We use model 1 to predict in the following as the error rate of model 1 is slightly smaller than that of model 3. 
+After running for several times, we found the error rates of model 1 and model 3 are significantly smaller than that of model 2. We used model 1 to predict in the following as the error rate of model 1 is slightly smaller than that of model 3. 
 
-Then, we randomly chosen 100 samples, which consist of around 10% of 987 screening mammograms. After that, we repeat these 100 samples for 5 times each. In order to address the problem that the radiologists don’t see the same patients, we added an additional row, which is  arranged by repeated series radiologist13, radiologist34, radiologist66, radiologist89 and radiologist95. Therefore, we let five radiologists see the same patients. Finally, we predict the recall rates of each radiologist with model 1. The results is below.
+Then, we randomly chose 100 samples, which consist of around 10% of 987 screening mammograms. After that, we repeated these 100 samples for 5 times each. In order to address the problem that the radiologists don’t see the same patients, we added an additional row, which is  arranged by repeated series radiologist13, radiologist34, radiologist66, radiologist89 and radiologist95. Therefore, we let five radiologists see the same patients. Finally, we predicted the recall rates of each radiologist with model 1. The results are below.
 
 ```{r setup_2.2.1.2, echo=FALSE , warning=FALSE}
 modelselect=glm(recall~radiologist*(age+history+symptoms+menopause+density),data=brca)
@@ -294,7 +294,7 @@ kable(brca_predict)
 
 From the above table, we can clearly see that radiologist89 is most clinically conservative, whose recall rate is about 0.21. Radiologist66, radiologist13, radiologist95 and radiologist34, ranked 2nd, 3rd, 4th and 5th respectivelly in terms of clinically conservative index.
 
-At last, we performed robust test on our results. We predicted recall rates by using model 2 and model 3. The below tables showed the results, which is consistent with the result predicted by model 1.
+At last, we performed robust test on our results. We predicted recall rates by using model 2 and model 3. The below tables showed the results, which are consistent with the result predicted by model 1.
 
 ```{r setup_2.2.1.3, echo=FALSE , warning=FALSE}
 modelselect=glm(recall~radiologist+age+history+symptoms+menopause+density,data=brca)
@@ -352,14 +352,14 @@ threshold = sum(brca$cancer == 1)/n+0.001
 
 The second point that we want to make is that when the radiologists at this hospital interpret a mammogram to make a decision on whether to recall the patient, they should be weighing the history of the patients, the breast cancer symptoms and the menopause status of the patient more heavily than they currently are. Although this means they have to recall more patients back for further checks, it will minimize the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible.
 
-First we build the baseline model, which suggests that when the doctors recall a patient, they tend to think that the patient has a cancer.
+First we built the baseline model, which suggests that when the doctors recall a patient, they tend to think that the patient has a cancer.
 
 To formalize the model by regression, we regressed the patient’s cancer outcome on the radiologist’s recall decision with the logistic regression. The regression model is:
 
 ```{r model2.2.1, echo = TRUE, warning=FALSE}
 baseline = cancer ~ recall
 ```
-We split the dataset into the training set and the testing set using the standard 80-20 rule, and re-run the regression for 100 times to eliminate the stochasticity, and ending up with similar rates to the ones calculated with the entire database.
+We splited the dataset into the training set and the testing set using the standard 80-20 rule, and re-run the regression for 100 times to eliminate the stochasticity, and ending up with similar rates to the ones calculated with the entire database.
 
 If we build a model using the recall decision and all the other clinical risk factors and it significantly performs better than the baseline model, it means that there are some risk factors that the doctors are missing.
 
@@ -630,7 +630,36 @@ row.names(t) <- c("viral = 0", "viral = 1")
 kable(t, padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
 ```
 
-Next, we moved on to the second approach. As the the viral status is binomial, in addition to the linear modelling, we were also able to exploit the logit model. After conducting trial and error with different forms of explanatory variables as in the first approach, the highest accuracy rate with the best configurations are shown below.
+Accuracy rate: 0.592
+
+Overall error rate: 0.408
+
+True positive rate: 0.856
+
+False positive rate:0.659
+
+Next, we moved on to the second approach. As the the viral status is binomial, in addition to the linear modelling, we were also able to exploit the logit model. The two logit models that we used are listed below: 
+
+```{r model2.3.2, echo = TRUE, warning=FALSE}
+viral_LM = viral ~ n_tokens_title + n_tokens_content + num_hrefs + 
+                     num_self_hrefs + num_imgs + num_videos + 
+                     average_token_length + num_keywords + data_channel_is_lifestyle + 
+                     data_channel_is_entertainment + data_channel_is_bus + 
+                     data_channel_is_socmed + data_channel_is_tech + 
+                     data_channel_is_world + self_reference_avg_sharess + 
+                     weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                     weekday_is_thursday + weekday_is_friday + weekday_is_saturday
+GLM = viral ~ n_tokens_title + n_tokens_content + num_hrefs + 
+                       num_self_hrefs + num_imgs + num_videos + 
+                       average_token_length + num_keywords + data_channel_is_lifestyle + 
+                       data_channel_is_entertainment + data_channel_is_bus + 
+                       data_channel_is_socmed + data_channel_is_tech + 
+                       data_channel_is_world + self_reference_avg_sharess + 
+                       weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                       weekday_is_thursday + weekday_is_friday + weekday_is_saturday
+```
+
+After conducting trial and error with different forms of explanatory variables as in the first approach, the highest accuracy rate with the best configurations are shown below.
 
 ```{r table2.3.1.2, echo = FALSE, warning=FALSE}
 kable(colMeans(accrate)[5:6], col.names = "Accurate Rate")
@@ -716,9 +745,32 @@ row.names(t) <- c("viral = 0", "viral = 1")
 kable(t,padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
 ```
 
+Accuracy rate: 0.627
+
+Overall error rate: 0.373
+
+True positive rate: 0.634
+
+False positive rate:0.376
+
 ### Conclusion
 
 The second approach, threshold first and regress/classify second, performed better than the first one with log transformation which was just under 60%. Our logit model reached 62.7% accuracy rate, approximately 23.7% (0.627/0.507 - 1) improvement relative to our benchmark. 
 
 One possibility that our first approach performed worse is that our explanatory variables are not good at creating a low variance linear relationship to predict numerical amount of shares. Under similar set of conditions, articles range high in both >1,400 and <1,400, resulting low accuracy rate. Once we take the log transformation of shares, variance goes down, providing us a better result . On the other hand, after we first classified articles into a binary variable, viral and non-viral, the variance in predicting numerical number of shares are eliminated, so that our explanatory variables seem to be relatively better at predicting how likely each article goes viral at 50% mark (>50% then predict viral, <50% then predict non-viral). 
+
+```{r table_2.3.last, echo=FALSE, warning=FALSE}
+table2 = summary(glm(viral ~ n_tokens_title + n_tokens_content + num_hrefs + 
+                       num_self_hrefs + num_imgs + num_videos + 
+                       average_token_length + num_keywords + data_channel_is_lifestyle + 
+                       data_channel_is_entertainment + data_channel_is_bus + 
+                       data_channel_is_socmed + data_channel_is_tech + 
+                       data_channel_is_world + self_reference_avg_sharess + 
+                       weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                       weekday_is_thursday + weekday_is_friday + weekday_is_saturday, data=OnlineNews, family=binomial))
+
+kable(as.data.frame(table2["coefficients"]), padding = 2, align = "c")
+```
+
+To improve an article’s chance of reaching Mashable’s cutoff threshold, 1,400 shares, we can look at the explanatory variable coefficients with the highest positive magnitude. From our best logit model, the top 3 factors that contribute to high shares are 1. article is under social media channel, 2. article published on Saturday, and 3. article is under technological channel. Top 3 factors to avoid are, 1. article is under world channel, 2. article published on Tuesday, 3. article is under entertainment channel. So given what we have, the best chance to make an article viral is to publish it under crossed social media & technological channel on Saturday.
 
