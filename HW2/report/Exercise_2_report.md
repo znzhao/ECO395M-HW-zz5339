@@ -14,13 +14,13 @@ The performance of the models are mesured with average out-of-sample RMSE. We us
 
 |         | AVG RMSE |
 |---------|:--------:|
-| model 1 | 65987.22 |
-| model 2 | 65769.93 |
-| model 3 | 59962.30 |
-| model 4 | 59887.17 |
-| model 5 | 59302.17 |
-| model 6 | 59623.05 |
-| model 7 | 60360.83 |
+| model 1 | 66753.16 |
+| model 2 | 66541.42 |
+| model 3 | 60597.09 |
+| model 4 | 60515.53 |
+| model 5 | 59774.60 |
+| model 6 | 60146.12 |
+| model 7 | 60947.73 |
 
 The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 60000, while the average RMSE of the baseline model is around 66000. The regression result is:
 
@@ -74,33 +74,33 @@ Exercise 2.2
 
 |         |  AVG RMSE |
 |---------|:---------:|
-| model 1 | 0.4018274 |
-| model 2 | 0.4461421 |
-| model 3 | 0.4020812 |
+| model 1 | 0.4023858 |
+| model 2 | 0.4444162 |
+| model 3 | 0.4027411 |
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1296905|
-| radiologist34 |     0.0643040|
-| radiologist66 |     0.1812487|
-| radiologist89 |     0.2595449|
-| radiologist95 |     0.1540658|
+| radiologist13 |     0.1384862|
+| radiologist34 |     0.0967631|
+| radiologist66 |     0.1922398|
+| radiologist89 |     0.2058958|
+| radiologist95 |     0.1301504|
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1452173|
-| radiologist34 |     0.0949511|
-| radiologist66 |     0.1922409|
-| radiologist89 |     0.2068320|
-| radiologist95 |     0.1389482|
+| radiologist13 |     0.1311517|
+| radiologist34 |     0.0808854|
+| radiologist66 |     0.1781752|
+| radiologist89 |     0.1927664|
+| radiologist95 |     0.1248826|
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1330110|
-| radiologist34 |     0.0489468|
-| radiologist66 |     0.1820529|
-| radiologist89 |     0.2453830|
-| radiologist95 |     0.1358177|
+| radiologist13 |     0.1359470|
+| radiologist34 |     0.0913719|
+| radiologist66 |     0.2015459|
+| radiologist89 |     0.2361697|
+| radiologist95 |     0.1333204|
 
 ### Exercise 2.2.2
 
@@ -122,10 +122,10 @@ The average deviance of the models are listed in the following table:
 
 |          | AVG Deviation for Different Models |
 |----------|:----------------------------------:|
-| Baseline |              1.532054              |
-| Model 1  |              1.589381              |
-| Model 2  |              1.620747              |
-| Model 3  |              1.450015              |
+| Baseline |              1.478730              |
+| Model 1  |              1.549682              |
+| Model 2  |              1.510544              |
+| Model 3  |              1.428182              |
 
 From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3.
 
@@ -152,7 +152,7 @@ The confusion matrix for the baseline model using the entire dataset is:
 | cancer = 0 |       824      |       126      |
 | cancer = 1 |       15       |       22       |
 
-The accuracy rate is (824+22)/987 = 85.7%, the true positive rate is 22/(22+15) = 59.5%, the specificity is 22/(126+22) = 14.9%.
+The accuracy rate is (824+22)/987 = 85.7%, the false negative rate is 15/(22+15) = 40.5%, the false positive rate is 126/(126+22) = 85.1%.
 
 The confusion matrix for the model using the entire dataset is:
 
@@ -161,12 +161,32 @@ The confusion matrix for the model using the entire dataset is:
 | cancer = 0 |       797      |       153      |
 | cancer = 1 |       14       |       23       |
 
-The accuracy rate is (797+23)/987 = 83.1%, the true positive rate is 23/(23+14) = 62.2%, the specificity is 23/(153+23) = 13.1%.
+The accuracy rate is (797+23)/987 = 83.1%, the false negative rate is 14/(23+14) = 37.8%, the false positive rate is 153/(153+23) = 86.9%.
 
-Although this is the insample rates, we can still conclude that the true positive rate is increasing, which means it will minimize the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible, while the specificity is slightly decreasing, meaning the doctors have to be more conservative and hence slightly increase the rate of the false alert.
+Although this is the insample rates, we can still conclude that the false negative rate is decreasing, which means it will lower the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible, while the false positive rate is slightly increasing, meaning the doctors have to be more conservative and hence slightly increase the rate of the false alert. However, clearly the fact that we identified more cancer patients matters more.
 
 Exercise 2.3
 ------------
 
-    ##        V1        V2        V3        V4        V5 
-    ## 0.4970892 0.5056930 0.6270639 0.6317552 0.3774612
+|          |  Accurate Rate|
+|----------|--------------:|
+| share-LM |      0.4958772|
+| viral-LM |      0.5067676|
+| GLM      |      0.6276428|
+
+|           | prediction = 0 | prediction = 1 |
+|-----------|:--------------:|:--------------:|
+| viral = 0 |      2515      |      1513      |
+| viral = 1 |      1432      |      2469      |
+
+![](Exercise_2_report_files/figure-markdown_github/table2.3.3-1.png)
+
+    ##    yhat
+    ## y      0    1
+    ##   0 2727 1356
+    ##   1 1577 2269
+
+|           | prediction = 0 | prediction = 1 |
+|-----------|:--------------:|:--------------:|
+| viral = 0 |      2727      |      1356      |
+| viral = 1 |      1577      |      2269      |
