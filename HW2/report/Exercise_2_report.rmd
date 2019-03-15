@@ -279,7 +279,7 @@ To compare the result, we made some predictions with the baseline model and the 
 The confusion matrix for the baseline model using the entire dataset is:
 
 ```{r table2.2.3, echo = FALSE, warning=FALSE}
-kable(t1, caption = "Table 2.1.3: Confusion Matrix of the Baseline Model",padding = 2, align = "c")
+kable(t1, caption = "Table 2.1.3: Confusion Matrix of the Baseline Model",padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
 ```
 
 The accuracy rate is (824+22)/987 = 85.7%, the true positive rate is 22/(22+15) = 59.5%, the specificity is 22/(126+22) = 14.9%.
@@ -287,7 +287,8 @@ The accuracy rate is (824+22)/987 = 85.7%, the true positive rate is 22/(22+15) 
 The confusion matrix for the model using the entire dataset is:
 
 ```{r table2.2.4, echo = FALSE, warning=FALSE}
-kable(t2, caption = "Table 2.1.4: Confusion Matrix of the Improved Model",padding = 2, align = "c")
+#kable(t2, caption = "Table 2.1.4: Confusion Matrix of the Improved Model",padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
+t2
 ```
 
 The accuracy rate is (797+23)/987 = 83.1%, the true positive rate is 23/(23+14) = 62.2%, the specificity is 23/(153+23) = 13.1%.

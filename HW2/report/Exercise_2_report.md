@@ -14,13 +14,13 @@ The performance of the models are mesured with average out-of-sample RMSE. We us
 
 |         | AVG RMSE |
 |---------|:--------:|
-| model 1 | 66593.63 |
-| model 2 | 66332.52 |
-| model 3 | 60676.64 |
-| model 4 | 60612.06 |
-| model 5 | 60021.57 |
-| model 6 | 60367.75 |
-| model 7 | 61066.64 |
+| model 1 | 66870.62 |
+| model 2 | 66616.43 |
+| model 3 | 60770.27 |
+| model 4 | 60674.10 |
+| model 5 | 60097.92 |
+| model 6 | 60448.47 |
+| model 7 | 61251.15 |
 
 The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 60000, while the average RMSE of the baseline model is around 66000. The regression result is:
 
@@ -90,10 +90,10 @@ The average deviance of the models are listed in the following table:
 
 |          | AVG Deviation for Different Models |
 |----------|:----------------------------------:|
-| Baseline |              1.473208              |
-| Model 1  |              1.545771              |
-| Model 2  |              1.514027              |
-| Model 3  |              1.420707              |
+| Baseline |              1.471985              |
+| Model 1  |              1.502621              |
+| Model 2  |              1.518575              |
+| Model 3  |              1.406967              |
 
 From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3.
 
@@ -115,19 +115,19 @@ To compare the result, we made some predictions with the baseline model and the 
 
 The confusion matrix for the baseline model using the entire dataset is:
 
-|     |  0  |  1  |
-|-----|:---:|:---:|
-| 0   | 824 | 126 |
-| 1   |  15 |  22 |
+|     | prediction = 0 | prediction = 1 |
+|-----|:--------------:|:--------------:|
+| 0   |       824      |       126      |
+| 1   |       15       |       22       |
 
 The accuracy rate is (824+22)/987 = 85.7%, the true positive rate is 22/(22+15) = 59.5%, the specificity is 22/(126+22) = 14.9%.
 
 The confusion matrix for the model using the entire dataset is:
 
-|     |  0  |  1  |
-|-----|:---:|:---:|
-| 0   | 797 | 153 |
-| 1   |  14 |  23 |
+    ##            yhatB
+    ## brca$cancer   0   1
+    ##           0 797 153
+    ##           1  14  23
 
 The accuracy rate is (797+23)/987 = 83.1%, the true positive rate is 23/(23+14) = 62.2%, the specificity is 23/(153+23) = 13.1%.
 

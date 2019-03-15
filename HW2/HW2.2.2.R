@@ -11,7 +11,7 @@ xtabs(~brca$recall + brca$cancer)
 table2 = xtabs(~recall + cancer, data=brca)
 # prop.table(table2, margin=1)
 sum(brca$recall != brca$cancer)/n
-
+threshold = sum(brca$cancer == 1)/n+0.001
 
 dev_out = function(ml, y, dataset) {
   probhat = predict(ml, newdata=dataset, type='response')
