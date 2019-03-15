@@ -292,7 +292,7 @@ summarise(Prob_recall = mean(yhat_recall))
 kable(brca_predict)
 ```
 
-From the above table, we can clearly see that radiologist89 is most clinically conservative, whose recall rate is 0.23. Radiologist66, radiologist13, radiologist95 and radiologist34, ranked 2nd, 3rd, 4th and 5th respectivelly in terms of clinically conservative index.
+From the above table, we can clearly see that radiologist89 is most clinically conservative, whose recall rate is about 0.21. Radiologist66, radiologist13, radiologist95 and radiologist34, ranked 2nd, 3rd, 4th and 5th respectivelly in terms of clinically conservative index.
 
 At last, we performed robust test on our results. We predicted recall rates by using model 2 and model 3. The below tables showed the results, which is consistent with the result predicted by model 1.
 
@@ -458,7 +458,54 @@ OnlineNews<-read.csv(url(urlfile))
 OnlineNews$viral = ifelse(OnlineNews$shares > 1400, 1, 0)
 ```
 
+The goal of this question is to build a model to predict whether an online article goes viral or not. Also from the model we would like to know how to improve an article’s chance of reaching Mashable’s cutoff threshold, 1,400 shares. 
 
+### Benchmark
+
+First we set up our baseline model for predicting which articles go viral. Out of the 39,644 articles, 19,562 of them have gone viral. This means that even if we blindly predict all articles do not go viral, the accuracy rate would reach 50.7%. We will set this number as our baseline accuracy rate and attempt to improve it as much as we can.
+
+### Model Construction
+There are 2 approaches to building forecasting model, 1. Predict the number of shares first then classify if each article goes viral by comparing to the threshold of 1,400 shares. 2. Classify the the viral status first by comparing each article to the threshold of 1,400 shares, then directly predict viral status as the target variable. 
+
+For the first approach, we used linear modeling, with different combinations of interaction terms, polynomial terms, and transformations. The improvement in accuracy rate is rather minimal, as some of our models shown below. (Each of the variations)
+
+```{r model2.3.1, echo = TRUE, warning=FALSE}
+share_LM1 = shares ~ n_tokens_title + n_tokens_content + num_hrefs + 
+  num_self_hrefs + num_imgs + num_videos + 
+  average_token_length + num_keywords + data_channel_is_lifestyle +
+  data_channel_is_entertainment + data_channel_is_bus + 
+  data_channel_is_socmed + data_channel_is_tech +
+  data_channel_is_world + self_reference_avg_sharess +
+  weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+  weekday_is_thursday + weekday_is_friday + weekday_is_saturday
+share_LM2 = shares ~ (n_tokens_title + n_tokens_content + num_hrefs +
+                        num_self_hrefs + num_imgs + num_videos + 
+                        average_token_length + num_keywords + data_channel_is_lifestyle + 
+                        data_channel_is_entertainment + data_channel_is_bus +
+                        data_channel_is_socmed + data_channel_is_tech +
+                        data_channel_is_world + self_reference_avg_sharess + 
+                        weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday +
+                        weekday_is_thursday + weekday_is_friday + weekday_is_saturday)^2
+share_LM3 = shares ~ poly(n_tokens_title, 3) + poly(num_hrefs, 2) + poly(num_imgs, 2) + poly(num_videos, 2) +
+  poly(average_token_length, 3) + poly(num_keywords, 2) + poly(n_tokens_content, 2) +
+  data_channel_is_lifestyle + data_channel_is_entertainment + data_channel_is_bus + 
+  data_channel_is_socmed + data_channel_is_tech +
+  data_channel_is_world + poly(self_reference_avg_sharess,2) + 
+  weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+  weekday_is_thursday + weekday_is_friday + weekday_is_saturday + 
+  poly(max_positive_polarity, 3) + poly(max_negative_polarity, 3)
+share_LM4 = shares ~ n_tokens_title + n_tokens_content + num_hrefs + 
+  num_self_hrefs + num_imgs + num_videos + 
+  average_token_length + num_keywords + data_channel_is_lifestyle +
+  data_channel_is_entertainment + data_channel_is_bus + 
+  data_channel_is_socmed + data_channel_is_tech + 
+  data_channel_is_world + self_reference_avg_sharess +
+  weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+  weekday_is_thursday + weekday_is_friday + weekday_is_saturday
+
+```
+
+The average accurate rate for these for model is listed in the following table.
 
 ```{r table2.3.1, echo = FALSE, warning=FALSE}
 data = OnlineNews
@@ -475,26 +522,68 @@ accrate = do(Ntimes)*{
   DF_test = data[test_cases,]
   y_test = data$viral[test_cases]
   
-  # lm test
-  lm_result = lm(shares ~ n_tokens_title + n_tokens_content + num_hrefs + 
+  # lm test1
+  lm_result1 = lm(shares ~ n_tokens_title + n_tokens_content + num_hrefs + 
                      num_self_hrefs + num_imgs + num_videos + 
                      average_token_length + num_keywords + data_channel_is_lifestyle + 
                      data_channel_is_entertainment + data_channel_is_bus + 
-                     + data_channel_is_socmed + data_channel_is_tech + 
+                     data_channel_is_socmed + data_channel_is_tech + 
                      data_channel_is_world + self_reference_avg_sharess + 
                      weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
                      weekday_is_thursday + weekday_is_friday + weekday_is_saturday, data=DF_train)
 
-  sharehat_test = predict(lm_result, DF_test)
-  yhat_test1 = ifelse((sharehat_test>1400), yes = 1 ,no = 0)
-  ar1 = sum(yhat_test1 == y_test)/n_test
+  sharehat_testlm1 = predict(lm_result1, DF_test)
+  yhat_testlm1 = ifelse((sharehat_testlm1>1400), yes = 1 ,no = 0)
+  lmar1 = sum(yhat_testlm1 == y_test)/n_test
+  
+    # lm test2
+  lm_result2 = lm(shares ~ (n_tokens_title + n_tokens_content + num_hrefs + 
+                                num_self_hrefs + num_imgs + num_videos + 
+                                average_token_length + num_keywords + data_channel_is_lifestyle + 
+                                data_channel_is_entertainment + data_channel_is_bus + 
+                                data_channel_is_socmed + data_channel_is_tech + 
+                                data_channel_is_world + self_reference_avg_sharess + 
+                                weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                                weekday_is_thursday + weekday_is_friday + weekday_is_saturday)^2, data=DF_train)
+
+  sharehat_testlm2 = predict(lm_result2, DF_test)
+  yhat_testlm2 = ifelse((sharehat_testlm2>1400), yes = 1 ,no = 0)
+  lmar2 = sum(yhat_testlm2 == y_test)/n_test
+  
+    # lm test3
+  lm_result3 = lm(shares ~ poly(n_tokens_title, 3) + poly(num_hrefs, 2) + poly(num_imgs, 2) + poly(num_videos, 2) + 
+                      poly(average_token_length, 3) + poly(num_keywords, 2) + poly(n_tokens_content, 2) + 
+                      data_channel_is_lifestyle + data_channel_is_entertainment + data_channel_is_bus + 
+                      data_channel_is_socmed + data_channel_is_tech + 
+                      data_channel_is_world + poly(self_reference_avg_sharess,2) + 
+                      weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                      weekday_is_thursday + weekday_is_friday + weekday_is_saturday + 
+                      poly(max_positive_polarity, 3) + poly(max_negative_polarity, 3), data=DF_train)
+
+  sharehat_testlm3 = predict(lm_result3, DF_test)
+  yhat_testlm3 = ifelse((sharehat_testlm3>1400), yes = 1 ,no = 0)
+  lmar3 = sum(yhat_testlm3 == y_test)/n_test
+  
+    # lm test4
+  lm_result4 = lm(log(shares) ~ poly(n_tokens_title, 3) + poly(num_hrefs, 2) + poly(num_imgs, 2) + poly(num_videos, 2) + 
+                           poly(average_token_length, 3) + poly(num_keywords, 2) + poly(n_tokens_content, 2) + 
+                           data_channel_is_lifestyle + data_channel_is_entertainment + data_channel_is_bus + 
+                           data_channel_is_socmed + data_channel_is_tech + 
+                           data_channel_is_world + poly(self_reference_avg_sharess,2) + 
+                           weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                           weekday_is_thursday + weekday_is_friday + weekday_is_saturday + 
+                           poly(max_positive_polarity, 3) + poly(max_negative_polarity, 3), data=DF_train)
+
+  sharehat_testlm4 = predict(lm_result4, DF_test)
+  yhat_testlm4 = ifelse((sharehat_testlm4>log(1400)), yes = 1 ,no = 0)
+  lmar4 = sum(yhat_testlm4 == y_test)/n_test
   
   # lm-viral test
   lm_result = lm(viral ~ n_tokens_title + n_tokens_content + num_hrefs + 
                      num_self_hrefs + num_imgs + num_videos + 
                      average_token_length + num_keywords + data_channel_is_lifestyle + 
                      data_channel_is_entertainment + data_channel_is_bus + 
-                     + data_channel_is_socmed + data_channel_is_tech + 
+                     data_channel_is_socmed + data_channel_is_tech + 
                      data_channel_is_world + self_reference_avg_sharess + 
                      weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
                      weekday_is_thursday + weekday_is_friday + weekday_is_saturday, data=DF_train)
@@ -508,7 +597,7 @@ accrate = do(Ntimes)*{
                        num_self_hrefs + num_imgs + num_videos + 
                        average_token_length + num_keywords + data_channel_is_lifestyle + 
                        data_channel_is_entertainment + data_channel_is_bus + 
-                       + data_channel_is_socmed + data_channel_is_tech + 
+                       data_channel_is_socmed + data_channel_is_tech + 
                        data_channel_is_world + self_reference_avg_sharess + 
                        weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
                        weekday_is_thursday + weekday_is_friday + weekday_is_saturday, data=DF_train, family=binomial)
@@ -516,25 +605,40 @@ accrate = do(Ntimes)*{
     phat_test3 = predict(glm_result, DF_test, type='response')
     yhat_test3 = ifelse(phat_test3 > 0.5, 1, 0)
     ar3 = sum(yhat_test3 == unlist(DF_test$viral))/n_test 
+    
+    tpr_lm4 = sum(yhat_testlm4 == 1 & unlist(DF_test$viral) == 1)/sum(unlist(DF_test$viral) == 1)
+    fpr_lm4 = sum(yhat_testlm4 == 1 & unlist(DF_test$viral) == 0)/sum(unlist(DF_test$viral) == 0)
+    
     tpr3 = sum(yhat_test3 == 1 & unlist(DF_test$viral) == 1)/sum(unlist(DF_test$viral) == 1)
     fpr3 = sum(yhat_test3 == 1 & unlist(DF_test$viral) == 0)/sum(unlist(DF_test$viral) == 0)
     
-  c(ar1, ar2, ar3, tpr3, fpr3)
+  c(lmar1,lmar2,lmar3,lmar4, ar2, ar3, tpr_lm4, fpr_lm4, tpr3, fpr3)
   }
-colnames(accrate) <- c("share-LM", "viral-LM", "GLM", "tpr_GLM", "fpr_GLM")
-kable(colMeans(accrate)[1:3], col.names = "Accurate Rate")
+colnames(accrate) <- c("share-LM1","share-LM2","share-LM3","share-LM4", "viral-LM", "GLM", "tpr_LM", "fpr_LM", "tpr_GLM", "fpr_GLM")
+kable(colMeans(accrate)[1:4], col.names = "Accurate Rate")
 ```
 
+All the results above are the average of running against 100 random train/test splits.
 
+Share-LM4 had the highest accuracy rate, so we report the confusion matrix. The following confusion matrix consists the testing data result from one iteration. In addition to the accuracy rate, we calculated the overall error rate, true positive rate and false positive rate in 100 iterations and took the average for each.
 
-```{r table2.3.2, echo = FALSE, warning=FALSE}
-t = xtabs(~DF_test$viral+yhat_test3)
+```{r table2.3.1.1, echo = FALSE, warning=FALSE}
+t = xtabs(~DF_test$viral+yhat_testlm4)
 df = as.data.frame(t)
 t = data.frame(yhat0 = c(df$Freq[1],df$Freq[2]),yhat1 = c(df$Freq[3],df$Freq[4]))
 row.names(t) <- c("viral = 0", "viral = 1")
-kable(t, caption = "Table 2.1.3: Confusion Matrix of the Baseline Model",padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
+kable(t, padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
 ```
 
+Next, we moved on to the second approach. As the the viral status is binomial, in addition to the linear modelling, we were also able to exploit the logit model. After conducting trial and error with different forms of explanatory variables as in the first approach, the highest accuracy rate with the best configurations are shown below.
+
+```{r table2.3.1.2, echo = FALSE, warning=FALSE}
+kable(colMeans(accrate)[5:6], col.names = "Accurate Rate")
+```
+
+All the results above are the average of running against 100 random train/test splits.
+
+The second approach turned out to be better, providing us with higher accuracy rate. In addition, as a supplement, we also explored the KNN method. The result was similar to the linear/logit models, as shown below.
 
 ```{r table2.3.3, echo = FALSE, warning=FALSE}
 
@@ -600,15 +704,21 @@ ggplot(data = accrate, aes(x = myL, y = myList))+
 
 ```
 
+the result above are the average of running 5 train/test splits iterations.
 
-```{r table2.3.4, echo = FALSE, warning=FALSE}
-knn_model = knn.reg(Xtilde_train, Xtilde_test, ytrain, k=myL[which.max(myList)])
-KNN_train_test1 = ifelse(knn_model$pred > 0.5, 1, 0)
-    
-confusion_in_KNN = table(y = OnlineNews_test$viral, yhat = KNN_train_test1)
-df = as.data.frame(confusion_in_KNN)
+We now report the confusion matrix with the logit model which provided us the highest accuracy rate. The following confusion matrix consists the testing data result in one iteration. In addition to the accuracy rate, we calculated the overall error rate, true positive rate and false positive rate in 100 iterations and took the average for each. 
+
+```{r table2.3.2, echo = FALSE, warning=FALSE}
+t = xtabs(~DF_test$viral+yhat_test3)
+df = as.data.frame(t)
 t = data.frame(yhat0 = c(df$Freq[1],df$Freq[2]),yhat1 = c(df$Freq[3],df$Freq[4]))
 row.names(t) <- c("viral = 0", "viral = 1")
-kable(t, caption = "Table 2.1.3: Confusion Matrix of the Baseline Model",padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
+kable(t,padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
 ```
+
+### Conclusion
+
+The second approach, threshold first and regress/classify second, performed better than the first one with log transformation which was just under 60%. Our logit model reached 62.7% accuracy rate, approximately 23.7% (0.627/0.507 - 1) improvement relative to our benchmark. 
+
+One possibility that our first approach performed worse is that our explanatory variables are not good at creating a low variance linear relationship to predict numerical amount of shares. Under similar set of conditions, articles range high in both >1,400 and <1,400, resulting low accuracy rate. Once we take the log transformation of shares, variance goes down, providing us a better result . On the other hand, after we first classified articles into a binary variable, viral and non-viral, the variance in predicting numerical number of shares are eliminated, so that our explanatory variables seem to be relatively better at predicting how likely each article goes viral at 50% mark (>50% then predict viral, <50% then predict non-viral). 
 
