@@ -20,19 +20,19 @@ model6 = price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fi
 model7 = price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + centralAir
 ```
 
-The performance of the models are mesured with average out-of-sample RMSE. We use the 80% of the data to do regressions and calculate RMSE for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average RMSE. The result of the models are listed below.
+The performance of the models are measured with average out-of-sample RMSE. We used the 80% of the data to do regressions and calculated RMSE for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average RMSE. The result of the models are listed below.
 
 |         | AVG RMSE |
 |---------|:--------:|
-| model 1 | 65881.76 |
-| model 2 | 65666.35 |
-| model 3 | 59676.18 |
-| model 4 | 59607.52 |
-| model 5 | 58884.46 |
-| model 6 | 59253.62 |
-| model 7 | 59917.76 |
+| model 1 | 67054.67 |
+| model 2 | 66812.26 |
+| model 3 | 60853.85 |
+| model 4 | 60794.72 |
+| model 5 | 60213.27 |
+| model 6 | 60524.55 |
+| model 7 | 61289.39 |
 
-The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 59900, while the average RMSE of the baseline model is around 66000. The regression result is:
+The best model that we solved is model 5. This model beats all the other models that we chose by having a smaller average RMSE is around 59,900, while the average RMSE of the baseline model is around 66,000. The regression result is:
 
 |                                   | coefficients.Estimate | coefficients.Std..Error | coefficients.t.value | coefficients.Pr...t.. |
 |-----------------------------------|:---------------------:|:-----------------------:|:--------------------:|:---------------------:|
@@ -63,11 +63,11 @@ The best model that we solved is model 5. This model beats all the other models 
 
 From the regression we can find many factors that could influence the house price.
 
-First of all, the most important factor is the land value. When we include the land value into account, the RMSE dropped dramatically. It is clearly true that the higher the land value is, the higher the house price is.
+First of all, the most important factor is the land value. When we included the land value into account, the RMSE dropped dramatically. It is clearly true that the higher the land value is, the higher the house price is.
 
-Second, the room with more bedrooms have a lower price. This makes sense because more bedrooms means there are more people sharing the apartment, hence the utility of each person is dropping. On the other hand, the apartment with more bathrooms have a higher price. The apartment with larger living area have a higher price, and the price of the apartment drops as the age of the apartment grows. These conclusions matches our intuition.
+Second, the room with more bedrooms have a lower price. This makes sense because more bedrooms means there are more people sharing the apartment, hence the utility of each person is dropping. On the other hand, the apartment with more bathrooms have a higher price. The apartment with larger living area have a higher price, and the price of the apartment drops as the age of the apartment grows. These conclusions match our intuition.
 
-Third, comparing with the apartments fueling with gas, the apartments fueling with oil have higher prices. comparing with the apartments having a central air conditioner, the apartments with separate air conditioner have higher price. What’s more, the apartments with a fireplace is more expensive, and the older the apartment is the lower the price is.
+Third, comparing with the apartments fueled with gas, the apartments fueled with oil have higher prices. Comparing with the apartments having a central air conditioner, the apartments with separate air conditioner have higher price. What’s more, the apartments with a fireplace are more expensive, and the older the apartment is the lower the price is.
 
 Forth, the interactions between the number of bedrooms or bathrooms and the lotsize are not significant, but the interactions between the living area and the fuel and whether the house has a central air conditioner is significant. To be more specific, the effect of the living area on the price of the room fueled with oil is lower than the room fueled with gas. And it is also true that the effect of the living area on the price of the room without a central air conditioner is lower than the room that has a central air conditioner.The interactions between whether the apartment is close to a college and the age of the house and the number of fireplaces are significant.
 
@@ -94,9 +94,9 @@ The performance of the models are measured with error rate, which is calculated 
 
 |         |  AVG RMSE |
 |---------|:---------:|
-| model 1 | 0.4049746 |
-| model 2 | 0.4516751 |
-| model 3 | 0.4053807 |
+| model 1 | 0.3989340 |
+| model 2 | 0.4437563 |
+| model 3 | 0.3926904 |
 
 After running for several times, we found the error rate of model 1 and model 3 is significantly smaller than that of model 2. We use model 1 to predict in the following as the error rate of model 1 is slightly smaller than that of model 3.
 
@@ -104,11 +104,11 @@ Then, we randomly chosen 100 samples, which consist of around 10% of 987 screeni
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1353653|
-| radiologist34 |     0.0748554|
-| radiologist66 |     0.1939711|
-| radiologist89 |     0.2296375|
-| radiologist95 |     0.1233878|
+| radiologist13 |     0.1407301|
+| radiologist34 |     0.0844730|
+| radiologist66 |     0.1905830|
+| radiologist89 |     0.2387116|
+| radiologist95 |     0.1224719|
 
 From the above table, we can clearly see that radiologist89 is most clinically conservative, whose recall rate is about 0.21. Radiologist66, radiologist13, radiologist95 and radiologist34, ranked 2nd, 3rd, 4th and 5th respectivelly in terms of clinically conservative index.
 
@@ -118,21 +118,21 @@ At last, we performed robust test on our results. We predicted recall rates by u
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1416219|
-| radiologist34 |     0.0913557|
-| radiologist66 |     0.1886454|
-| radiologist89 |     0.2032366|
-| radiologist95 |     0.1353528|
+| radiologist13 |     0.1410302|
+| radiologist34 |     0.0907640|
+| radiologist66 |     0.1880538|
+| radiologist89 |     0.2026450|
+| radiologist95 |     0.1347611|
 
     ## [1] "model 3"
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1561600|
-| radiologist34 |     0.0913423|
-| radiologist66 |     0.2051045|
-| radiologist89 |     0.2114192|
-| radiologist95 |     0.1220445|
+| radiologist13 |     0.1421558|
+| radiologist34 |     0.0896313|
+| radiologist66 |     0.1753459|
+| radiologist89 |     0.2249490|
+| radiologist95 |     0.1341800|
 
 In conclusion, holding patient risk factors equal, the order of clinically conservative characteristic in recalling patients is: radiologist89 &gt; radiologist66 &gt; radiologist13 &gt; radiologist95 &gt; radiologist34, when letting radiologists see the same patients.
 
@@ -166,10 +166,10 @@ The average deviance of the models are listed in the following table:
 
 |          | AVG Deviance for Different Models |
 |----------|:---------------------------------:|
-| Baseline |              1.453228             |
-| Model 1  |              1.513312             |
-| Model 2  |              1.529210             |
-| Model 3  |              1.392400             |
+| Baseline |              1.478329             |
+| Model 1  |              1.552357             |
+| Model 2  |              1.666524             |
+| Model 3  |              1.403200             |
 
 From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3. Overall we can say that the doctors did great jobs at identifying the patients who do get cancer. the drop between Model3 and the baseline is very small.
 
@@ -263,10 +263,10 @@ The average accurate rate for these for model is listed in the following table.
 
 |           |  Accurate Rate|
 |-----------|--------------:|
-| share-LM1 |      0.4966730|
-| share-LM2 |      0.5117770|
-| share-LM3 |      0.5023572|
-| share-LM4 |      0.5944634|
+| share-LM1 |      0.4958229|
+| share-LM2 |      0.5109963|
+| share-LM3 |      0.5016623|
+| share-LM4 |      0.5932829|
 
 All the results above are the average of running against 100 random train/test splits.
 
@@ -274,15 +274,36 @@ Share-LM4 had the highest accuracy rate, so we report the confusion matrix. The 
 
 |           | prediction = 0 | prediction = 1 |
 |-----------|:--------------:|:--------------:|
-| viral = 0 |      1359      |      2674      |
-| viral = 1 |       542      |      3354      |
+| viral = 0 |      1382      |      2650      |
+| viral = 1 |       533      |      3364      |
 
-Next, we moved on to the second approach. As the the viral status is binomial, in addition to the linear modelling, we were also able to exploit the logit model. After conducting trial and error with different forms of explanatory variables as in the first approach, the highest accuracy rate with the best configurations are shown below.
+Next, we moved on to the second approach. As the the viral status is binomial, in addition to the linear modelling, we were also able to exploit the logit model. The two logit models that we used are listed below:
+
+``` r
+viral_LM = viral ~ n_tokens_title + n_tokens_content + num_hrefs + 
+                     num_self_hrefs + num_imgs + num_videos + 
+                     average_token_length + num_keywords + data_channel_is_lifestyle + 
+                     data_channel_is_entertainment + data_channel_is_bus + 
+                     data_channel_is_socmed + data_channel_is_tech + 
+                     data_channel_is_world + self_reference_avg_sharess + 
+                     weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                     weekday_is_thursday + weekday_is_friday + weekday_is_saturday
+GLM = viral ~ n_tokens_title + n_tokens_content + num_hrefs + 
+                       num_self_hrefs + num_imgs + num_videos + 
+                       average_token_length + num_keywords + data_channel_is_lifestyle + 
+                       data_channel_is_entertainment + data_channel_is_bus + 
+                       data_channel_is_socmed + data_channel_is_tech + 
+                       data_channel_is_world + self_reference_avg_sharess + 
+                       weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                       weekday_is_thursday + weekday_is_friday + weekday_is_saturday
+```
+
+After conducting trial and error with different forms of explanatory variables as in the first approach, the highest accuracy rate with the best configurations are shown below.
 
 |          |  Accurate Rate|
 |----------|--------------:|
-| viral-LM |      0.6283668|
-| GLM      |      0.6289406|
+| viral-LM |      0.6272884|
+| GLM      |      0.6281561|
 
 All the results above are the average of running against 100 random train/test splits.
 
@@ -296,11 +317,41 @@ We now report the confusion matrix with the logit model which provided us the hi
 
 |           | prediction = 0 | prediction = 1 |
 |-----------|:--------------:|:--------------:|
-| viral = 0 |      2507      |      1526      |
-| viral = 1 |      1432      |      2464      |
+| viral = 0 |      2482      |      1550      |
+| viral = 1 |      1356      |      2541      |
 
 ### Conclusion
 
 The second approach, threshold first and regress/classify second, performed better than the first one with log transformation which was just under 60%. Our logit model reached 62.7% accuracy rate, approximately 23.7% (0.627/0.507 - 1) improvement relative to our benchmark.
 
 One possibility that our first approach performed worse is that our explanatory variables are not good at creating a low variance linear relationship to predict numerical amount of shares. Under similar set of conditions, articles range high in both &gt;1,400 and &lt;1,400, resulting low accuracy rate. Once we take the log transformation of shares, variance goes down, providing us a better result . On the other hand, after we first classified articles into a binary variable, viral and non-viral, the variance in predicting numerical number of shares are eliminated, so that our explanatory variables seem to be relatively better at predicting how likely each article goes viral at 50% mark (&gt;50% then predict viral, &lt;50% then predict non-viral).
+
+|                                   |    coefficients.Estimate    |    coefficients.Std..Error    |    coefficients.z.value    |                                                                                                                          coefficients.Pr...z..                                                                                                                          |
+|-----------------------------------|:---------------------------:|:-----------------------------:|:--------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| (Intercept)                       |          0.9529115          |           0.1020576           |          9.336997          |                                                                                                                                0.0000000                                                                                                                                |
+| n\_tokens\_title                  |          -0.0092257         |           0.0050772           |          -1.817091         |                                                                                                                                0.0692032                                                                                                                                |
+| n\_tokens\_content                |          0.0001644          |           0.0000280           |          5.872242          |                                                                                                                                0.0000000                                                                                                                                |
+| num\_hrefs                        |          0.0128979          |           0.0012438           |          10.370169         |                                                                                                                                0.0000000                                                                                                                                |
+| num\_self\_hrefs                  |          -0.0271880         |           0.0032155           |          -8.455383         |                                                                                                                                0.0000000                                                                                                                                |
+| num\_imgs                         |          0.0064140          |           0.0015081           |          4.253075          |                                                                                                                                0.0000211                                                                                                                                |
+| num\_videos                       |          0.0043642          |           0.0027552           |          1.583977          |                                                                                                                                0.1131989                                                                                                                                |
+| average\_token\_length            |          -0.0984953         |           0.0131119           |          -7.511930         |                                                                                                                                0.0000000                                                                                                                                |
+| num\_keywords                     |          0.0464659          |           0.0057822           |          8.035971          |                                                                                                                                0.0000000                                                                                                                                |
+| data\_channel\_is\_lifestyle      |          -0.1864650         |           0.0543287           |          -3.432161         |                                                                                                                                0.0005988                                                                                                                                |
+| data\_channel\_is\_entertainment  |          -0.8593291         |           0.0383385           |         -22.414287         |                                                                                                                                0.0000000                                                                                                                                |
+| data\_channel\_is\_bus            |          -0.2843569         |           0.0407319           |          -6.981184         |                                                                                                                                0.0000000                                                                                                                                |
+| data\_channel\_is\_socmed         |          0.6317587          |           0.0558869           |          11.304234         |                                                                                                                                0.0000000                                                                                                                                |
+| data\_channel\_is\_tech           |          0.0930711          |           0.0393092           |          2.367665          |                                                                                                                                0.0179008                                                                                                                                |
+| data\_channel\_is\_world          |          -0.9613410         |           0.0388580           |         -24.739861         |                                                                                                                                0.0000000                                                                                                                                |
+| self\_reference\_avg\_sharess     |          0.0000069          |           0.0000008           |          9.211522          |                                                                                                                                0.0000000                                                                                                                                |
+| weekday\_is\_monday               |          -0.6923313         |           0.0486246           |         -14.238281         |                                                                                                                                0.0000000                                                                                                                                |
+| weekday\_is\_tuesday              |          -0.8023188         |           0.0480387           |         -16.701497         |                                                                                                                                0.0000000                                                                                                                                |
+| weekday\_is\_wednesday            |          -0.8106103         |           0.0480153           |         -16.882327         |                                                                                                                                0.0000000                                                                                                                                |
+| weekday\_is\_thursday             |          -0.7486349         |           0.0481060           |         -15.562198         |                                                                                                                                0.0000000                                                                                                                                |
+| weekday\_is\_friday               |          -0.5842591         |           0.0497025           |         -11.755127         |                                                                                                                                0.0000000                                                                                                                                |
+| weekday\_is\_saturday             |          0.2243040          |           0.0615516           |          3.644164          |                                                                                                                                0.0002683                                                                                                                                |
+
+
+To improve an article’s chance of reaching Mashable’s cutoff threshold, 1,400 shares, we can look at the explanatory variable coefficients with the highest positive magnitude. From our best logit model, the top 3 factors that contribute to high shares are 1. article is under social media channel, 2. article published on Saturday, and 3. article is under technological channel.
+
+Top 3 factors to avoid are, 1. article is under world channel, 2. article published on Tuesday, 3. article is under entertainment channel. So given what we have, the best chance to make an article viral is to publish it under crossed social media & technological channel on Saturday.
