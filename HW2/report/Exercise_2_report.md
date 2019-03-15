@@ -24,13 +24,13 @@ The performance of the models are mesured with average out-of-sample RMSE. We us
 
 |         | AVG RMSE |
 |---------|:--------:|
-| model 1 | 66563.19 |
-| model 2 | 66379.88 |
-| model 3 | 60429.91 |
-| model 4 | 60368.80 |
-| model 5 | 59633.71 |
-| model 6 | 60110.58 |
-| model 7 | 60808.58 |
+| model 1 | 65881.76 |
+| model 2 | 65666.35 |
+| model 3 | 59676.18 |
+| model 4 | 59607.52 |
+| model 5 | 58884.46 |
+| model 6 | 59253.62 |
+| model 7 | 59917.76 |
 
 The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 59900, while the average RMSE of the baseline model is around 66000. The regression result is:
 
@@ -94,9 +94,9 @@ The performance of the models are measured with error rate, which is calculated 
 
 |         |  AVG RMSE |
 |---------|:---------:|
-| model 1 | 0.4034518 |
-| model 2 | 0.4474112 |
-| model 3 | 0.4046193 |
+| model 1 | 0.4049746 |
+| model 2 | 0.4516751 |
+| model 3 | 0.4053807 |
 
 After running for several times, we found the error rate of model 1 and model 3 is significantly smaller than that of model 2. We use model 1 to predict in the following as the error rate of model 1 is slightly smaller than that of model 3.
 
@@ -104,13 +104,13 @@ Then, we randomly chosen 100 samples, which consist of around 10% of 987 screeni
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1389836|
-| radiologist34 |     0.0946831|
-| radiologist66 |     0.1795290|
-| radiologist89 |     0.2163394|
-| radiologist95 |     0.1293578|
+| radiologist13 |     0.1353653|
+| radiologist34 |     0.0748554|
+| radiologist66 |     0.1939711|
+| radiologist89 |     0.2296375|
+| radiologist95 |     0.1233878|
 
-From the above table, we can clearly see that radiologist89 is most clinically conservative, whose recall rate is 0.23. Radiologist66, radiologist13, radiologist95 and radiologist34, ranked 2nd, 3rd, 4th and 5th respectivelly in terms of clinically conservative index.
+From the above table, we can clearly see that radiologist89 is most clinically conservative, whose recall rate is about 0.21. Radiologist66, radiologist13, radiologist95 and radiologist34, ranked 2nd, 3rd, 4th and 5th respectivelly in terms of clinically conservative index.
 
 At last, we performed robust test on our results. We predicted recall rates by using model 2 and model 3. The below tables showed the results, which is consistent with the result predicted by model 1.
 
@@ -118,21 +118,21 @@ At last, we performed robust test on our results. We predicted recall rates by u
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1447277|
-| radiologist34 |     0.0944615|
-| radiologist66 |     0.1917512|
-| radiologist89 |     0.2063424|
-| radiologist95 |     0.1384586|
+| radiologist13 |     0.1416219|
+| radiologist34 |     0.0913557|
+| radiologist66 |     0.1886454|
+| radiologist89 |     0.2032366|
+| radiologist95 |     0.1353528|
 
     ## [1] "model 3"
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1408157|
-| radiologist34 |     0.0826584|
-| radiologist66 |     0.1991137|
-| radiologist89 |     0.2103601|
-| radiologist95 |     0.1318364|
+| radiologist13 |     0.1561600|
+| radiologist34 |     0.0913423|
+| radiologist66 |     0.2051045|
+| radiologist89 |     0.2114192|
+| radiologist95 |     0.1220445|
 
 In conclusion, holding patient risk factors equal, the order of clinically conservative characteristic in recalling patients is: radiologist89 &gt; radiologist66 &gt; radiologist13 &gt; radiologist95 &gt; radiologist34, when letting radiologists see the same patients.
 
@@ -166,10 +166,10 @@ The average deviance of the models are listed in the following table:
 
 |          | AVG Deviance for Different Models |
 |----------|:---------------------------------:|
-| Baseline |              1.439518             |
-| Model 1  |              1.498015             |
-| Model 2  |              1.540995             |
-| Model 3  |              1.387163             |
+| Baseline |              1.453228             |
+| Model 1  |              1.513312             |
+| Model 2  |              1.529210             |
+| Model 3  |              1.392400             |
 
 From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3. Overall we can say that the doctors did great jobs at identifying the patients who do get cancer. the drop between Model3 and the baseline is very small.
 
@@ -212,20 +212,95 @@ Although this is the insample rates, we can still conclude that the false negati
 Exercise 2.3
 ------------
 
-|          |  Accurate Rate|
-|----------|--------------:|
-| share-LM |      0.4963917|
-| viral-LM |      0.6268130|
-| GLM      |      0.6274373|
+The goal of this question is to build a model to predict whether an online article goes viral or not. Also from the model we would like to know how to improve an article’s chance of reaching Mashable’s cutoff threshold, 1,400 shares.
+
+### Benchmark
+
+First we set up our baseline model for predicting which articles go viral. Out of the 39,644 articles, 19,562 of them have gone viral. This means that even if we blindly predict all articles do not go viral, the accuracy rate would reach 50.7%. We will set this number as our baseline accuracy rate and attempt to improve it as much as we can.
+
+### Model Construction
+
+There are 2 approaches to building forecasting model, 1. Predict the number of shares first then classify if each article goes viral by comparing to the threshold of 1,400 shares. 2. Classify the the viral status first by comparing each article to the threshold of 1,400 shares, then directly predict viral status as the target variable.
+
+For the first approach, we used linear modeling, with different combinations of interaction terms, polynomial terms, and transformations. The improvement in accuracy rate is rather minimal, as some of our models shown below. (Each of the variations)
+
+``` r
+share_LM1 = shares ~ n_tokens_title + n_tokens_content + num_hrefs + 
+  num_self_hrefs + num_imgs + num_videos + 
+  average_token_length + num_keywords + data_channel_is_lifestyle +
+  data_channel_is_entertainment + data_channel_is_bus + 
+  data_channel_is_socmed + data_channel_is_tech +
+  data_channel_is_world + self_reference_avg_sharess +
+  weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+  weekday_is_thursday + weekday_is_friday + weekday_is_saturday
+share_LM2 = shares ~ (n_tokens_title + n_tokens_content + num_hrefs +
+                        num_self_hrefs + num_imgs + num_videos + 
+                        average_token_length + num_keywords + data_channel_is_lifestyle + 
+                        data_channel_is_entertainment + data_channel_is_bus +
+                        data_channel_is_socmed + data_channel_is_tech +
+                        data_channel_is_world + self_reference_avg_sharess + 
+                        weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday +
+                        weekday_is_thursday + weekday_is_friday + weekday_is_saturday)^2
+share_LM3 = shares ~ poly(n_tokens_title, 3) + poly(num_hrefs, 2) + poly(num_imgs, 2) + poly(num_videos, 2) +
+  poly(average_token_length, 3) + poly(num_keywords, 2) + poly(n_tokens_content, 2) +
+  data_channel_is_lifestyle + data_channel_is_entertainment + data_channel_is_bus + 
+  data_channel_is_socmed + data_channel_is_tech +
+  data_channel_is_world + poly(self_reference_avg_sharess,2) + 
+  weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+  weekday_is_thursday + weekday_is_friday + weekday_is_saturday + 
+  poly(max_positive_polarity, 3) + poly(max_negative_polarity, 3)
+share_LM4 = shares ~ n_tokens_title + n_tokens_content + num_hrefs + 
+  num_self_hrefs + num_imgs + num_videos + 
+  average_token_length + num_keywords + data_channel_is_lifestyle +
+  data_channel_is_entertainment + data_channel_is_bus + 
+  data_channel_is_socmed + data_channel_is_tech + 
+  data_channel_is_world + self_reference_avg_sharess +
+  weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+  weekday_is_thursday + weekday_is_friday + weekday_is_saturday
+```
+
+The average accurate rate for these for model is listed in the following table.
+
+|           |  Accurate Rate|
+|-----------|--------------:|
+| share-LM1 |      0.4966730|
+| share-LM2 |      0.5117770|
+| share-LM3 |      0.5023572|
+| share-LM4 |      0.5944634|
+
+All the results above are the average of running against 100 random train/test splits.
+
+Share-LM4 had the highest accuracy rate, so we report the confusion matrix. The following confusion matrix consists the testing data result from one iteration. In addition to the accuracy rate, we calculated the overall error rate, true positive rate and false positive rate in 100 iterations and took the average for each.
 
 |           | prediction = 0 | prediction = 1 |
 |-----------|:--------------:|:--------------:|
-| viral = 0 |      2472      |      1560      |
-| viral = 1 |      1425      |      2472      |
+| viral = 0 |      1359      |      2674      |
+| viral = 1 |       542      |      3354      |
+
+Next, we moved on to the second approach. As the the viral status is binomial, in addition to the linear modelling, we were also able to exploit the logit model. After conducting trial and error with different forms of explanatory variables as in the first approach, the highest accuracy rate with the best configurations are shown below.
+
+|          |  Accurate Rate|
+|----------|--------------:|
+| viral-LM |      0.6283668|
+| GLM      |      0.6289406|
+
+All the results above are the average of running against 100 random train/test splits.
+
+The second approach turned out to be better, providing us with higher accuracy rate. In addition, as a supplement, we also explored the KNN method. The result was similar to the linear/logit models, as shown below.
 
 ![](Exercise_2_report_files/figure-markdown_github/table2.3.3-1.png)
 
+the result above are the average of running 5 train/test splits iterations.
+
+We now report the confusion matrix with the logit model which provided us the highest accuracy rate. The following confusion matrix consists the testing data result in one iteration. In addition to the accuracy rate, we calculated the overall error rate, true positive rate and false positive rate in 100 iterations and took the average for each.
+
 |           | prediction = 0 | prediction = 1 |
 |-----------|:--------------:|:--------------:|
-| viral = 0 |      2708      |      1336      |
-| viral = 1 |      1611      |      2274      |
+| viral = 0 |      2507      |      1526      |
+| viral = 1 |      1432      |      2464      |
+
+### Conclusion
+
+The second approach, threshold first and regress/classify second, performed better than the first one with log transformation which was just under 60%. Our logit model reached 62.7% accuracy rate, approximately 23.7% (0.627/0.507 - 1) improvement relative to our benchmark.
+
+One possibility that our first approach performed worse is that our explanatory variables are not good at creating a low variance linear relationship to predict numerical amount of shares. Under similar set of conditions, articles range high in both &gt;1,400 and &lt;1,400, resulting low accuracy rate. Once we take the log transformation of shares, variance goes down, providing us a better result . On the other hand, after we first classified articles into a binary variable, viral and non-viral, the variance in predicting numerical number of shares are eliminated, so that our explanatory variables seem to be relatively better at predicting how likely each article goes viral at 50% mark (&gt;50% then predict viral, &lt;50% then predict non-viral).

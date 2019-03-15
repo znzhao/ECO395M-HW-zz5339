@@ -25,6 +25,8 @@ myfunc <- function() {
 }
   
 ### simple LM w/o polarity
+
+##########################################
 lm_OnlineNews_1 = lm(shares ~ n_tokens_title + n_tokens_content + num_hrefs + 
                      num_self_hrefs + num_imgs + num_videos + 
                      average_token_length + num_keywords + data_channel_is_lifestyle + 
@@ -61,6 +63,7 @@ lm_OnlineNews_1polytrans = lm(log(shares) ~ poly(n_tokens_title, 3) + poly(num_h
                            weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
                            weekday_is_thursday + weekday_is_friday + weekday_is_saturday + 
                            poly(max_positive_polarity, 3) + poly(max_negative_polarity, 3), data=OnlineNews_train)
+#################################################
 
 ### simple binomial LM w/o polarity 
 lm_OnlineNews_2 = lm(viral ~ n_tokens_title + n_tokens_content + num_hrefs + 
