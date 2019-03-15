@@ -14,13 +14,13 @@ The performance of the models are mesured with average out-of-sample RMSE. We us
 
 |         | AVG RMSE |
 |---------|:--------:|
-| model 1 | 66874.46 |
-| model 2 | 66645.42 |
-| model 3 | 60645.40 |
-| model 4 | 60567.64 |
-| model 5 | 59906.54 |
-| model 6 | 60243.34 |
-| model 7 | 60961.83 |
+| model 1 | 66593.63 |
+| model 2 | 66332.52 |
+| model 3 | 60676.64 |
+| model 4 | 60612.06 |
+| model 5 | 60021.57 |
+| model 6 | 60367.75 |
+| model 7 | 61066.64 |
 
 The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 60000, while the average RMSE of the baseline model is around 66000. The regression result is:
 
@@ -88,165 +88,12 @@ Before we show the result of the models, we need to explain the criteria that we
 
 The average deviance of the models are listed in the following table:
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
 |          | AVG Deviation for Different Models |
 |----------|:----------------------------------:|
-| Baseline |              1.492068              |
-| Model 1  |              1.529239              |
-| Model 2  |              1.486628              |
-| Model 3  |              1.423994              |
+| Baseline |              1.473208              |
+| Model 1  |              1.545771              |
+| Model 2  |              1.514027              |
+| Model 3  |              1.420707              |
 
 From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3.
 
@@ -261,3 +108,27 @@ The logistic regression of model 3 using the whole dataset is shown below:
 | menopausepostmenoNoHT    |       -0.0010441      |        0.0142239        |      -0.0734067      |       0.9414975       |
 | menopausepostmenounknown |       0.0410178       |        0.0328765        |       1.2476318      |       0.2124640       |
 | menopausepremeno         |       -0.0058343      |        0.0152413        |      -0.3827939      |       0.7019556       |
+
+From the regression result we can tell that the doctor should consider more about the patient’s history, the breast cancer symptoms and the menopause status of the patient. More specifically, if a person has the history of having cancer, or she has the breast cancer symptoms, or the hormone-therapy status is unknown, she is more likely to have cancers. This result matches our intuition.
+
+To compare the result, we made some predictions with the baseline model and the model we choose.The threshold of positive prediction is chosen as 0.0395, which is slightly higher than the prior probability of having a cancer.
+
+The confusion matrix for the baseline model using the entire dataset is:
+
+|     |  0  |  1  |
+|-----|:---:|:---:|
+| 0   | 824 | 126 |
+| 1   |  15 |  22 |
+
+The accuracy rate is (824+22)/987 = 85.7%, the true positive rate is 22/(22+15) = 59.5%, the specificity is 22/(126+22) = 14.9%.
+
+The confusion matrix for the model using the entire dataset is:
+
+|     |  0  |  1  |
+|-----|:---:|:---:|
+| 0   | 797 | 153 |
+| 1   |  14 |  23 |
+
+The accuracy rate is (797+23)/987 = 83.1%, the true positive rate is 23/(23+14) = 62.2%, the specificity is 23/(153+23) = 13.1%.
+
+Although this is the insample rates, we can still conclude that the true positive rate is increasing while the specificity is slightly decreasing, which means it will minimize the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible.

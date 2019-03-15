@@ -20,7 +20,7 @@ By Chong Wang, Tianping Wu, Zhenning Zhao
 
 ## Exercise 2.1
 
-```{r setup_2.1, echo=FALSE}
+```{r setup_2.1, echo=FALSE, warning=FALSE}
 data(SaratogaHouses)
 # define the functions
 rmse = function(y, yhat) {
@@ -106,14 +106,14 @@ The models that we checked are listed below.
 
 The performance of the models are mesured with average out-of-sample RMSE. We use the 80% of the data to do regressions and calculate RMSE for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average RMSE. The result of the models are listed below.
 
-```{r table_2.1.1, echo=FALSE}
+```{r table_2.1.1, echo=FALSE, warning=FALSE}
 colnames(rmse_vals) <- c("model 1", "model 2", "model 3", "model 4", "model 5", "model 6", "model 7")
 kable(colMeans(rmse_vals), col.names = c("AVG RMSE"), caption = "Table 2.1.1: The Average RMSE for Different Models",padding = 2, align = "c")
 ```
 
 The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 60000, while the average RMSE of the baseline model is around 66000. The regression result is:
 
-```{r table_2.1.2, echo=FALSE}
+```{r table_2.1.2, echo=FALSE, warning=FALSE}
 table1 = summary(lm(price ~ landValue + 
                       lotSize*(bedrooms + bathrooms) + 
                       livingArea*(fuel+ heating + centralAir) + 
@@ -135,7 +135,7 @@ Forth, the interactions between the number of bedrooms or bathrooms and the lots
 
 By using exactly same variables in the linear regression model it is very hard to beat the linear regression with the KNN model.
 
-```{r graph2.1.1, echo=FALSE}
+```{r graph2.1.1, echo=FALSE, warning=FALSE}
 
 X = subset(SaratogaHouses, select=c(-price,-waterfront,-sewer,-newConstruction,-heating, -fuel, -centralAir, -centralAirNo, -fuelgas, -heatinghotair))
 y = subset(SaratogaHouses, select=c(price))
@@ -189,7 +189,7 @@ From the plot of average RMSE vs K we can tell the optimal K for the KNN model i
 ## Exercise 2.2
 
 ### Exercise 2.2.2
-```{r setup_2.2.2, echo=FALSE}
+```{r setup_2.2.2, echo=FALSE , warning=FALSE}
 urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW2/brca.csv'
 brca<-read.csv(url(urlfile))
 n = nrow(brca)
@@ -223,7 +223,7 @@ We checked (1) the model regressing cancer indicator on the recall indicator and
 Before we show the result of the models, we need to explain the criteria that we use to judge these model. When we try to identify the patient, different kinds of error has different cost. It might not be a big problem if a healthy woman is recalled to do some further test, but it may cause death if the doctor didn’t identify the patients who have cancer. Hence the accurate rate is not the best criteria. Instead, we calculate the deviance of these model, and choose the model with smaller deviance.
 
 The average deviance of the models are listed in the following table:
-```{r table2.2.1, echo = FALSE}
+```{r table2.2.1, echo = FALSE, warning=FALSE}
 
 Err1 = do(50)*{
   data = brca
@@ -255,7 +255,8 @@ kable(colMeans(Err1), col.names = c("AVG Deviation for Different Models"), capti
 From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3.
 
 The logistic regression of model 3 using the whole dataset is shown below:
-```{r table2.2.2, echo = FALSE}
+
+```{r table2.2.2, echo = FALSE, warning=FALSE}
 glm_modelA = glm(cancer ~ recall, data = brca)
 phatA = predict(glm_modelA, brca, type='response')
 yhatA = ifelse(phatA >= threshold, 1, 0)
@@ -270,3 +271,25 @@ t2 = xtabs(~brca$cancer+yhatB)
 table2 = summary(glm_modelB)
 kable(as.data.frame(table2["coefficients"]), caption = "Table 2.1.2: Regression Result for the Best Model",padding = 2, align = "c")
 ```
+
+From the regression result we can tell that the doctor should consider more about the patient’s history, the breast cancer symptoms and the menopause status of the patient. More specifically, if a person has the history of having cancer, or she has the breast cancer symptoms, or the hormone-therapy status is unknown, she is more likely to have cancers. This result matches our intuition.
+
+To compare the result, we made some predictions with the baseline model and the model we choose.The threshold of positive prediction is chosen as 0.0395, which is slightly higher than the prior probability of having a cancer. 
+
+The confusion matrix for the baseline model using the entire dataset is:
+
+```{r table2.2.3, echo = FALSE, warning=FALSE}
+kable(t1, caption = "Table 2.1.3: Confusion Matrix of the Baseline Model",padding = 2, align = "c")
+```
+
+The accuracy rate is (824+22)/987 = 85.7%, the true positive rate is 22/(22+15) = 59.5%, the specificity is 22/(126+22) = 14.9%.
+
+The confusion matrix for the model using the entire dataset is:
+
+```{r table2.2.4, echo = FALSE, warning=FALSE}
+kable(t2, caption = "Table 2.1.4: Confusion Matrix of the Improved Model",padding = 2, align = "c")
+```
+
+The accuracy rate is (797+23)/987 = 83.1%, the true positive rate is 23/(23+14) = 62.2%, the specificity is 23/(153+23) = 13.1%.
+
+Although this is the insample rates, we can still conclude that the true positive rate is increasing while the specificity is slightly decreasing, which means it will minimize the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible.
