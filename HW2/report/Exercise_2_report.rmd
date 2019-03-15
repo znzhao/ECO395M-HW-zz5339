@@ -104,6 +104,16 @@ Long story short, we "hand-build" a model for price that outperforms the "medium
 
 The models that we checked are listed below.
 
+```{r model2.1, echo=TRUE, warning=FALSE}
+model1 = price ~ lotSize + age + livingArea + pctCollege + bedrooms + fireplaces + bathrooms + rooms + heating + fuel + centralAir
+model2 = price ~ lotSize + age + livingArea + pctCollege*fireplaces + bedrooms  + bathrooms + rooms + heating + centralAir
+model3 = price ~ landValue + livingArea + pctCollege + bedrooms + fireplaces + bathrooms + rooms + heating + fuel + centralAir
+model4 = price ~ landValue + livingArea + bedrooms + bathrooms + rooms + heating + fuel + centralAir
+model5 = price ~ landValue + lotSize*(bedrooms + bathrooms) + livingArea*(fuel+ heating + centralAir) + pctCollege*(fireplaces+age) + rooms
+model6 = price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + bathrooms + rooms + heating + centralAir
+model7 = price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + centralAir
+```
+
 The performance of the models are mesured with average out-of-sample RMSE. We use the 80% of the data to do regressions and calculate RMSE for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average RMSE. The result of the models are listed below.
 
 ```{r table_2.1.1, echo=FALSE, warning=FALSE}
@@ -111,7 +121,7 @@ colnames(rmse_vals) <- c("model 1", "model 2", "model 3", "model 4", "model 5", 
 kable(colMeans(rmse_vals), col.names = c("AVG RMSE"), caption = "Table 2.1.1: The Average RMSE for Different Models",padding = 2, align = "c")
 ```
 
-The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 60000, while the average RMSE of the baseline model is around 66000. The regression result is:
+The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 59900, while the average RMSE of the baseline model is around 66000. The regression result is:
 
 ```{r table_2.1.2, echo=FALSE, warning=FALSE}
 table1 = summary(lm(price ~ landValue + 
@@ -133,7 +143,7 @@ Third, comparing with the apartments fueling with gas, the apartments fueling wi
 
 Forth, the interactions between the number of bedrooms or bathrooms and the lotsize are not significant, but the interactions between the living area and the fuel and whether the house has a central air conditioner is significant. To be more specific, the effect of the living area on the price of the room fueled with oil is lower than the room fueled with gas. And it is also true that the effect of the living area on the price of the room without a central air conditioner is lower than the room that has a central air conditioner.The interactions between whether the apartment is close to a college and the age of the house and the number of fireplaces are significant.
 
-By using exactly same variables in the linear regression model it is very hard to beat the linear regression with the KNN model.
+However, by using exactly same variables in the linear regression model it is very hard to beat the linear regression with the KNN model.
 
 ```{r graph2.1.1, echo=FALSE, warning=FALSE}
 
@@ -172,19 +182,20 @@ KNN_result = do(Ntimes)*{
   temp
 }
 KNN_result =  KNN_result %>% colMeans() %>% as.data.frame()
-
+myList = KNN_result$.
+myL = c(3:30)
 ggplot(data = KNN_result, aes(x = c(3:30), y = .)) + 
   geom_point(shape = "O") +
   geom_line(col = "red")+
   theme_bw()+
+  geom_vline(xintercept = myL[which.max(myList)])+
   labs(title = "AVG RMSE vs K (2<K<30)",
        x = "K",
        y = "AVG RMSE")+
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-From the plot of average RMSE vs K we can tell the optimal K for the KNN model is about 10-15. The lowest average RMSE that we can get with KNN model is about 63000, which is still higher than the average RMSE that we conclude using a linear model with interactions.
-
+From the plot of average RMSE vs K we can tell the optimal K for the KNN model is about 10-12. The lowest average RMSE that we can get with KNN model is about 63000, which is still higher than the average RMSE that we conclude using a linear model with interactions.
 
 ## Exercise 2.2
 
@@ -205,6 +216,16 @@ dev_out = function(ml, y, dataset) {
 
 ### Exercise 2.2.1
 
+First, in order to get the most accurate predictions of radiologists’ recall rates, we construct three logistic models. Because we need to take consideration that all the risk factors need to be constant, we choose age, history of breast biopsy/surgery, breast cancer symptom, menopause/hormone-therapy status and breast density classification as independent variables and recall as dependent variable in our logistic model. After considering the chance of interactions, we selected three following models:
+
+```{r model2.2.1,1, echo=TRUE , warning=FALSE}
+model1 = recall~radiologist*(age+history+symptoms+menopause+density)
+model2 = recall~radiologist+age+history+symptoms+menopause+density
+model3 = recall~(radiologist+age+history+symptoms+menopause+density)^2
+```
+
+The performance of the models are measured with error rate, which is calculated by sum of the right diagonal numbers of confusion matrix divided by 987 screening mammograms. We use the 80% of the data to do logistic regressions and calculate error rate for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average error rate. The threshold that we used for the calculation is about 0.1509, which is the average rate for the recalled patients. The result of the models are listed below:
+
 ```{r setup_2.2.1,1, echo=FALSE , warning=FALSE}
 data = brca
 n = nrow(data)
@@ -212,7 +233,6 @@ Ntimes = 100
 threshold = sum(brca$recall == 1)/n+0.001
 
 # performance check
-
 rmse_vals = do(Ntimes)*{
   # re-split into train and test cases
   n_train = round(0.8*n)  # round to nearest integer
@@ -245,6 +265,10 @@ colnames(rmse_vals) <- c("model 1", "model 2", "model 3")
 kable(colMeans(rmse_vals), col.names = c("AVG RMSE"), caption = "Table 2.2.1: The Average RMSE for Different Models",padding = 2, align = "c")
 ```
 
+After running for several times, we found the error rate of model 1 and model 3 is significantly smaller than that of model 2. We use model 1 to predict in the following as the error rate of model 1 is slightly smaller than that of model 3. 
+
+Then, we randomly chosen 100 samples, which consist of around 10% of 987 screening mammograms. After that, we repeat these 100 samples for 5 times each. In order to address the problem that the radiologists don’t see the same patients, we added an additional row, which is  arranged by repeated series radiologist13, radiologist34, radiologist66, radiologist89 and radiologist95. Therefore, we let five radiologists see the same patients. Finally, we predict the recall rates of each radiologist with model 1. The results is below.
+
 ```{r setup_2.2.1.2, echo=FALSE , warning=FALSE}
 modelselect=glm(recall~radiologist*(age+history+symptoms+menopause+density),data=brca)
 table2_1 = summary(modelselect)
@@ -268,6 +292,10 @@ summarise(Prob_recall = mean(yhat_recall))
 kable(brca_predict)
 ```
 
+From the above table, we can clearly see that radiologist89 is most clinically conservative, whose recall rate is 0.23. Radiologist66, radiologist13, radiologist95 and radiologist34, ranked 2nd, 3rd, 4th and 5th respectivelly in terms of clinically conservative index.
+
+At last, we performed robust test on our results. We predicted recall rates by using model 2 and model 3. The below tables showed the results, which is consistent with the result predicted by model 1.
+
 ```{r setup_2.2.1.3, echo=FALSE , warning=FALSE}
 modelselect=glm(recall~radiologist+age+history+symptoms+menopause+density,data=brca)
 #kable(as.data.frame(table2_1["coefficients"]), caption = "Table 2.2.2: Regression Result for the Best Model",padding = 2, align = "c")# generate the testing set
@@ -284,13 +312,11 @@ brca_samplerepeat$radiologist=c("radiologist13","radiologist34","radiologist66",
 yhat_recall = predict(modelselect, brca_samplerepeat)
 brca_samplerepeat=cbind(brca_samplerepeat,yhat_recall)
 # compare doctors 
-brca_predict<-brca_samplerepeat%>%
+brca_predict2<-brca_samplerepeat%>%
 group_by(radiologist)%>%
 summarise(Prob_recall = mean(yhat_recall))
-kable(brca_predict)
-```
 
-```{r setup_2.2.1.4, echo=FALSE , warning=FALSE}
+
 modelselect=glm(recall~(radiologist+age+history+symptoms+menopause+density)^2,data=brca)
 #kable(as.data.frame(table2_1["coefficients"]), caption = "Table 2.2.2: Regression Result for the Best Model",padding = 2, align = "c")# generate the testing set
 n = nrow(brca)
@@ -306,17 +332,22 @@ brca_samplerepeat$radiologist=c("radiologist13","radiologist34","radiologist66",
 yhat_recall = predict(modelselect, brca_samplerepeat)
 brca_samplerepeat=cbind(brca_samplerepeat,yhat_recall)
 # compare doctors 
-brca_predict<-brca_samplerepeat%>%
+brca_predict3<-brca_samplerepeat%>%
 group_by(radiologist)%>%
 summarise(Prob_recall = mean(yhat_recall))
-kable(brca_predict)
+t1 = data.frame(brca_predict2,brca_predict3)
+print("model 2")
+kable(brca_predict2)
+print("model 3")
+kable(brca_predict3)
 ```
+
+In conclusion, holding patient risk factors equal, the order of clinically conservative characteristic in recalling patients is: radiologist89 > radiologist66 > radiologist13 > radiologist95 > radiologist34, when letting radiologists see the same patients.
 
 ### Exercise 2.2.2
 
 ```{r setup_2.2.2, echo=FALSE , warning=FALSE}
 threshold = sum(brca$cancer == 1)/n+0.001
-
 ```
 
 The second point that we want to make is that when the radiologists at this hospital interpret a mammogram to make a decision on whether to recall the patient, they should be weighing the history of the patients, the breast cancer symptoms and the menopause status of the patient more heavily than they currently are. Although this means they have to recall more patients back for further checks, it will minimize the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible.
@@ -325,19 +356,26 @@ First we build the baseline model, which suggests that when the doctors recall a
 
 To formalize the model by regression, we regressed the patient’s cancer outcome on the radiologist’s recall decision with the logistic regression. The regression model is:
 
+```{r model2.2.1, echo = TRUE, warning=FALSE}
+baseline = cancer ~ recall
+```
 We split the dataset into the training set and the testing set using the standard 80-20 rule, and re-run the regression for 100 times to eliminate the stochasticity, and ending up with similar rates to the ones calculated with the entire database.
 
 If we build a model using the recall decision and all the other clinical risk factors and it significantly performs better than the baseline model, it means that there are some risk factors that the doctors are missing.
 
 We checked (1) the model regressing cancer indicator on the recall indicator and all the risk factors, (2) the model regressing cancer indicator on the recall indicator and all the risk factors and their interactions (3) two hand-build models. The thresholds that we chose for these models are the same as the baseline model, so that we can compare these models on the same level. The regression models are:
 
+```{r model2.2.2, echo = FALSE, warning=FALSE}
+model1 = cancer ~ recall + age + history + symptoms + menopause + density
+model2 = cancer ~ recall + (age + history + symptoms + menopause + density)^2
+model3 = cancer ~ recall + history + symptoms + menopause
+```
 
 Before we show the result of the models, we need to explain the criteria that we use to judge these model. When we try to identify the patient, different kinds of error has different cost. It might not be a big problem if a healthy woman is recalled to do some further test, but it may cause death if the doctor didn’t identify the patients who have cancer. Hence the accurate rate is not the best criteria. Instead, we calculate the deviance of these model, and choose the model with smaller deviance.
 
 The average deviance of the models are listed in the following table:
 
 ```{r table2.2.1, echo = FALSE, warning=FALSE}
-
 Err1 = do(50)*{
   data = brca
   n = nrow(data)
@@ -361,10 +399,10 @@ Err1 = do(50)*{
   }
 
 colnames(Err1) <- c("Baseline", "Model 1", "Model 2", "Model 3")
-kable(colMeans(Err1), col.names = c("AVG Deviation for Different Models"), caption = "Table 2.2.1: The Average RMSE for Different Models",padding = 2, align = "c")
+kable(colMeans(Err1), col.names = c("AVG Deviance for Different Models"), caption = "Table 2.2.1: The Average RMSE for Different Models",padding = 2, align = "c")
 ```
 
-From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3.
+From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3. Overall we can say that the doctors did great jobs at identifying the patients who do get cancer. the drop between Model3 and the baseline is very small.
 
 The logistic regression of model 3 using the whole dataset is shown below:
 
@@ -419,6 +457,7 @@ urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW2/
 OnlineNews<-read.csv(url(urlfile))
 OnlineNews$viral = ifelse(OnlineNews$shares > 1400, 1, 0)
 ```
+
 
 
 ```{r table2.3.1, echo = FALSE, warning=FALSE}
@@ -486,6 +525,8 @@ colnames(accrate) <- c("share-LM", "viral-LM", "GLM", "tpr_GLM", "fpr_GLM")
 kable(colMeans(accrate)[1:3], col.names = "Accurate Rate")
 ```
 
+
+
 ```{r table2.3.2, echo = FALSE, warning=FALSE}
 t = xtabs(~DF_test$viral+yhat_test3)
 df = as.data.frame(t)
@@ -494,11 +535,13 @@ row.names(t) <- c("viral = 0", "viral = 1")
 kable(t, caption = "Table 2.1.3: Confusion Matrix of the Baseline Model",padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
 ```
 
+
 ```{r table2.3.3, echo = FALSE, warning=FALSE}
 
 K = 20
 run_time = 5
 myList <- c(rep(0, 20))
+myList_share <- c(rep(0, 20))
 for(i in c(1:run_time)){
   n = nrow(OnlineNews)
   n_train = round(0.8*n)  # round to nearest integer
@@ -509,6 +552,7 @@ for(i in c(1:run_time)){
   OnlineNews_test = OnlineNews[test_cases,]
   # training and testing set responses
   ytrain = OnlineNews_train$viral
+  share_train =  OnlineNews_train$shares
   ytest = OnlineNews_test$viral
   Xtrain = model.matrix(~ n_tokens_title + n_tokens_content + num_hrefs + 
                           num_self_hrefs + num_imgs + num_videos + 
@@ -532,13 +576,20 @@ for(i in c(1:run_time)){
   Xtilde_test = scale(Xtest, scale = scale_train)  # use the training set scales!
   for(j in c(1:K)){
     m = j*5
+    # KNN - viral
     knn_model = knn.reg(Xtilde_train, Xtilde_test, ytrain, k=m)
     KNN_train_test1 = ifelse(knn_model$pred > 0.5, 1, 0)
-    
     confusion_in_KNN = table(y = OnlineNews_test$viral, yhat = KNN_train_test1)
-    confusion_in_KNN
     accuracy_rate = sum(diag(confusion_in_KNN))/sum(confusion_in_KNN)
     myList[j]= myList[j] + accuracy_rate
+    
+    # KNN - share
+    knn_share = FNN::knn.reg(train=Xtilde_train, test= Xtilde_test, y = share_train, k=m)
+    ypred_knn = knn_share$pred
+    KNN_train_test2 = ifelse(ypred_knn > 1400, 1, 0)  
+    confusion_in_KNN2 = table(y = OnlineNews_test$viral, yhat = KNN_train_test2)
+    accuracy_rate2 = sum(diag(confusion_in_KNN2))/sum(confusion_in_KNN2)
+    myList_share[j]= myList_share[j] + accuracy_rate2
   }
   # fit the model
 
@@ -549,18 +600,36 @@ accrate <- data.frame(myList, myL)
 ggplot(data = accrate, aes(x = myL, y = myList))+
   geom_point(shape = "O")+
   geom_line(col = "red")+
-  geom_vline(xintercept = myL[which.max(myList)])
+  geom_vline(xintercept = myL[which.max(myList)])+
+  labs(title = "AVG Accuracy Rate vs K (5<K<100) Model: KNN classification",
+       x = "K",
+       y = "AVG Accuracy Rate")+
+  theme(plot.title = element_text(hjust = 0.5))
 
 ```
+
+```{r share2.3.3, echo = FALSE, warning=FALSE}
+myList_share = myList_share/run_time
+accrate2 <- data.frame(myList_share, myL)
+ggplot(data = accrate2, aes(x = myL, y = myList_share))+
+  geom_point(shape = "O")+
+  geom_line(col = "red")+
+  geom_vline(xintercept = myL[which.max(myList)])+
+  labs(title = "AVG Accuracy Rate vs K (5<K<100) Model: KNN regression",
+       x = "K",
+       y = "AVG Accuracy Rate")+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
 
 ```{r table2.3.4, echo = FALSE, warning=FALSE}
 knn_model = knn.reg(Xtilde_train, Xtilde_test, ytrain, k=myL[which.max(myList)])
 KNN_train_test1 = ifelse(knn_model$pred > 0.5, 1, 0)
     
 confusion_in_KNN = table(y = OnlineNews_test$viral, yhat = KNN_train_test1)
-confusion_in_KNN
 df = as.data.frame(confusion_in_KNN)
 t = data.frame(yhat0 = c(df$Freq[1],df$Freq[2]),yhat1 = c(df$Freq[3],df$Freq[4]))
 row.names(t) <- c("viral = 0", "viral = 1")
 kable(t, caption = "Table 2.1.3: Confusion Matrix of the Baseline Model",padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
 ```
+

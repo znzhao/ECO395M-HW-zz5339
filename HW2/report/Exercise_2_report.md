@@ -10,19 +10,29 @@ Long story short, we "hand-build" a model for price that outperforms the "medium
 
 The models that we checked are listed below.
 
+``` r
+model1 = price ~ lotSize + age + livingArea + pctCollege + bedrooms + fireplaces + bathrooms + rooms + heating + fuel + centralAir
+model2 = price ~ lotSize + age + livingArea + pctCollege*fireplaces + bedrooms  + bathrooms + rooms + heating + centralAir
+model3 = price ~ landValue + livingArea + pctCollege + bedrooms + fireplaces + bathrooms + rooms + heating + fuel + centralAir
+model4 = price ~ landValue + livingArea + bedrooms + bathrooms + rooms + heating + fuel + centralAir
+model5 = price ~ landValue + lotSize*(bedrooms + bathrooms) + livingArea*(fuel+ heating + centralAir) + pctCollege*(fireplaces+age) + rooms
+model6 = price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + bathrooms + rooms + heating + centralAir
+model7 = price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + centralAir
+```
+
 The performance of the models are mesured with average out-of-sample RMSE. We use the 80% of the data to do regressions and calculate RMSE for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average RMSE. The result of the models are listed below.
 
 |         | AVG RMSE |
 |---------|:--------:|
-| model 1 | 66753.16 |
-| model 2 | 66541.42 |
-| model 3 | 60597.09 |
-| model 4 | 60515.53 |
-| model 5 | 59774.60 |
-| model 6 | 60146.12 |
-| model 7 | 60947.73 |
+| model 1 | 66519.70 |
+| model 2 | 66254.90 |
+| model 3 | 60769.80 |
+| model 4 | 60680.62 |
+| model 5 | 59915.80 |
+| model 6 | 60267.81 |
+| model 7 | 61008.73 |
 
-The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 60000, while the average RMSE of the baseline model is around 66000. The regression result is:
+The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 59900, while the average RMSE of the baseline model is around 66000. The regression result is:
 
 |                                   | coefficients.Estimate | coefficients.Std..Error | coefficients.t.value | coefficients.Pr...t.. |
 |-----------------------------------|:---------------------:|:-----------------------:|:--------------------:|:---------------------:|
@@ -61,46 +71,70 @@ Third, comparing with the apartments fueling with gas, the apartments fueling wi
 
 Forth, the interactions between the number of bedrooms or bathrooms and the lotsize are not significant, but the interactions between the living area and the fuel and whether the house has a central air conditioner is significant. To be more specific, the effect of the living area on the price of the room fueled with oil is lower than the room fueled with gas. And it is also true that the effect of the living area on the price of the room without a central air conditioner is lower than the room that has a central air conditioner.The interactions between whether the apartment is close to a college and the age of the house and the number of fireplaces are significant.
 
-By using exactly same variables in the linear regression model it is very hard to beat the linear regression with the KNN model.
+However, by using exactly same variables in the linear regression model it is very hard to beat the linear regression with the KNN model.
 
 ![](Exercise_2_report_files/figure-markdown_github/graph2.1.1-1.png)
 
-From the plot of average RMSE vs K we can tell the optimal K for the KNN model is about 10-15. The lowest average RMSE that we can get with KNN model is about 63000, which is still higher than the average RMSE that we conclude using a linear model with interactions.
+From the plot of average RMSE vs K we can tell the optimal K for the KNN model is about 10-12. The lowest average RMSE that we can get with KNN model is about 63000, which is still higher than the average RMSE that we conclude using a linear model with interactions.
 
 Exercise 2.2
 ------------
 
 ### Exercise 2.2.1
 
+First, in order to get the most accurate predictions of radiologists’ recall rates, we construct three logistic models. Because we need to take consideration that all the risk factors need to be constant, we choose age, history of breast biopsy/surgery, breast cancer symptom, menopause/hormone-therapy status and breast density classification as independent variables and recall as dependent variable in our logistic model. After considering the chance of interactions, we selected three following models:
+
+``` r
+model1 = recall~radiologist*(age+history+symptoms+menopause+density)
+model2 = recall~radiologist+age+history+symptoms+menopause+density
+model3 = recall~(radiologist+age+history+symptoms+menopause+density)^2
+```
+
+The performance of the models are measured with error rate, which is calculated by sum of the right diagonal numbers of confusion matrix divided by 987 screening mammograms. We use the 80% of the data to do logistic regressions and calculate error rate for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average error rate. The threshold that we used for the calculation is about 0.1509, which is the average rate for the recalled patients. The result of the models are listed below:
+
 |         |  AVG RMSE |
 |---------|:---------:|
-| model 1 | 0.4023858 |
-| model 2 | 0.4444162 |
-| model 3 | 0.4027411 |
+| model 1 | 0.4052284 |
+| model 2 | 0.4474112 |
+| model 3 | 0.3964467 |
+
+After running for several times, we found the error rate of model 1 and model 3 is significantly smaller than that of model 2. We use model 1 to predict in the following as the error rate of model 1 is slightly smaller than that of model 3.
+
+Then, we randomly chosen 100 samples, which consist of around 10% of 987 screening mammograms. After that, we repeat these 100 samples for 5 times each. In order to address the problem that the radiologists don’t see the same patients, we added an additional row, which is arranged by repeated series radiologist13, radiologist34, radiologist66, radiologist89 and radiologist95. Therefore, we let five radiologists see the same patients. Finally, we predict the recall rates of each radiologist with model 1. The results is below.
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1384862|
-| radiologist34 |     0.0967631|
-| radiologist66 |     0.1922398|
-| radiologist89 |     0.2058958|
-| radiologist95 |     0.1301504|
+| radiologist13 |     0.1357191|
+| radiologist34 |     0.0892768|
+| radiologist66 |     0.1894795|
+| radiologist89 |     0.2016454|
+| radiologist95 |     0.1244217|
+
+From the above table, we can clearly see that radiologist89 is most clinically conservative, whose recall rate is 0.23. Radiologist66, radiologist13, radiologist95 and radiologist34, ranked 2nd, 3rd, 4th and 5th respectivelly in terms of clinically conservative index.
+
+At last, we performed robust test on our results. We predicted recall rates by using model 2 and model 3. The below tables showed the results, which is consistent with the result predicted by model 1.
+
+    ## [1] "model 2"
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1311517|
-| radiologist34 |     0.0808854|
-| radiologist66 |     0.1781752|
-| radiologist89 |     0.1927664|
-| radiologist95 |     0.1248826|
+| radiologist13 |     0.1530652|
+| radiologist34 |     0.1027990|
+| radiologist66 |     0.2000887|
+| radiologist89 |     0.2146799|
+| radiologist95 |     0.1467961|
+
+    ## [1] "model 3"
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1359470|
-| radiologist34 |     0.0913719|
-| radiologist66 |     0.2015459|
-| radiologist89 |     0.2361697|
-| radiologist95 |     0.1333204|
+| radiologist13 |     0.1432242|
+| radiologist34 |     0.0935221|
+| radiologist66 |     0.1937180|
+| radiologist89 |     0.2547362|
+| radiologist95 |     0.1582047|
+
+In conclusion, holding patient risk factors equal, the order of clinically conservative characteristic in recalling patients is: radiologist89 &gt; radiologist66 &gt; radiologist13 &gt; radiologist95 &gt; radiologist34, when letting radiologists see the same patients.
 
 ### Exercise 2.2.2
 
@@ -109,6 +143,10 @@ The second point that we want to make is that when the radiologists at this hosp
 First we build the baseline model, which suggests that when the doctors recall a patient, they tend to think that the patient has a cancer.
 
 To formalize the model by regression, we regressed the patient’s cancer outcome on the radiologist’s recall decision with the logistic regression. The regression model is:
+
+``` r
+baseline = cancer ~ recall
+```
 
 We split the dataset into the training set and the testing set using the standard 80-20 rule, and re-run the regression for 100 times to eliminate the stochasticity, and ending up with similar rates to the ones calculated with the entire database.
 
@@ -120,14 +158,14 @@ Before we show the result of the models, we need to explain the criteria that we
 
 The average deviance of the models are listed in the following table:
 
-|          | AVG Deviation for Different Models |
-|----------|:----------------------------------:|
-| Baseline |              1.478730              |
-| Model 1  |              1.549682              |
-| Model 2  |              1.510544              |
-| Model 3  |              1.428182              |
+|          | AVG Deviance for Different Models |
+|----------|:---------------------------------:|
+| Baseline |              1.500853             |
+| Model 1  |              1.560098             |
+| Model 2  |              1.459631             |
+| Model 3  |              1.442899             |
 
-From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3.
+From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3. Overall we can say that the doctors did great jobs at identifying the patients who do get cancer. the drop between Model3 and the baseline is very small.
 
 The logistic regression of model 3 using the whole dataset is shown below:
 
@@ -170,23 +208,20 @@ Exercise 2.3
 
 |          |  Accurate Rate|
 |----------|--------------:|
-| share-LM |      0.4958772|
-| viral-LM |      0.5067676|
-| GLM      |      0.6276428|
+| share-LM |      0.4964523|
+| viral-LM |      0.5066414|
+| GLM      |      0.6270652|
 
 |           | prediction = 0 | prediction = 1 |
 |-----------|:--------------:|:--------------:|
-| viral = 0 |      2515      |      1513      |
-| viral = 1 |      1432      |      2469      |
+| viral = 0 |      2528      |      1508      |
+| viral = 1 |      1395      |      2498      |
 
 ![](Exercise_2_report_files/figure-markdown_github/table2.3.3-1.png)
 
-    ##    yhat
-    ## y      0    1
-    ##   0 2727 1356
-    ##   1 1577 2269
+![](Exercise_2_report_files/figure-markdown_github/share2.3.3-1.png)
 
 |           | prediction = 0 | prediction = 1 |
 |-----------|:--------------:|:--------------:|
-| viral = 0 |      2727      |      1356      |
-| viral = 1 |      1577      |      2269      |
+| viral = 0 |      2722      |      1279      |
+| viral = 1 |      1671      |      2257      |
