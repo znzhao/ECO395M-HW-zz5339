@@ -14,14 +14,16 @@ summary(OnlineNews)
   p1
 
 ### Split into training and testing sets
-n = nrow(OnlineNews)
-n_train = round(0.8*n)  # round to nearest integer
-n_test = n - n_train
-train_cases = sample.int(n, n_train, replace=FALSE)
-test_cases = setdiff(1:n, train_cases)
-OnlineNews_train = OnlineNews[train_cases,]
-OnlineNews_test = OnlineNews[test_cases,]
-
+myfunc <- function() {
+  n = nrow(OnlineNews)
+  n_train = round(0.8*n)  # round to nearest integer
+  n_test = n - n_train
+  train_cases = sample.int(n, n_train, replace=FALSE)
+  test_cases = setdiff(1:n, train_cases)
+  OnlineNews_train = OnlineNews[train_cases,]
+  OnlineNews_test = OnlineNews[test_cases,]
+}
+  
 ### simple LM w/o polarity
 lm_OnlineNews_1 = lm(shares ~ n_tokens_title + n_tokens_content + num_hrefs + 
                      num_self_hrefs + num_imgs + num_videos + 
@@ -150,21 +152,37 @@ Xtest = model.matrix(~ n_tokens_title + n_tokens_content + num_hrefs +
                        weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
                        weekday_is_thursday + weekday_is_friday + weekday_is_saturday - 1, data=OnlineNews_test)
 
-# training and testing set responses
-ytrain = OnlineNews_train$viral
-ytest = OnlineNews_test$viral
 
-# now rescale:
-scale_train = apply(Xtrain, 2, sd)  # calculate std dev for each column
-Xtilde_train = scale(Xtrain, scale = scale_train)
-Xtilde_test = scale(Xtest, scale = scale_train)  # use the training set scales!
 
-K = 100
+K = 20
+run_time = 5
+myList <- c(rep(0, 20))
+for(i in c(1:run_time)){
+  myfunc()
+  # training and testing set responses
+  ytrain = OnlineNews_train$viral
+  ytest = OnlineNews_test$viral
+  
+  # now rescale:
+  scale_train = apply(Xtrain, 2, sd)  # calculate std dev for each column
+  Xtilde_train = scale(Xtrain, scale = scale_train)
+  Xtilde_test = scale(Xtest, scale = scale_train)  # use the training set scales!
+  for(j in c(1:K)){
+    m = j*5
+    knn_model = knn.reg(Xtilde_train, Xtilde_test, ytrain, k=m)
+    KNN_train_test1 = ifelse(knn_model$pred > 0.5, 1, 0)
+    
+    confusion_in_KNN = table(y = OnlineNews_test$viral, yhat = KNN_train_test1)
+    confusion_in_KNN
+    accuracy_rate = sum(diag(confusion_in_KNN))/sum(confusion_in_KNN)
+    myList[j]= myList[j] + accuracy_rate
+    print(j)
+  }
+  # fit the model
 
-# fit the model
-knn_model = knn.reg(Xtilde_train, Xtilde_test, ytrain, k=K)
-KNN_train_test1 = ifelse(knn_model$pred > 0.5, 1, 0)
+}
+myList = myList/run_time
 
-confusion_in_KNN = table(y = OnlineNews_test$viral, yhat = KNN_train_test1)
-confusion_in_KNN
-sum(diag(confusion_in_KNN))/sum(confusion_in_KNN)
+myL <- seq(5,100, by=5)
+
+
