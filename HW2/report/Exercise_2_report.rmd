@@ -241,8 +241,8 @@ rmse_vals = do(Ntimes)*{
   e3 = sum(yhat_test3 != unlist(DF_test$recall))/n_test 
   c(e1,e2,e3)
 }
-
-colMeans(rmse_vals)
+colnames(rmse_vals) <- c("model 1", "model 2", "model 3")
+kable(colMeans(rmse_vals), col.names = c("AVG RMSE"), caption = "Table 2.2.1: The Average RMSE for Different Models",padding = 2, align = "c")
 ```
 
 ```{r setup_2.2.1.2, echo=FALSE , warning=FALSE}
@@ -329,9 +329,7 @@ We split the dataset into the training set and the testing set using the standar
 
 If we build a model using the recall decision and all the other clinical risk factors and it significantly performs better than the baseline model, it means that there are some risk factors that the doctors are missing.
 
-We checked (1) the model regressing cancer indicator on the recall indicator and all the risk factors, (2) the model regressing cancer indicator on the recall indicator and all the risk factors and their interactions (3) two hand-build models. The thresholds that we chose for these models are the same as the baseline model, so that we can compare these models on the same level.  The regression models are:
-
-
+We checked (1) the model regressing cancer indicator on the recall indicator and all the risk factors, (2) the model regressing cancer indicator on the recall indicator and all the risk factors and their interactions (3) two hand-build models. The thresholds that we chose for these models are the same as the baseline model, so that we can compare these models on the same level. The regression models are:
 
 
 Before we show the result of the models, we need to explain the criteria that we use to judge these model. When we try to identify the patient, different kinds of error has different cost. It might not be a big problem if a healthy woman is recalled to do some further test, but it may cause death if the doctor didn’t identify the patients who have cancer. Hence the accurate rate is not the best criteria. Instead, we calculate the deviance of these model, and choose the model with smaller deviance.
@@ -364,7 +362,6 @@ Err1 = do(50)*{
 
 colnames(Err1) <- c("Baseline", "Model 1", "Model 2", "Model 3")
 kable(colMeans(Err1), col.names = c("AVG Deviation for Different Models"), caption = "Table 2.2.1: The Average RMSE for Different Models",padding = 2, align = "c")
-
 ```
 
 From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3.
@@ -400,7 +397,7 @@ row.names(t1) <- c("cancer = 0", "cancer = 1")
 kable(t1, caption = "Table 2.1.3: Confusion Matrix of the Baseline Model",padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
 ```
 
-The accuracy rate is (824+22)/987 = 85.7%, the true positive rate is 22/(22+15) = 59.5%, the specificity is 22/(126+22) = 14.9%.
+The accuracy rate is (824+22)/987 = 85.7%, the false negative rate is 15/(22+15) = 40.5%,  the false positive rate is 126/(126+22) = 85.1%.
 
 The confusion matrix for the model using the entire dataset is:
 
@@ -411,6 +408,80 @@ row.names(t2) <- c("cancer = 0", "cancer = 1")
 kable(t2, caption = "Table 2.1.4: Confusion Matrix of the Improved Model",padding = 2, align = "c", col.names = c("prediction = 0", "prediction = 1"))
 ```
 
-The accuracy rate is (797+23)/987 = 83.1%, the true positive rate is 23/(23+14) = 62.2%, the specificity is 23/(153+23) = 13.1%.
+The accuracy rate is (797+23)/987 = 83.1%, the false negative rate is 14/(23+14) = 37.8%, the false positive rate is 153/(153+23) = 86.9%.
 
-Although this is the insample rates, we can still conclude that the true positive rate is increasing, which means it will minimize the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible, while the specificity is slightly decreasing, meaning the doctors have to be more conservative and hence slightly increase the rate of the false alert.
+Although this is the insample rates, we can still conclude that the false negative rate is decreasing, which means it will lower the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible, while the false positive rate is slightly increasing, meaning the doctors have to be more conservative and hence slightly increase the rate of the false alert. However, clearly the fact that we identified more cancer patients matters more.
+
+## Exercise 2.3
+
+```{r setup2.3, echo = FALSE, warning=FALSE}
+urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW2/online_news.csv'
+OnlineNews<-read.csv(url(urlfile))
+OnlineNews$viral = ifelse(OnlineNews$shares > 1400, 1, 0)
+```
+
+
+```{r table2.3.1, echo = FALSE, warning=FALSE}
+data = OnlineNews
+Ntimes = 100
+n = nrow(data)
+
+accrate = do(Ntimes)*{
+  # re-split into train and test cases
+  n_train = round(0.8*n)  # round to nearest integer
+  n_test = n - n_train
+  train_cases = sample.int(n, n_train, replace=FALSE)
+  test_cases = setdiff(1:n, train_cases)
+  DF_train = data[train_cases,]
+  DF_test = data[test_cases,]
+  y_test = data$viral[test_cases]
+  
+  # lm test
+  lm_result = lm(shares ~ n_tokens_title + n_tokens_content + num_hrefs + 
+                     num_self_hrefs + num_imgs + num_videos + 
+                     average_token_length + num_keywords + data_channel_is_lifestyle + 
+                     data_channel_is_entertainment + data_channel_is_bus + 
+                     + data_channel_is_socmed + data_channel_is_tech + 
+                     data_channel_is_world + self_reference_avg_sharess + 
+                     weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                     weekday_is_thursday + weekday_is_friday + weekday_is_saturday, data=DF_train)
+
+  sharehat_test = predict(lm_result, DF_test)
+  yhat_test1 = ifelse((sharehat_test>1400), yes = 1 ,no = 0)
+  ar1 = sum(yhat_test1 == y_test)/n_test
+  
+  # lm-viral test
+  lm_result = lm(viral ~ n_tokens_title + n_tokens_content + num_hrefs + 
+                     num_self_hrefs + num_imgs + num_videos + 
+                     average_token_length + num_keywords + data_channel_is_lifestyle + 
+                     data_channel_is_entertainment + data_channel_is_bus + 
+                     + data_channel_is_socmed + data_channel_is_tech + 
+                     data_channel_is_world + self_reference_avg_sharess + 
+                     weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                     weekday_is_thursday + weekday_is_friday + weekday_is_saturday, data=DF_train)
+
+  phat_test = predict(lm_result, DF_test)
+  yhat_test2 = ifelse((phat_test>1400), yes = 1 ,no = 0)
+  ar2 = sum(yhat_test2 == y_test)/n_test
+  
+  # glm test
+  glm_result = glm(viral ~ n_tokens_title + n_tokens_content + num_hrefs + 
+                       num_self_hrefs + num_imgs + num_videos + 
+                       average_token_length + num_keywords + data_channel_is_lifestyle + 
+                       data_channel_is_entertainment + data_channel_is_bus + 
+                       + data_channel_is_socmed + data_channel_is_tech + 
+                       data_channel_is_world + self_reference_avg_sharess + 
+                       weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                       weekday_is_thursday + weekday_is_friday + weekday_is_saturday, data=DF_train, family=binomial)
+  
+    phat_test3 = predict(glm_result, DF_test, type='response')
+    yhat_test3 = ifelse(phat_test3 > 0.5, 1, 0)
+    ar3 = sum(yhat_test3 == unlist(DF_test$viral))/n_test 
+    tpr3 = sum(yhat_test3 == 1 & unlist(DF_test$viral) == 1)/sum(unlist(DF_test$viral) == 1)
+    fpr3 = sum(yhat_test3 == 1 & unlist(DF_test$viral) == 0)/sum(unlist(DF_test$viral) == 0)
+    
+  c(ar1, ar2, ar3, tpr3, fpr3)
+  }
+
+colMeans(accrate)
+```
