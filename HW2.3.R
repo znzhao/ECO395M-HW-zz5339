@@ -197,11 +197,32 @@ K = 20
 run_time = 5
 myList <- c(rep(0, 20))
 for(i in c(1:run_time)){
-  myfunc()
+  n = nrow(OnlineNews)
+  n_train = round(0.8*n)  # round to nearest integer
+  n_test = n - n_train
+  train_cases = sample.int(n, n_train, replace=FALSE)
+  test_cases = setdiff(1:n, train_cases)
+  OnlineNews_train = OnlineNews[train_cases,]
+  OnlineNews_test = OnlineNews[test_cases,]
   # training and testing set responses
   ytrain = OnlineNews_train$viral
   ytest = OnlineNews_test$viral
-  
+  Xtrain = model.matrix(~ n_tokens_title + n_tokens_content + num_hrefs + 
+                          num_self_hrefs + num_imgs + num_videos + 
+                          average_token_length + num_keywords + data_channel_is_lifestyle + 
+                          data_channel_is_entertainment + data_channel_is_bus + 
+                          + data_channel_is_socmed + data_channel_is_tech + 
+                          data_channel_is_world + self_reference_avg_sharess + 
+                          weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                          weekday_is_thursday + weekday_is_friday + weekday_is_saturday - 1, data=OnlineNews_train)
+  Xtest = model.matrix(~ n_tokens_title + n_tokens_content + num_hrefs + 
+                         num_self_hrefs + num_imgs + num_videos + 
+                         average_token_length + num_keywords + data_channel_is_lifestyle + 
+                         data_channel_is_entertainment + data_channel_is_bus + 
+                         + data_channel_is_socmed + data_channel_is_tech + 
+                         data_channel_is_world + self_reference_avg_sharess + 
+                         weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                         weekday_is_thursday + weekday_is_friday + weekday_is_saturday - 1, data=OnlineNews_test)
   # now rescale:
   scale_train = apply(Xtrain, 2, sd)  # calculate std dev for each column
   Xtilde_train = scale(Xtrain, scale = scale_train)
@@ -215,7 +236,6 @@ for(i in c(1:run_time)){
     confusion_in_KNN
     accuracy_rate = sum(diag(confusion_in_KNN))/sum(confusion_in_KNN)
     myList[j]= myList[j] + accuracy_rate
-    print(j)
   }
   # fit the model
 
