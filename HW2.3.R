@@ -10,7 +10,7 @@ OnlineNews$viral = ifelse(OnlineNews$shares > 1400, 1, 0)
 summary(OnlineNews)
 
   p1 <- ggplot(data = OnlineNews) + 
-    geom_point(mapping = aes(y = shares, x =title_sentiment_polarity),alpha = 0.01) + ylim(0, 10000)
+    geom_point(mapping = aes(y = shares, x =n_tokens_title),alpha = 0.01) +ylim(0, 15000)
   p1
 
 ### Split into training and testing sets
@@ -34,6 +34,25 @@ lm_OnlineNews_1 = lm(shares ~ n_tokens_title + n_tokens_content + num_hrefs +
 
 ### simple binomial LM w/o polarity 
 lm_OnlineNews_2 = lm(viral ~ n_tokens_title + n_tokens_content + num_hrefs + 
+                       num_self_hrefs + num_imgs + num_videos + 
+                       average_token_length + num_keywords + data_channel_is_lifestyle + 
+                       data_channel_is_entertainment + data_channel_is_bus + 
+                       + data_channel_is_socmed + data_channel_is_tech + 
+                       data_channel_is_world + self_reference_avg_sharess + 
+                       weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                       weekday_is_thursday + weekday_is_friday + weekday_is_saturday, data=OnlineNews_train)
+
+lm_OnlineNews_22 = glm(viral ~ poly(n_tokens_title, 2) + log(n_tokens_content+0.1) + log(num_hrefs+0.1) + 
+                       num_self_hrefs + log(num_imgs+0.1) + log(num_videos+0.1) + 
+                        poly(average_token_length, 2) + log(num_keywords+0.1) + data_channel_is_lifestyle + 
+                       data_channel_is_entertainment + data_channel_is_bus + 
+                       + data_channel_is_socmed + data_channel_is_tech + 
+                       data_channel_is_world + self_reference_avg_sharess + 
+                       weekday_is_monday + weekday_is_tuesday + weekday_is_wednesday + 
+                       weekday_is_thursday + weekday_is_friday + weekday_is_saturday +
+                        poly(max_positive_polarity, 2) + poly(max_negative_polarity, 2), data=OnlineNews_train, family=binomial)
+
+lm_OnlineNews_1 = lm(shares ~ n_tokens_title + n_tokens_content + num_hrefs + 
                        num_self_hrefs + num_imgs + num_videos + 
                        average_token_length + num_keywords + data_channel_is_lifestyle + 
                        data_channel_is_entertainment + data_channel_is_bus + 
@@ -73,9 +92,9 @@ lm_OnlineNews_5 = lm(viral ~ poly(n_tokens_title, 3) + poly(num_hrefs, 2) + poly
                        poly(max_positive_polarity, 3) + poly(max_negative_polarity, 3), data=OnlineNews_train)
 
 coef(lm_OnlineNews_5) %>% round(3)
-
+summary(lm_OnlineNews_22)
 ### Set model
-lm_OnlineNews_SetModel <- lm_OnlineNews_5
+lm_OnlineNews_SetModel <- lm_OnlineNews_22
 
 ### Predictions in sample
 yhat_train_test1 = predict(lm_OnlineNews_SetModel, OnlineNews_train)
