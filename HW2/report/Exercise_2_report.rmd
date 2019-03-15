@@ -591,6 +591,7 @@ accrate <- data.frame(myList, myL)
 ggplot(data = accrate, aes(x = myL, y = myList))+
   geom_point(shape = "O")+
   geom_line(col = "red")+
+  theme_bw()+
   geom_vline(xintercept = myL[which.max(myList)])+
   labs(title = "AVG Accuracy Rate vs K (5<K<100) Model: KNN classification",
        x = "K",

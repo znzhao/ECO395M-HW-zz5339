@@ -24,13 +24,13 @@ The performance of the models are mesured with average out-of-sample RMSE. We us
 
 |         | AVG RMSE |
 |---------|:--------:|
-| model 1 | 67039.96 |
-| model 2 | 66787.10 |
-| model 3 | 60452.47 |
-| model 4 | 60386.43 |
-| model 5 | 59694.41 |
-| model 6 | 60004.13 |
-| model 7 | 60753.29 |
+| model 1 | 66563.19 |
+| model 2 | 66379.88 |
+| model 3 | 60429.91 |
+| model 4 | 60368.80 |
+| model 5 | 59633.71 |
+| model 6 | 60110.58 |
+| model 7 | 60808.58 |
 
 The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 59900, while the average RMSE of the baseline model is around 66000. The regression result is:
 
@@ -94,9 +94,9 @@ The performance of the models are measured with error rate, which is calculated 
 
 |         |  AVG RMSE |
 |---------|:---------:|
-| model 1 | 0.4050254 |
-| model 2 | 0.4426396 |
-| model 3 | 0.3995939 |
+| model 1 | 0.4034518 |
+| model 2 | 0.4474112 |
+| model 3 | 0.4046193 |
 
 After running for several times, we found the error rate of model 1 and model 3 is significantly smaller than that of model 2. We use model 1 to predict in the following as the error rate of model 1 is slightly smaller than that of model 3.
 
@@ -104,11 +104,11 @@ Then, we randomly chosen 100 samples, which consist of around 10% of 987 screeni
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1535287|
-| radiologist34 |     0.1007484|
-| radiologist66 |     0.2105483|
-| radiologist89 |     0.2356515|
-| radiologist95 |     0.1216130|
+| radiologist13 |     0.1389836|
+| radiologist34 |     0.0946831|
+| radiologist66 |     0.1795290|
+| radiologist89 |     0.2163394|
+| radiologist95 |     0.1293578|
 
 From the above table, we can clearly see that radiologist89 is most clinically conservative, whose recall rate is 0.23. Radiologist66, radiologist13, radiologist95 and radiologist34, ranked 2nd, 3rd, 4th and 5th respectivelly in terms of clinically conservative index.
 
@@ -118,21 +118,21 @@ At last, we performed robust test on our results. We predicted recall rates by u
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1410426|
-| radiologist34 |     0.0907764|
-| radiologist66 |     0.1880662|
-| radiologist89 |     0.2026574|
-| radiologist95 |     0.1347735|
+| radiologist13 |     0.1447277|
+| radiologist34 |     0.0944615|
+| radiologist66 |     0.1917512|
+| radiologist89 |     0.2063424|
+| radiologist95 |     0.1384586|
 
     ## [1] "model 3"
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1415107|
-| radiologist34 |     0.0806531|
-| radiologist66 |     0.2208250|
-| radiologist89 |     0.2562951|
-| radiologist95 |     0.1341621|
+| radiologist13 |     0.1408157|
+| radiologist34 |     0.0826584|
+| radiologist66 |     0.1991137|
+| radiologist89 |     0.2103601|
+| radiologist95 |     0.1318364|
 
 In conclusion, holding patient risk factors equal, the order of clinically conservative characteristic in recalling patients is: radiologist89 &gt; radiologist66 &gt; radiologist13 &gt; radiologist95 &gt; radiologist34, when letting radiologists see the same patients.
 
@@ -166,10 +166,10 @@ The average deviance of the models are listed in the following table:
 
 |          | AVG Deviance for Different Models |
 |----------|:---------------------------------:|
-| Baseline |              1.471110             |
-| Model 1  |              1.483570             |
-| Model 2  |              1.467849             |
-| Model 3  |              1.388686             |
+| Baseline |              1.439518             |
+| Model 1  |              1.498015             |
+| Model 2  |              1.540995             |
+| Model 3  |              1.387163             |
 
 From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3. Overall we can say that the doctors did great jobs at identifying the patients who do get cancer. the drop between Model3 and the baseline is very small.
 
@@ -214,18 +214,18 @@ Exercise 2.3
 
 |          |  Accurate Rate|
 |----------|--------------:|
-| share-LM |      0.4967285|
-| viral-LM |      0.6268735|
-| GLM      |      0.6276668|
+| share-LM |      0.4963917|
+| viral-LM |      0.6268130|
+| GLM      |      0.6274373|
 
 |           | prediction = 0 | prediction = 1 |
 |-----------|:--------------:|:--------------:|
-| viral = 0 |      2475      |      1564      |
-| viral = 1 |      1388      |      2502      |
+| viral = 0 |      2472      |      1560      |
+| viral = 1 |      1425      |      2472      |
 
 ![](Exercise_2_report_files/figure-markdown_github/table2.3.3-1.png)
 
 |           | prediction = 0 | prediction = 1 |
 |-----------|:--------------:|:--------------:|
-| viral = 0 |      2681      |      1294      |
-| viral = 1 |      1588      |      2366      |
+| viral = 0 |      2708      |      1336      |
+| viral = 1 |      1611      |      2274      |
