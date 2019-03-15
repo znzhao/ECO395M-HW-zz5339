@@ -10,19 +10,29 @@ Long story short, we "hand-build" a model for price that outperforms the "medium
 
 The models that we checked are listed below.
 
+``` r
+model1 = price ~ lotSize + age + livingArea + pctCollege + bedrooms + fireplaces + bathrooms + rooms + heating + fuel + centralAir
+model2 = price ~ lotSize + age + livingArea + pctCollege*fireplaces + bedrooms  + bathrooms + rooms + heating + centralAir
+model3 = price ~ landValue + livingArea + pctCollege + bedrooms + fireplaces + bathrooms + rooms + heating + fuel + centralAir
+model4 = price ~ landValue + livingArea + bedrooms + bathrooms + rooms + heating + fuel + centralAir
+model5 = price ~ landValue + lotSize*(bedrooms + bathrooms) + livingArea*(fuel+ heating + centralAir) + pctCollege*(fireplaces+age) + rooms
+model6 = price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + bathrooms + rooms + heating + centralAir
+model7 = price ~ landValue + lotSize*bedrooms + livingArea*fuel + pctCollege*(fireplaces+age) + centralAir
+```
+
 The performance of the models are mesured with average out-of-sample RMSE. We use the 80% of the data to do regressions and calculate RMSE for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average RMSE. The result of the models are listed below.
 
 |         | AVG RMSE |
 |---------|:--------:|
-| model 1 | 65987.22 |
-| model 2 | 65769.93 |
-| model 3 | 59962.30 |
-| model 4 | 59887.17 |
-| model 5 | 59302.17 |
-| model 6 | 59623.05 |
-| model 7 | 60360.83 |
+| model 1 | 66563.19 |
+| model 2 | 66379.88 |
+| model 3 | 60429.91 |
+| model 4 | 60368.80 |
+| model 5 | 59633.71 |
+| model 6 | 60110.58 |
+| model 7 | 60808.58 |
 
-The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 60000, while the average RMSE of the baseline model is around 66000. The regression result is:
+The best model that we solved is model 5. This model beats all the other models that we choose by having a smaller average RMSE of around 59900, while the average RMSE of the baseline model is around 66000. The regression result is:
 
 |                                   | coefficients.Estimate | coefficients.Std..Error | coefficients.t.value | coefficients.Pr...t.. |
 |-----------------------------------|:---------------------:|:-----------------------:|:--------------------:|:---------------------:|
@@ -61,46 +71,70 @@ Third, comparing with the apartments fueling with gas, the apartments fueling wi
 
 Forth, the interactions between the number of bedrooms or bathrooms and the lotsize are not significant, but the interactions between the living area and the fuel and whether the house has a central air conditioner is significant. To be more specific, the effect of the living area on the price of the room fueled with oil is lower than the room fueled with gas. And it is also true that the effect of the living area on the price of the room without a central air conditioner is lower than the room that has a central air conditioner.The interactions between whether the apartment is close to a college and the age of the house and the number of fireplaces are significant.
 
-By using exactly same variables in the linear regression model it is very hard to beat the linear regression with the KNN model.
+However, by using exactly same variables in the linear regression model it is very hard to beat the linear regression with the KNN model.
 
 ![](Exercise_2_report_files/figure-markdown_github/graph2.1.1-1.png)
 
-From the plot of average RMSE vs K we can tell the optimal K for the KNN model is about 10-15. The lowest average RMSE that we can get with KNN model is about 63000, which is still higher than the average RMSE that we conclude using a linear model with interactions.
+From the plot of average RMSE vs K we can tell the optimal K for the KNN model is about 10-12. The lowest average RMSE that we can get with KNN model is about 63000, which is still higher than the average RMSE that we conclude using a linear model with interactions.
 
 Exercise 2.2
 ------------
 
 ### Exercise 2.2.1
 
+First, in order to get the most accurate predictions of radiologists’ recall rates, we construct three logistic models. Because we need to take consideration that all the risk factors need to be constant, we choose age, history of breast biopsy/surgery, breast cancer symptom, menopause/hormone-therapy status and breast density classification as independent variables and recall as dependent variable in our logistic model. After considering the chance of interactions, we selected three following models:
+
+``` r
+model1 = recall~radiologist*(age+history+symptoms+menopause+density)
+model2 = recall~radiologist+age+history+symptoms+menopause+density
+model3 = recall~(radiologist+age+history+symptoms+menopause+density)^2
+```
+
+The performance of the models are measured with error rate, which is calculated by sum of the right diagonal numbers of confusion matrix divided by 987 screening mammograms. We use the 80% of the data to do logistic regressions and calculate error rate for the rest 20%, and rerun the Monte Carlo training-testing split to calculate the average error rate. The threshold that we used for the calculation is about 0.1509, which is the average rate for the recalled patients. The result of the models are listed below:
+
 |         |  AVG RMSE |
 |---------|:---------:|
-| model 1 | 0.4018274 |
-| model 2 | 0.4461421 |
-| model 3 | 0.4020812 |
+| model 1 | 0.4034518 |
+| model 2 | 0.4474112 |
+| model 3 | 0.4046193 |
+
+After running for several times, we found the error rate of model 1 and model 3 is significantly smaller than that of model 2. We use model 1 to predict in the following as the error rate of model 1 is slightly smaller than that of model 3.
+
+Then, we randomly chosen 100 samples, which consist of around 10% of 987 screening mammograms. After that, we repeat these 100 samples for 5 times each. In order to address the problem that the radiologists don’t see the same patients, we added an additional row, which is arranged by repeated series radiologist13, radiologist34, radiologist66, radiologist89 and radiologist95. Therefore, we let five radiologists see the same patients. Finally, we predict the recall rates of each radiologist with model 1. The results is below.
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1296905|
-| radiologist34 |     0.0643040|
-| radiologist66 |     0.1812487|
-| radiologist89 |     0.2595449|
-| radiologist95 |     0.1540658|
+| radiologist13 |     0.1389836|
+| radiologist34 |     0.0946831|
+| radiologist66 |     0.1795290|
+| radiologist89 |     0.2163394|
+| radiologist95 |     0.1293578|
+
+From the above table, we can clearly see that radiologist89 is most clinically conservative, whose recall rate is 0.23. Radiologist66, radiologist13, radiologist95 and radiologist34, ranked 2nd, 3rd, 4th and 5th respectivelly in terms of clinically conservative index.
+
+At last, we performed robust test on our results. We predicted recall rates by using model 2 and model 3. The below tables showed the results, which is consistent with the result predicted by model 1.
+
+    ## [1] "model 2"
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1452173|
-| radiologist34 |     0.0949511|
-| radiologist66 |     0.1922409|
-| radiologist89 |     0.2068320|
-| radiologist95 |     0.1389482|
+| radiologist13 |     0.1447277|
+| radiologist34 |     0.0944615|
+| radiologist66 |     0.1917512|
+| radiologist89 |     0.2063424|
+| radiologist95 |     0.1384586|
+
+    ## [1] "model 3"
 
 | radiologist   |  Prob\_recall|
 |:--------------|-------------:|
-| radiologist13 |     0.1330110|
-| radiologist34 |     0.0489468|
-| radiologist66 |     0.1820529|
-| radiologist89 |     0.2453830|
-| radiologist95 |     0.1358177|
+| radiologist13 |     0.1408157|
+| radiologist34 |     0.0826584|
+| radiologist66 |     0.1991137|
+| radiologist89 |     0.2103601|
+| radiologist95 |     0.1318364|
+
+In conclusion, holding patient risk factors equal, the order of clinically conservative characteristic in recalling patients is: radiologist89 &gt; radiologist66 &gt; radiologist13 &gt; radiologist95 &gt; radiologist34, when letting radiologists see the same patients.
 
 ### Exercise 2.2.2
 
@@ -110,24 +144,34 @@ First we build the baseline model, which suggests that when the doctors recall a
 
 To formalize the model by regression, we regressed the patient’s cancer outcome on the radiologist’s recall decision with the logistic regression. The regression model is:
 
+``` r
+baseline = cancer ~ recall
+```
+
 We split the dataset into the training set and the testing set using the standard 80-20 rule, and re-run the regression for 100 times to eliminate the stochasticity, and ending up with similar rates to the ones calculated with the entire database.
 
 If we build a model using the recall decision and all the other clinical risk factors and it significantly performs better than the baseline model, it means that there are some risk factors that the doctors are missing.
 
 We checked (1) the model regressing cancer indicator on the recall indicator and all the risk factors, (2) the model regressing cancer indicator on the recall indicator and all the risk factors and their interactions (3) two hand-build models. The thresholds that we chose for these models are the same as the baseline model, so that we can compare these models on the same level. The regression models are:
 
+``` r
+model1 = cancer ~ recall + age + history + symptoms + menopause + density
+model2 = cancer ~ recall + (age + history + symptoms + menopause + density)^2
+model3 = cancer ~ recall + history + symptoms + menopause
+```
+
 Before we show the result of the models, we need to explain the criteria that we use to judge these model. When we try to identify the patient, different kinds of error has different cost. It might not be a big problem if a healthy woman is recalled to do some further test, but it may cause death if the doctor didn’t identify the patients who have cancer. Hence the accurate rate is not the best criteria. Instead, we calculate the deviance of these model, and choose the model with smaller deviance.
 
 The average deviance of the models are listed in the following table:
 
-|          | AVG Deviation for Different Models |
-|----------|:----------------------------------:|
-| Baseline |              1.532054              |
-| Model 1  |              1.589381              |
-| Model 2  |              1.620747              |
-| Model 3  |              1.450015              |
+|          | AVG Deviance for Different Models |
+|----------|:---------------------------------:|
+| Baseline |              1.439518             |
+| Model 1  |              1.498015             |
+| Model 2  |              1.540995             |
+| Model 3  |              1.387163             |
 
-From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3.
+From the table we can tell that the Model 3 has the lowest average deviation, which means we can perform better than the doctors currently do if they give more weight on the terms in Model 3. Overall we can say that the doctors did great jobs at identifying the patients who do get cancer. the drop between Model3 and the baseline is very small.
 
 The logistic regression of model 3 using the whole dataset is shown below:
 
@@ -152,7 +196,7 @@ The confusion matrix for the baseline model using the entire dataset is:
 | cancer = 0 |       824      |       126      |
 | cancer = 1 |       15       |       22       |
 
-The accuracy rate is (824+22)/987 = 85.7%, the true positive rate is 22/(22+15) = 59.5%, the specificity is 22/(126+22) = 14.9%.
+The accuracy rate is (824+22)/987 = 85.7%, the false negative rate is 15/(22+15) = 40.5%, the false positive rate is 126/(126+22) = 85.1%.
 
 The confusion matrix for the model using the entire dataset is:
 
@@ -161,12 +205,27 @@ The confusion matrix for the model using the entire dataset is:
 | cancer = 0 |       797      |       153      |
 | cancer = 1 |       14       |       23       |
 
-The accuracy rate is (797+23)/987 = 83.1%, the true positive rate is 23/(23+14) = 62.2%, the specificity is 23/(153+23) = 13.1%.
+The accuracy rate is (797+23)/987 = 83.1%, the false negative rate is 14/(23+14) = 37.8%, the false positive rate is 153/(153+23) = 86.9%.
 
-Although this is the insample rates, we can still conclude that the true positive rate is increasing, which means it will minimize the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible, while the specificity is slightly decreasing, meaning the doctors have to be more conservative and hence slightly increase the rate of the false alert.
+Although this is the insample rates, we can still conclude that the false negative rate is decreasing, which means it will lower the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible, while the false positive rate is slightly increasing, meaning the doctors have to be more conservative and hence slightly increase the rate of the false alert. However, clearly the fact that we identified more cancer patients matters more.
 
 Exercise 2.3
 ------------
 
-    ##        V1        V2        V3        V4        V5 
-    ## 0.4970892 0.5056930 0.6270639 0.6317552 0.3774612
+|          |  Accurate Rate|
+|----------|--------------:|
+| share-LM |      0.4963917|
+| viral-LM |      0.6268130|
+| GLM      |      0.6274373|
+
+|           | prediction = 0 | prediction = 1 |
+|-----------|:--------------:|:--------------:|
+| viral = 0 |      2472      |      1560      |
+| viral = 1 |      1425      |      2472      |
+
+![](Exercise_2_report_files/figure-markdown_github/table2.3.3-1.png)
+
+|           | prediction = 0 | prediction = 1 |
+|-----------|:--------------:|:--------------:|
+| viral = 0 |      2708      |      1336      |
+| viral = 1 |      1611      |      2274      |
