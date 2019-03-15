@@ -187,21 +187,68 @@ From the plot of average RMSE vs K we can tell the optimal K for the KNN model i
 
 
 ## Exercise 2.2
+
 ```{r setup_2.2, echo=FALSE , warning=FALSE}
 urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW2/brca.csv'
 brca<-read.csv(url(urlfile))
 n = nrow(brca)
+
+# define the deviation function as the judgement
+dev_out = function(ml, y, dataset) {
+  probhat = predict(ml, newdata=dataset, type='response')
+  p0 = 1-probhat
+  phat = data.frame(P0 = p0, p1 = probhat)
+  rc_pairs = cbind(seq_along(y), y)
+  -2*sum(log(phat[rc_pairs]))
+}
 ```
 
 ### Exercise 2.2.1
-```{r setup_2.1.2, echo=FALSE , warning=FALSE}
-modelselect=glm(recall~radiologist*(age+history+symptoms+menopause),data=brca)
-table2_1 = summary(modelselect)
-kable(as.data.frame(table2_1["coefficients"]), caption = "Table 2.2.2: Regression Result for the Best Model",padding = 2, align = "c")
+
+```{r setup_2.2.1,1, echo=FALSE , warning=FALSE}
+data = brca
+n = nrow(data)
+Ntimes = 100
+threshold = sum(brca$recall == 1)/n+0.001
+
+# performance check
+
+rmse_vals = do(Ntimes)*{
+  # re-split into train and test cases
+  n_train = round(0.8*n)  # round to nearest integer
+  n_test = n - n_train
+  train_cases = sample.int(n, n_train, replace=FALSE)
+  test_cases = setdiff(1:n, train_cases)
+  DF_train = data[train_cases,]
+  DF_test = data[test_cases,]
+  
+  # fit to this training set
+  glm_result1 = glm(recall~radiologist*(age+history+symptoms+menopause+density), data=DF_train, family=binomial)
+  glm_result2 = glm(recall~radiologist+age+history+symptoms+menopause+density, data=DF_train, family=binomial)
+  glm_result3 = glm(recall~(radiologist+age+history+symptoms+menopause+density)^2, data=DF_train, family=binomial)
+  
+  # predict on this testing set
+  phat_test1 = predict(glm_result1, DF_test, type='response')
+  yhat_test1 = ifelse(phat_test1 > threshold, 1, 0)
+  e1 = sum(yhat_test1 != unlist(DF_test$recall))/n_test
+  # predict on this testing set
+  phat_test2 = predict(glm_result2, DF_test, type='response')
+  yhat_test2 = ifelse(phat_test2 > threshold, 1, 0)
+  e2 = sum(yhat_test2 != unlist(DF_test$recall))/n_test
+  # predict on this testing set
+  phat_test3 = predict(glm_result3, DF_test, type='response')
+  yhat_test3 = ifelse(phat_test3 > threshold, 1, 0)
+  e3 = sum(yhat_test3 != unlist(DF_test$recall))/n_test 
+  c(e1,e2,e3)
+}
+
+colMeans(rmse_vals)
 ```
 
-```{r setup_2.1.3, echo=FALSE , warning=FALSE}
-# generate the testing set
+```{r setup_2.2.1.2, echo=FALSE , warning=FALSE}
+modelselect=glm(recall~radiologist*(age+history+symptoms+menopause+density),data=brca)
+table2_1 = summary(modelselect)
+#kable(as.data.frame(table2_1["coefficients"]), caption = "Table 2.2.2: Regression Result for the Best Model",padding = 2, align = "c")# generate the testing set
 n = nrow(brca)
 # get the sample
 pretest_cases = sample.int(n,50,replace=FALSE)
@@ -220,18 +267,56 @@ group_by(radiologist)%>%
 summarise(Prob_recall = mean(yhat_recall))
 kable(brca_predict)
 ```
+
+```{r setup_2.2.1.3, echo=FALSE , warning=FALSE}
+modelselect=glm(recall~radiologist+age+history+symptoms+menopause+density,data=brca)
+#kable(as.data.frame(table2_1["coefficients"]), caption = "Table 2.2.2: Regression Result for the Best Model",padding = 2, align = "c")# generate the testing set
+n = nrow(brca)
+# get the sample
+pretest_cases = sample.int(n,50,replace=FALSE)
+brca_pretest = brca[pretest_cases,]
+brca_sample=data.frame(brca_pretest)
+# replicate the data for 5 times
+brca_samplerepeat=brca_sample[rep(1:nrow(brca_sample),each=5),-1]
+# assign the same patient to different doctors
+brca_samplerepeat$radiologist=c("radiologist13","radiologist34","radiologist66","radiologist89","radiologist95")
+# get diagnose from doctors 
+yhat_recall = predict(modelselect, brca_samplerepeat)
+brca_samplerepeat=cbind(brca_samplerepeat,yhat_recall)
+# compare doctors 
+brca_predict<-brca_samplerepeat%>%
+group_by(radiologist)%>%
+summarise(Prob_recall = mean(yhat_recall))
+kable(brca_predict)
+```
+
+```{r setup_2.2.1.4, echo=FALSE , warning=FALSE}
+modelselect=glm(recall~(radiologist+age+history+symptoms+menopause+density)^2,data=brca)
+#kable(as.data.frame(table2_1["coefficients"]), caption = "Table 2.2.2: Regression Result for the Best Model",padding = 2, align = "c")# generate the testing set
+n = nrow(brca)
+# get the sample
+pretest_cases = sample.int(n,50,replace=FALSE)
+brca_pretest = brca[pretest_cases,]
+brca_sample=data.frame(brca_pretest)
+# replicate the data for 5 times
+brca_samplerepeat=brca_sample[rep(1:nrow(brca_sample),each=5),-1]
+# assign the same patient to different doctors
+brca_samplerepeat$radiologist=c("radiologist13","radiologist34","radiologist66","radiologist89","radiologist95")
+# get diagnose from doctors 
+yhat_recall = predict(modelselect, brca_samplerepeat)
+brca_samplerepeat=cbind(brca_samplerepeat,yhat_recall)
+# compare doctors 
+brca_predict<-brca_samplerepeat%>%
+group_by(radiologist)%>%
+summarise(Prob_recall = mean(yhat_recall))
+kable(brca_predict)
+```
+
 ### Exercise 2.2.2
+
 ```{r setup_2.2.2, echo=FALSE , warning=FALSE}
 threshold = sum(brca$cancer == 1)/n+0.001
 
-# define the deviation function as the judgement
-dev_out = function(ml, y, dataset) {
-  probhat = predict(ml, newdata=dataset, type='response')
-  p0 = 1-probhat
-  phat = data.frame(P0 = p0, p1 = probhat)
-  rc_pairs = cbind(seq_along(y), y)
-  -2*sum(log(phat[rc_pairs]))
-}
 ```
 
 The second point that we want to make is that when the radiologists at this hospital interpret a mammogram to make a decision on whether to recall the patient, they should be weighing the history of the patients, the breast cancer symptoms and the menopause status of the patient more heavily than they currently are. Although this means they have to recall more patients back for further checks, it will minimize the false negative rate, identifying more precisely the patients who do end up getting cancer, so that they can be treated as early as possible.
@@ -252,6 +337,7 @@ We checked (1) the model regressing cancer indicator on the recall indicator and
 Before we show the result of the models, we need to explain the criteria that we use to judge these model. When we try to identify the patient, different kinds of error has different cost. It might not be a big problem if a healthy woman is recalled to do some further test, but it may cause death if the doctor didn’t identify the patients who have cancer. Hence the accurate rate is not the best criteria. Instead, we calculate the deviance of these model, and choose the model with smaller deviance.
 
 The average deviance of the models are listed in the following table:
+
 ```{r table2.2.1, echo = FALSE, warning=FALSE}
 
 Err1 = do(50)*{
