@@ -1,7 +1,6 @@
 library(tidyverse)
 library(mosaic)
 library(foreach)
-library(doMC)
 library(gamlr) 
 
 urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW1/greenbuildings.csv'
@@ -26,7 +25,7 @@ big  = lm(Rent ~ (.-CS_PropertyID-green_rating)^2, data=GB_cleaned)
 stepwise = step(null, scope=formula(big), dir="both")
 
 length(coef(stepwise))
-formula(stepwise)
+model1 = formula(stepwise)
 
 ## Gamma Lasso model
 gbx = sparse.model.matrix(Rent ~ (.-CS_PropertyID-green_rating)^2, data=GB_cleaned)[,-1] 
@@ -37,9 +36,44 @@ gbbeta = coef(gblasso)
 log(gblasso$lambda[which.min(AICc(gblasso))])
 sum(gbbeta!=0)
 
-gbcvl = cv.gamlr(gbx, gby, verb=TRUE)
+p1 <- dimnames(gbbeta)[[1]]
+p2 <- c()
+for (i in c(1:sum(gbbeta))){
+  p2 <- c(p2, as.list(gbbeta)[[i]])
+}
 
-gbb.min = coef(gbcvl, select="min")
-log(gbcvl$lambda.min)
-sum(gbb.min!=0) # note: this is random!  because of the CV randomness
+model2 = c("Rent ~ ")
+for (i in c(2:sum(gbbeta))){
+  if (p2[i] != 0){
+    if (model2 == "Rent ~ "){
+      model2 = paste(model2, p1[i])
+    }
+    else{
+      model2 = paste(model2,"+", p1[i])
+    }
+  }
+}
+model2 <- as.formula(model2)
+
+N = nrow(GB_cleaned)
+# Create a vector of fold indicators
+K = 10
+fold_id = rep_len(1:K, N)  # repeats 1:K over and over again
+fold_id = sample(fold_id, replace=FALSE) # permute the order randomly
+step_err_save = rep(0, K)
+lasso_err_save = rep(0, K)
+for(i in 1:K) {
+  train_set = which(fold_id != i)
+  y_test = GB_cleaned$Rent[-train_set]
+  step_model = lm(model1, data=GB_cleaned[train_set,])
+  lasso_model = lm(model2, data=GB_cleaned[train_set,])
+  
+  yhat_test1 = predict(step_model, newdata=GB_cleaned[-train_set,])
+  step_err_save[i] = mean((y_test - yhat_test1)^2)
+  
+  yhat_test2 = predict(lasso_model, newdata=GB_cleaned[-train_set,])
+  lasso_err_save[i] = mean((y_test - yhat_test2)^2)
+}
+# RMSE
+c(sqrt(mean(step_err_save)),sqrt(mean(lasso_err_save)))
 
