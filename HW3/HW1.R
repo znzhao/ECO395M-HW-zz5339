@@ -33,7 +33,7 @@ fwd = step(null, scope=formula(full), dir="forward")
 
 length(coef(fwd))
 #big1  = lm(Rent ~ (.-CS_PropertyID-LEED-Energystar)^2 + log(empl_gr) + log(age) + log(Electricity_Costs), data=GB_cleaned)
-big1  = lm(Rent ~ (.-CS_PropertyID-LEED-Energystar)^2 + poly(age,2) + poly(empl_gr,2) + poly(Electricity_Costs,2)+ poly(Gas_Costs,2), data=GB_cleaned)
+big1  = lm(Rent ~ (.-CS_PropertyID-LEED-Energystar)^2 + poly(age,2) + poly(empl_gr,2) + poly(Electricity_Costs,2)+ poly(Gas_Costs,2)+ poly(total_dd_07,2)+ poly(size,2), data=GB_cleaned)
 stepwise1 = step(null, scope=formula(big1), dir="both")
 
 #44 used, null = Forward, then stepwise 
