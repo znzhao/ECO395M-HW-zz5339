@@ -14,8 +14,6 @@ The first model considered LEED and EnergyStar separately and the second model c
 
 The two selected models are shown below. Including the interaction terms, we had 45 and 44 significant coefficients, respectively.
 
-    ## [1] "model1 = "
-
     ## Rent ~ cluster_rent + size + class_a + class_b + cd_total_07 + 
     ##     age + cluster + net + Electricity_Costs + hd_total07 + leasing_rate + 
     ##     LEED + amenities + cluster_rent:size + size:cluster + cluster_rent:cluster + 
@@ -28,8 +26,6 @@ The two selected models are shown below. Including the interaction terms, we had
     ##     size:class_b + class_b:amenities + size:amenities + Electricity_Costs:amenities + 
     ##     cluster_rent:amenities + cluster:leasing_rate + age:cluster + 
     ##     size:hd_total07 + age:LEED
-
-    ## [1] "model2 = "
 
     ## Rent ~ cluster_rent + size + class_a + class_b + cd_total_07 + 
     ##     age + cluster + net + Electricity_Costs + hd_total07 + leasing_rate + 
@@ -167,7 +163,7 @@ Thus, we used the model at the segment 66 and chose 168 coefficients. The specif
 
 Lastly, in order to compare 4 models above, we used k-fold cross validation. We arbitrarily set k equal to 10 and calculated the CVs. We found that the CVs of the stepwise selection models are lower than those by Lasso method. The second stepwise model with the combined "green certified" category had the minimum CV, and therefore it is our best predictive model possible for rent price.
 
-    ## [1] 9.200166 9.195550 9.274665 9.216901
+    ## [1] 9.158497 9.154099 9.186821 9.126833
 
 ### Use this model to quantify the average change in rental income per square foot (whether in absolute or percentage terms) associated with green certification, holding other features of the building constant.
 
