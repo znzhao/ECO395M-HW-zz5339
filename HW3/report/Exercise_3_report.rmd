@@ -63,7 +63,6 @@ plot(gblasso) # the path plot!
 
 ```{r model3, echo=FALSE, warning=FALSE}
 gbbeta = coef(gblasso)
-log(gblasso$lambda[which.min(AICc(gblasso))])
 # 184 used in Lasso
 # sum(gbbeta!=0)
 
@@ -99,7 +98,6 @@ plot(gblasso) # the path plot!
 
 ```{r model4, echo=FALSE, warning=FALSE}
 gbbeta2 = coef(gblasso)
-log(gblasso$lambda[which.min(AICc(gblasso))])
 # 168 used in Lasso
 # sum(gbbeta2!=0)
 
@@ -158,6 +156,12 @@ for(i in 1:K) {
 # RMSE
 c(sqrt(mean(step_err_save)),sqrt(mean(step_err_save2)),sqrt(mean(lasso_err_save)),sqrt(mean(lasso_err_save2)))
 ```
+
+```{r result, echo=FALSE, warning=FALSE}
+step_model2 = lm(model2, data=GB_cleaned)
+coef(step_model2)
+```
+
 ## Exercise 3.2
 
 ### Why can’t I just get data from a few different cities and run the regression of “Crime” on “Police” to understand how more cops in the streets affect crime?

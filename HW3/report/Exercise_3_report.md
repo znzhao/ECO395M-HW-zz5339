@@ -34,9 +34,6 @@ Exercise 3.1
 
 ![](Exercise_3_report_files/figure-markdown_github/pathplot1-1.png)
 
-    ##     seg65 
-    ## -6.490443
-
     ## Rent ~ cluster + size + leasing_rate + stories + age + renovated + 
     ##     class_a + class_b + LEED + Energystar + net + amenities + 
     ##     hd_total07 + total_dd_07 + Precipitation + Electricity_Costs + 
@@ -94,9 +91,6 @@ Exercise 3.1
 
 ![](Exercise_3_report_files/figure-markdown_github/pathplot2-1.png)
 
-    ##     seg66 
-    ## -6.629993
-
     ## Rent ~ cluster + size + leasing_rate + stories + age + renovated + 
     ##     class_a + class_b + green_rating + net + amenities + hd_total07 + 
     ##     total_dd_07 + Precipitation + Electricity_Costs + cluster_rent + 
@@ -149,7 +143,52 @@ Exercise 3.1
     ##     Precipitation:cluster_rent + Gas_Costs:Electricity_Costs + 
     ##     Gas_Costs:cluster_rent + Electricity_Costs:cluster_rent
 
-    ## [1] 9.179402 9.176062 9.254044 9.200242
+    ## [1] 9.199302 9.194623 9.299225 9.216758
+
+    ##                  (Intercept)                 cluster_rent 
+    ##                 7.545433e+00                 8.507614e-01 
+    ##                         size                      class_a 
+    ##                -1.575534e-02                 5.808478e+00 
+    ##                      class_b                  cd_total_07 
+    ##                 4.618605e+00                 1.218062e-05 
+    ##                          age                      cluster 
+    ##                 2.692105e-02                -6.788977e-03 
+    ##                          net            Electricity_Costs 
+    ##                -5.764383e-01                -2.878859e+02 
+    ##                   hd_total07                 leasing_rate 
+    ##                -6.525369e-04                -2.948967e-02 
+    ##                 green_rating                    amenities 
+    ##                 2.294792e+00                -1.688043e+00 
+    ##            cluster_rent:size                 size:cluster 
+    ##                 4.042199e-04                 5.579955e-06 
+    ##         cluster_rent:cluster                  class_b:age 
+    ##                 7.528733e-05                -4.530344e-02 
+    ##                  class_a:age              cd_total_07:net 
+    ##                -2.948802e-02                 9.684441e-04 
+    ##       cd_total_07:hd_total07             cluster_rent:age 
+    ##                -2.845268e-07                -1.803267e-03 
+    ##            size:leasing_rate       size:Electricity_Costs 
+    ##                 1.078452e-04                 2.958192e-01 
+    ##                 size:class_a        age:Electricity_Costs 
+    ##                -1.275192e-02                 1.654240e+00 
+    ##    cluster_rent:leasing_rate             cluster_rent:net 
+    ##                 1.655459e-03                -1.159047e-01 
+    ## Electricity_Costs:hd_total07             size:cd_total_07 
+    ##                 4.472173e-02                -1.317423e-06 
+    ##    cluster:Electricity_Costs           cluster:hd_total07 
+    ##                 1.703656e-01                 5.215901e-07 
+    ##          class_a:cd_total_07                     size:age 
+    ##                 5.790688e-04                -5.863860e-05 
+    ##                 size:class_b              size:hd_total07 
+    ##                -8.955488e-03                 4.983504e-07 
+    ##      cluster_rent:hd_total07       green_rating:amenities 
+    ##                -1.848286e-05                -2.150574e+00 
+    ##               size:amenities            class_b:amenities 
+    ##                 3.054381e-03                 1.132012e+00 
+    ##       cluster_rent:amenities  Electricity_Costs:amenities 
+    ##                -6.554303e-02                 9.710612e+01 
+    ##         cluster:leasing_rate                  age:cluster 
+    ##                -2.555993e-05                -1.400855e-05
 
 Exercise 3.2
 ------------
