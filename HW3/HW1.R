@@ -9,6 +9,7 @@ greenbuildings =na.omit(greenbuildings)
 greenbuildings$size = greenbuildings$size/1000
 
 # clean data by deleting the data with occupacy rate equal to 0% 
+
 GB_cleaned <- subset(greenbuildings,(greenbuildings$leasing_rate != 0))
 
 ## stepwise model 1.1 LEED & Energy
@@ -31,12 +32,13 @@ null = glm(Rent~1, data=GB_cleaned)
 fwd = step(null, scope=formula(full), dir="forward")
 
 length(coef(fwd))
-big  = lm(Rent ~ (.-CS_PropertyID-LEED-Energystar)^2, data=GB_cleaned)
-stepwise = step(null, scope=formula(big), dir="both")
+#big1  = lm(Rent ~ (.-CS_PropertyID-LEED-Energystar)^2 + log(empl_gr) + log(age) + log(Electricity_Costs), data=GB_cleaned)
+big1  = lm(Rent ~ (.-CS_PropertyID-LEED-Energystar)^2 + poly(age,2) + poly(empl_gr,2) + poly(Electricity_Costs,2)+ poly(Gas_Costs,2), data=GB_cleaned)
+stepwise1 = step(null, scope=formula(big1), dir="both")
 
 #44 used, null = Forward, then stepwise 
-length(coef(stepwise))
-model1_2 = formula(stepwise)
+length(coef(stepwise1))
+model1_2 = formula(stepwise1)
 
 ## Gamma Lasso model 2.1 LEED & Energy
 gbx = sparse.model.matrix(Rent ~ (.-CS_PropertyID-green_rating)^2, data=GB_cleaned)[,-1] 
@@ -127,7 +129,4 @@ for(i in 1:K) {
 }
 # RMSE
 c(sqrt(mean(step_err_save)),sqrt(mean(step_err_save1)),sqrt(mean(lasso_err_save)),sqrt(mean(lasso_err_save1)))
-
-# log, polynomial
-#
 
