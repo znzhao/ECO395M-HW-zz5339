@@ -6,6 +6,19 @@ By Chong Wang, Tianping Wu, Zhenning Zhao
 Exercise 3.1
 ------------
 
+    ## Rent ~ cluster_rent + size + class_a + class_b + cd_total_07 + 
+    ##     age + cluster + net + Electricity_Costs + hd_total07 + leasing_rate + 
+    ##     LEED + amenities + cluster_rent:size + size:cluster + cluster_rent:cluster + 
+    ##     class_b:age + class_a:age + cd_total_07:net + cd_total_07:hd_total07 + 
+    ##     cluster_rent:age + size:leasing_rate + size:Electricity_Costs + 
+    ##     size:class_a + age:Electricity_Costs + cluster_rent:leasing_rate + 
+    ##     cluster_rent:net + cluster_rent:LEED + Electricity_Costs:hd_total07 + 
+    ##     size:cd_total_07 + cluster:Electricity_Costs + class_a:cd_total_07 + 
+    ##     cluster:hd_total07 + cluster_rent:hd_total07 + size:age + 
+    ##     size:class_b + class_b:amenities + size:amenities + Electricity_Costs:amenities + 
+    ##     cluster_rent:amenities + cluster:leasing_rate + age:cluster + 
+    ##     size:hd_total07 + age:LEED
+
 Exercise 3.2
 ------------
 

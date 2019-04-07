@@ -8,7 +8,7 @@ output:
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-
+library(gamlr)
 ```
 
 # Exercise 3
@@ -17,8 +17,28 @@ By Chong Wang, Tianping Wu, Zhenning Zhao
 ## Exercise 3.1
 
 ```{r setup_3.1, echo=FALSE, warning=FALSE}
+urlfile<-'https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW1/greenbuildings.csv'
+greenbuildings<-read.csv(url(urlfile))
+greenbuildings =na.omit(greenbuildings)
+greenbuildings$size = greenbuildings$size/1000
 
+# clean data by deleting the data with occupacy rate equal to 0%
+GB_cleaned <- subset(greenbuildings,(greenbuildings$leasing_rate != 0))
 ```
+
+```{r model1, echo=FALSE, warning=FALSE}
+## stepwise model 1.1 LEED & Energy
+full = lm(Rent ~ .-CS_PropertyID-green_rating, data=GB_cleaned)
+null = glm(Rent~1, data=GB_cleaned)
+fwd = step(null, scope=formula(full), dir="forward", trace = FALSE)
+big  = lm(Rent ~ (.-CS_PropertyID-green_rating)^2, data=GB_cleaned)
+stepwise = step(null, scope=formula(big), dir="both", trace = FALSE)
+
+#45 used, null = Forward, then stepwise 
+model1 = formula(stepwise)
+model1
+```
+
 
 ## Exercise 3.2
 
