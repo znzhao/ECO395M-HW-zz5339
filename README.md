@@ -19,6 +19,8 @@ Report 2:
 
 Report 3:
 
-[md](https://github.com/znzhao/ECO395M-HW-zz5339/blob/master/HW2/report/Exercise_2_report.md)
+[md](https://github.com/znzhao/ECO395M-HW-zz5339/blob/master/HW3/report/Exercise_3_report.md)
 
-[rmd](https://github.com/znzhao/ECO395M-HW-zz5339/blob/master/HW2/report/Exercise_2_report.rmd)
+[rmd](https://github.com/znzhao/ECO395M-HW-zz5339/blob/master/HW3/report/Exercise_3_report.rmd)
+
+
