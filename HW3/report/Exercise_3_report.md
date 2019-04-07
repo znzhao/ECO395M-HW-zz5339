@@ -6,6 +6,16 @@ By Chong Wang, Tianping Wu, Zhenning Zhao
 Exercise 3.1
 ------------
 
+### Build the best predictive model possible for price.
+
+Before assembling the model, we first cleaned the data. We deleted buildings with 0% leasing rate and lowered the scale of size of the buildings by 1,000 square foot to comply with the computation limit. As we mentioned in the first exercise, we deleted the data with occupancy rate equal to 0% because we believe that these buildings are abnormal. Next, we used the stepwise selection method to assemble the predictive model for price. Two models were built with a minor tweak.
+
+The first model considered LEED and EnergyStar separately and the second model combined them into a single "green certified" category. In both models, we started with the null model by regressing rent on one, followed by adding new variables as demonstrated in the forward selection method. Using this model as our starting point model, we ran stepwise selection and obtained our final model.
+
+The two selected models are shown below. Including the interaction terms, we had 45 and 44 significant coefficients, respectively.
+
+    ## [1] "model1 = "
+
     ## Rent ~ cluster_rent + size + class_a + class_b + cd_total_07 + 
     ##     age + cluster + net + Electricity_Costs + hd_total07 + leasing_rate + 
     ##     LEED + amenities + cluster_rent:size + size:cluster + cluster_rent:cluster + 
@@ -18,6 +28,8 @@ Exercise 3.1
     ##     size:class_b + class_b:amenities + size:amenities + Electricity_Costs:amenities + 
     ##     cluster_rent:amenities + cluster:leasing_rate + age:cluster + 
     ##     size:hd_total07 + age:LEED
+
+    ## [1] "model2 = "
 
     ## Rent ~ cluster_rent + size + class_a + class_b + cd_total_07 + 
     ##     age + cluster + net + Electricity_Costs + hd_total07 + leasing_rate + 
@@ -32,7 +44,13 @@ Exercise 3.1
     ##     class_b:amenities + cluster_rent:amenities + Electricity_Costs:amenities + 
     ##     cluster:leasing_rate + age:cluster
 
+We then used the Lasso model to assemble the best predictive model possible for price. Two models were also built with this method, the model considering LEED and EnergyStar separately, and the model combining them into a single "green certified" category. We considered the interaction terms as well.
+
+In the first model, from the path plot below we could see that minimum AIC occurs at segment 65.
+
 ![](Exercise_3_report_files/figure-markdown_github/pathplot1-1.png)
+
+Thus, we used the model at the segment 65 and chose 184 coefficients. The specific model is shown below.
 
     ## Rent ~ cluster + size + leasing_rate + stories + age + renovated + 
     ##     class_a + class_b + LEED + Energystar + net + amenities + 
@@ -89,7 +107,11 @@ Exercise 3.1
     ##     Precipitation:cluster_rent + Gas_Costs:Electricity_Costs + 
     ##     Gas_Costs:cluster_rent + Electricity_Costs:cluster_rent
 
+In the second model, from the path plot below we could see that minimum AIC occurs at segment 66.
+
 ![](Exercise_3_report_files/figure-markdown_github/pathplot2-1.png)
+
+Thus, we used the model at the segment 66 and chose 168 coefficients. The specific model is shown below.
 
     ## Rent ~ cluster + size + leasing_rate + stories + age + renovated + 
     ##     class_a + class_b + green_rating + net + amenities + hd_total07 + 
@@ -143,52 +165,20 @@ Exercise 3.1
     ##     Precipitation:cluster_rent + Gas_Costs:Electricity_Costs + 
     ##     Gas_Costs:cluster_rent + Electricity_Costs:cluster_rent
 
-    ## [1] 9.199302 9.194623 9.299225 9.216758
+Lastly, in order to compare 4 models above, we used k-fold cross validation. We arbitrarily set k equal to 10 and calculated the CVs. We found that the CVs of the stepwise selection models are lower than those by Lasso method. The second stepwise model with the combined "green certified" category had the minimum CV, and therefore it is our best predictive model possible for rent price.
 
-    ##                  (Intercept)                 cluster_rent 
-    ##                 7.545433e+00                 8.507614e-01 
-    ##                         size                      class_a 
-    ##                -1.575534e-02                 5.808478e+00 
-    ##                      class_b                  cd_total_07 
-    ##                 4.618605e+00                 1.218062e-05 
-    ##                          age                      cluster 
-    ##                 2.692105e-02                -6.788977e-03 
-    ##                          net            Electricity_Costs 
-    ##                -5.764383e-01                -2.878859e+02 
-    ##                   hd_total07                 leasing_rate 
-    ##                -6.525369e-04                -2.948967e-02 
-    ##                 green_rating                    amenities 
-    ##                 2.294792e+00                -1.688043e+00 
-    ##            cluster_rent:size                 size:cluster 
-    ##                 4.042199e-04                 5.579955e-06 
-    ##         cluster_rent:cluster                  class_b:age 
-    ##                 7.528733e-05                -4.530344e-02 
-    ##                  class_a:age              cd_total_07:net 
-    ##                -2.948802e-02                 9.684441e-04 
-    ##       cd_total_07:hd_total07             cluster_rent:age 
-    ##                -2.845268e-07                -1.803267e-03 
-    ##            size:leasing_rate       size:Electricity_Costs 
-    ##                 1.078452e-04                 2.958192e-01 
-    ##                 size:class_a        age:Electricity_Costs 
-    ##                -1.275192e-02                 1.654240e+00 
-    ##    cluster_rent:leasing_rate             cluster_rent:net 
-    ##                 1.655459e-03                -1.159047e-01 
-    ## Electricity_Costs:hd_total07             size:cd_total_07 
-    ##                 4.472173e-02                -1.317423e-06 
-    ##    cluster:Electricity_Costs           cluster:hd_total07 
-    ##                 1.703656e-01                 5.215901e-07 
-    ##          class_a:cd_total_07                     size:age 
-    ##                 5.790688e-04                -5.863860e-05 
-    ##                 size:class_b              size:hd_total07 
-    ##                -8.955488e-03                 4.983504e-07 
-    ##      cluster_rent:hd_total07       green_rating:amenities 
-    ##                -1.848286e-05                -2.150574e+00 
-    ##               size:amenities            class_b:amenities 
-    ##                 3.054381e-03                 1.132012e+00 
-    ##       cluster_rent:amenities  Electricity_Costs:amenities 
-    ##                -6.554303e-02                 9.710612e+01 
-    ##         cluster:leasing_rate                  age:cluster 
-    ##                -2.555993e-05                -1.400855e-05
+    ## [1] 9.200166 9.195550 9.274665 9.216901
+
+### Use this model to quantify the average change in rental income per square foot (whether in absolute or percentage terms) associated with green certification, holding other features of the building constant.
+
+    ##           green_rating green_rating:amenities 
+    ##               2.294792              -2.150574
+
+Holding all other significant features of the building fixed, green certified (LEED or EnergyStar) buildings are expected to be 2.29 dollars per square foot per calendar year more expensive in comparison to non-green buildings. However, interestingly when buildings have amenities available on site, the positive effect of the green certification on rental income is significantly neutralized, an expected decrease of 2.15 dollars per square foot per calendar year.
+
+### Assess whether the "green certification" effect is different for different buildings, or instead whether it seems to be roughly similar across all or most buildings.
+
+In the model selected by stepwise method with combined green rate variable, we could see that holding all other significant features of the building fixed, green certification buildings with amenities is 2.15 dollar per square foot per calendar year less than green certification buildings without amenities. It shows that "green certification" effect is different for buildings of with and without amenities. The intuition behind is that the green buildings with amenities are normally considered as commercial buildings, so the buildings need to pay the energy fee as commercial rate, which is normally higher than residential rate. Thus, residents in the green buildings with amenities still need to pay more than those in the green buildings without amenities. Thus, the owners of green buildings with amenities will lower the rent fee in order to attract more residents.
 
 Exercise 3.2
 ------------
