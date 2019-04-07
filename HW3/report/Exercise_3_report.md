@@ -19,6 +19,138 @@ Exercise 3.1
     ##     cluster_rent:amenities + cluster:leasing_rate + age:cluster + 
     ##     size:hd_total07 + age:LEED
 
+    ## Rent ~ cluster_rent + size + class_a + class_b + cd_total_07 + 
+    ##     age + cluster + net + Electricity_Costs + hd_total07 + leasing_rate + 
+    ##     green_rating + amenities + cluster_rent:size + size:cluster + 
+    ##     cluster_rent:cluster + class_b:age + class_a:age + cd_total_07:net + 
+    ##     cd_total_07:hd_total07 + cluster_rent:age + size:leasing_rate + 
+    ##     size:Electricity_Costs + size:class_a + age:Electricity_Costs + 
+    ##     cluster_rent:leasing_rate + cluster_rent:net + Electricity_Costs:hd_total07 + 
+    ##     size:cd_total_07 + cluster:Electricity_Costs + cluster:hd_total07 + 
+    ##     class_a:cd_total_07 + size:age + size:class_b + size:hd_total07 + 
+    ##     cluster_rent:hd_total07 + green_rating:amenities + size:amenities + 
+    ##     class_b:amenities + cluster_rent:amenities + Electricity_Costs:amenities + 
+    ##     cluster:leasing_rate + age:cluster
+
+![](Exercise_3_report_files/figure-markdown_github/pathplot1-1.png)
+
+    ##     seg65 
+    ## -6.490443
+
+    ## Rent ~ cluster + size + leasing_rate + stories + age + renovated + 
+    ##     class_a + class_b + LEED + Energystar + net + amenities + 
+    ##     hd_total07 + total_dd_07 + Precipitation + Electricity_Costs + 
+    ##     cluster_rent + cluster:size + cluster:empl_gr + cluster:leasing_rate + 
+    ##     cluster:stories + cluster:age + cluster:renovated + cluster:class_a + 
+    ##     cluster:class_b + cluster:LEED + cluster:Energystar + cluster:net + 
+    ##     cluster:hd_total07 + cluster:total_dd_07 + cluster:Precipitation + 
+    ##     cluster:Gas_Costs + cluster:Electricity_Costs + cluster:cluster_rent + 
+    ##     size:empl_gr + size:leasing_rate + size:stories + size:age + 
+    ##     size:renovated + size:class_a + size:class_b + size:LEED + 
+    ##     size:Energystar + size:net + size:amenities + size:cd_total_07 + 
+    ##     size:hd_total07 + size:Precipitation + size:Gas_Costs + size:Electricity_Costs + 
+    ##     size:cluster_rent + empl_gr:leasing_rate + empl_gr:stories + 
+    ##     empl_gr:age + empl_gr:renovated + empl_gr:class_b + empl_gr:LEED + 
+    ##     empl_gr:net + empl_gr:amenities + empl_gr:hd_total07 + empl_gr:Precipitation + 
+    ##     empl_gr:Electricity_Costs + empl_gr:cluster_rent + leasing_rate:stories + 
+    ##     leasing_rate:age + leasing_rate:class_a + leasing_rate:class_b + 
+    ##     leasing_rate:LEED + leasing_rate:net + leasing_rate:amenities + 
+    ##     leasing_rate:cd_total_07 + leasing_rate:hd_total07 + leasing_rate:total_dd_07 + 
+    ##     leasing_rate:Precipitation + leasing_rate:Gas_Costs + leasing_rate:Electricity_Costs + 
+    ##     leasing_rate:cluster_rent + stories:age + stories:renovated + 
+    ##     stories:class_a + stories:class_b + stories:LEED + stories:Energystar + 
+    ##     stories:net + stories:amenities + stories:cd_total_07 + stories:hd_total07 + 
+    ##     stories:Precipitation + stories:Gas_Costs + stories:Electricity_Costs + 
+    ##     stories:cluster_rent + age:renovated + age:class_a + age:class_b + 
+    ##     age:LEED + age:Energystar + age:net + age:amenities + age:cd_total_07 + 
+    ##     age:hd_total07 + age:total_dd_07 + age:Precipitation + age:Gas_Costs + 
+    ##     age:Electricity_Costs + age:cluster_rent + renovated:class_a + 
+    ##     renovated:class_b + renovated:LEED + renovated:Energystar + 
+    ##     renovated:net + renovated:amenities + renovated:cd_total_07 + 
+    ##     renovated:hd_total07 + renovated:total_dd_07 + renovated:Precipitation + 
+    ##     renovated:Gas_Costs + renovated:Electricity_Costs + renovated:cluster_rent + 
+    ##     class_a:LEED + class_a:Energystar + class_a:net + class_a:amenities + 
+    ##     class_a:cd_total_07 + class_a:hd_total07 + class_a:total_dd_07 + 
+    ##     class_a:Precipitation + class_a:Gas_Costs + class_a:Electricity_Costs + 
+    ##     class_a:cluster_rent + class_b:LEED + class_b:Energystar + 
+    ##     class_b:net + class_b:amenities + class_b:cd_total_07 + class_b:hd_total07 + 
+    ##     class_b:total_dd_07 + class_b:Precipitation + class_b:Gas_Costs + 
+    ##     class_b:Electricity_Costs + class_b:cluster_rent + LEED:Energystar + 
+    ##     LEED:net + LEED:amenities + LEED:cd_total_07 + LEED:total_dd_07 + 
+    ##     LEED:Precipitation + LEED:Gas_Costs + LEED:Electricity_Costs + 
+    ##     LEED:cluster_rent + Energystar:net + Energystar:amenities + 
+    ##     Energystar:cd_total_07 + Energystar:total_dd_07 + Energystar:Precipitation + 
+    ##     Energystar:Electricity_Costs + Energystar:cluster_rent + 
+    ##     net:amenities + net:cd_total_07 + net:total_dd_07 + net:Precipitation + 
+    ##     net:Gas_Costs + net:Electricity_Costs + net:cluster_rent + 
+    ##     amenities:hd_total07 + amenities:total_dd_07 + amenities:Precipitation + 
+    ##     amenities:Gas_Costs + amenities:Electricity_Costs + amenities:cluster_rent + 
+    ##     cd_total_07:hd_total07 + cd_total_07:total_dd_07 + cd_total_07:Precipitation + 
+    ##     cd_total_07:Electricity_Costs + cd_total_07:cluster_rent + 
+    ##     hd_total07:total_dd_07 + hd_total07:Precipitation + hd_total07:cluster_rent + 
+    ##     Precipitation:Gas_Costs + Precipitation:Electricity_Costs + 
+    ##     Precipitation:cluster_rent + Gas_Costs:Electricity_Costs + 
+    ##     Gas_Costs:cluster_rent + Electricity_Costs:cluster_rent
+
+![](Exercise_3_report_files/figure-markdown_github/pathplot2-1.png)
+
+    ##     seg66 
+    ## -6.629993
+
+    ## Rent ~ cluster + size + leasing_rate + stories + age + renovated + 
+    ##     class_a + class_b + green_rating + net + amenities + hd_total07 + 
+    ##     total_dd_07 + Precipitation + Electricity_Costs + cluster_rent + 
+    ##     cluster:size + cluster:empl_gr + cluster:leasing_rate + cluster:stories + 
+    ##     cluster:age + cluster:renovated + cluster:class_a + cluster:class_b + 
+    ##     cluster:green_rating + cluster:net + cluster:amenities + 
+    ##     cluster:hd_total07 + cluster:total_dd_07 + cluster:Precipitation + 
+    ##     cluster:Gas_Costs + cluster:Electricity_Costs + cluster:cluster_rent + 
+    ##     size:empl_gr + size:leasing_rate + size:stories + size:age + 
+    ##     size:renovated + size:class_a + size:class_b + size:green_rating + 
+    ##     size:amenities + size:cd_total_07 + size:hd_total07 + size:Precipitation + 
+    ##     size:Gas_Costs + size:Electricity_Costs + size:cluster_rent + 
+    ##     empl_gr:leasing_rate + empl_gr:stories + empl_gr:age + empl_gr:renovated + 
+    ##     empl_gr:class_b + empl_gr:green_rating + empl_gr:amenities + 
+    ##     empl_gr:hd_total07 + empl_gr:Precipitation + empl_gr:Electricity_Costs + 
+    ##     empl_gr:cluster_rent + leasing_rate:stories + leasing_rate:age + 
+    ##     leasing_rate:class_a + leasing_rate:class_b + leasing_rate:green_rating + 
+    ##     leasing_rate:net + leasing_rate:amenities + leasing_rate:cd_total_07 + 
+    ##     leasing_rate:hd_total07 + leasing_rate:total_dd_07 + leasing_rate:Precipitation + 
+    ##     leasing_rate:Gas_Costs + leasing_rate:Electricity_Costs + 
+    ##     leasing_rate:cluster_rent + stories:age + stories:renovated + 
+    ##     stories:class_a + stories:class_b + stories:green_rating + 
+    ##     stories:net + stories:amenities + stories:cd_total_07 + stories:hd_total07 + 
+    ##     stories:Precipitation + stories:Gas_Costs + stories:Electricity_Costs + 
+    ##     stories:cluster_rent + age:renovated + age:class_a + age:class_b + 
+    ##     age:green_rating + age:net + age:amenities + age:cd_total_07 + 
+    ##     age:hd_total07 + age:total_dd_07 + age:Precipitation + age:Gas_Costs + 
+    ##     age:Electricity_Costs + age:cluster_rent + renovated:class_a + 
+    ##     renovated:class_b + renovated:green_rating + renovated:net + 
+    ##     renovated:amenities + renovated:cd_total_07 + renovated:hd_total07 + 
+    ##     renovated:total_dd_07 + renovated:Precipitation + renovated:Gas_Costs + 
+    ##     renovated:Electricity_Costs + renovated:cluster_rent + class_a:green_rating + 
+    ##     class_a:net + class_a:amenities + class_a:cd_total_07 + class_a:hd_total07 + 
+    ##     class_a:total_dd_07 + class_a:Precipitation + class_a:Gas_Costs + 
+    ##     class_a:Electricity_Costs + class_a:cluster_rent + class_b:green_rating + 
+    ##     class_b:net + class_b:amenities + class_b:cd_total_07 + class_b:hd_total07 + 
+    ##     class_b:total_dd_07 + class_b:Precipitation + class_b:Gas_Costs + 
+    ##     class_b:Electricity_Costs + class_b:cluster_rent + green_rating:net + 
+    ##     green_rating:amenities + green_rating:cd_total_07 + green_rating:hd_total07 + 
+    ##     green_rating:Precipitation + green_rating:Gas_Costs + green_rating:Electricity_Costs + 
+    ##     green_rating:cluster_rent + net:amenities + net:cd_total_07 + 
+    ##     net:total_dd_07 + net:Precipitation + net:Gas_Costs + net:Electricity_Costs + 
+    ##     net:cluster_rent + amenities:hd_total07 + amenities:total_dd_07 + 
+    ##     amenities:Precipitation + amenities:Gas_Costs + amenities:Electricity_Costs + 
+    ##     amenities:cluster_rent + cd_total_07:hd_total07 + cd_total_07:total_dd_07 + 
+    ##     cd_total_07:Precipitation + cd_total_07:Electricity_Costs + 
+    ##     cd_total_07:cluster_rent + hd_total07:total_dd_07 + hd_total07:Precipitation + 
+    ##     hd_total07:cluster_rent + total_dd_07:Electricity_Costs + 
+    ##     Precipitation:Gas_Costs + Precipitation:Electricity_Costs + 
+    ##     Precipitation:cluster_rent + Gas_Costs:Electricity_Costs + 
+    ##     Gas_Costs:cluster_rent + Electricity_Costs:cluster_rent
+
+    ## [1] 9.179402 9.176062 9.254044 9.200242
+
 Exercise 3.2
 ------------
 
