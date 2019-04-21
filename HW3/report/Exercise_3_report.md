@@ -6,6 +6,14 @@ By Chong Wang, Tianping Wu, Zhenning Zhao
 Exercise 3.1
 ------------
 
+### Build the best predictive model possible for price.
+
+Before assembling the model, we first cleaned the data. We deleted buildings with 0% leasing rate and lowered the scale of size of the buildings by 1,000 square foot to comply with the computation limit. As we mentioned in the first exercise, we deleted the data with occupancy rate equal to 0% because we believe that these buildings are abnormal. Next, we used the stepwise selection method to assemble the predictive model for price. Two models were built with a minor tweak.
+
+The first model considered LEED and EnergyStar separately and the second model combined them into a single "green certified" category. In both models, we started with the null model by regressing rent on one, followed by adding new variables as demonstrated in the forward selection method. Using this model as our starting point model, we ran stepwise selection and obtained our final model.
+
+The two selected models are shown below. Including the interaction terms, we had 45 and 44 significant coefficients, respectively.
+
     ## Rent ~ cluster_rent + size + class_a + class_b + cd_total_07 + 
     ##     age + cluster + net + Electricity_Costs + hd_total07 + leasing_rate + 
     ##     LEED + amenities + cluster_rent:size + size:cluster + cluster_rent:cluster + 
@@ -32,10 +40,13 @@ Exercise 3.1
     ##     class_b:amenities + cluster_rent:amenities + Electricity_Costs:amenities + 
     ##     cluster:leasing_rate + age:cluster
 
+We then used the Lasso model to assemble the best predictive model possible for price. Two models were also built with this method, the model considering LEED and EnergyStar separately, and the model combining them into a single "green certified" category. We considered the interaction terms as well.
+
+In the first model, from the path plot below we could see that minimum AIC occurs at segment 65.
+
 ![](Exercise_3_report_files/figure-markdown_github/pathplot1-1.png)
 
-    ##     seg65 
-    ## -6.490443
+Thus, we used the model at the segment 65 and chose 184 coefficients. The specific model is shown below.
 
     ## Rent ~ cluster + size + leasing_rate + stories + age + renovated + 
     ##     class_a + class_b + LEED + Energystar + net + amenities + 
@@ -92,10 +103,11 @@ Exercise 3.1
     ##     Precipitation:cluster_rent + Gas_Costs:Electricity_Costs + 
     ##     Gas_Costs:cluster_rent + Electricity_Costs:cluster_rent
 
+In the second model, from the path plot below we could see that minimum AIC occurs at segment 66.
+
 ![](Exercise_3_report_files/figure-markdown_github/pathplot2-1.png)
 
-    ##     seg66 
-    ## -6.629993
+Thus, we used the model at the segment 66 and chose 168 coefficients. The specific model is shown below.
 
     ## Rent ~ cluster + size + leasing_rate + stories + age + renovated + 
     ##     class_a + class_b + green_rating + net + amenities + hd_total07 + 
@@ -149,7 +161,20 @@ Exercise 3.1
     ##     Precipitation:cluster_rent + Gas_Costs:Electricity_Costs + 
     ##     Gas_Costs:cluster_rent + Electricity_Costs:cluster_rent
 
-    ## [1] 9.179402 9.176062 9.254044 9.200242
+Lastly, in order to compare 4 models above, we used k-fold cross validation. We arbitrarily set k equal to 10 and calculated the CVs. We found that the CVs of the stepwise selection models are lower than those by Lasso method. The second stepwise model with the combined "green certified" category had the minimum CV, and therefore it is our best predictive model possible for rent price.
+
+    ## [1] 9.158497 9.154099 9.186821 9.126833
+
+### Use this model to quantify the average change in rental income per square foot (whether in absolute or percentage terms) associated with green certification, holding other features of the building constant.
+
+    ##           green_rating green_rating:amenities 
+    ##               2.294792              -2.150574
+
+Holding all other significant features of the building fixed, green certified (LEED or EnergyStar) buildings are expected to be 2.29 dollars per square foot per calendar year more expensive in comparison to non-green buildings. However, interestingly when buildings have amenities available on site, the positive effect of the green certification on rental income is significantly neutralized, an expected decrease of 2.15 dollars per square foot per calendar year.
+
+### Assess whether the "green certification" effect is different for different buildings, or instead whether it seems to be roughly similar across all or most buildings.
+
+In the model selected by stepwise method with combined green rate variable, we could see that holding all other significant features of the building fixed, green certification buildings with amenities is 2.15 dollar per square foot per calendar year less than green certification buildings without amenities. It shows that "green certification" effect is different for buildings of with and without amenities. The intuition behind is that the green buildings with amenities are normally considered as commercial buildings, so the buildings need to pay the energy fee as commercial rate, which is normally higher than residential rate. Thus, residents in the green buildings with amenities still need to pay more than those in the green buildings without amenities. Thus, the owners of green buildings with amenities will lower the rent fee in order to attract more residents.
 
 Exercise 3.2
 ------------

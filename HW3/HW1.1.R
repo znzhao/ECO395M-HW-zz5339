@@ -41,7 +41,7 @@ length(coef(stepwise1))
 model1_2 = formula(stepwise1)
 
 ## Gamma Lasso model 2.1 LEED & Energy
-gbx = sparse.model.matrix(Rent ~ (.-CS_PropertyID-green_rating)^2, data=GB_cleaned)[,-1] 
+gbx = sparse.model.matrix(Rent ~ (.-CS_PropertyID-green_rating)^2 + poly(age,2) + poly(empl_gr,2) + poly(Electricity_Costs,2)+ poly(Gas_Costs,2)+ poly(total_dd_07,2)+ poly(size,2), data=GB_cleaned)[,-1] 
 gby = GB_cleaned$Rent
 gblasso = gamlr(gbx, gby, lambda.min.ratio=0.000001)
 plot(gblasso) # the path plot!

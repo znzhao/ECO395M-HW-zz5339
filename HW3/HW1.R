@@ -122,4 +122,5 @@ for(i in 1:K) {
 # RMSE
 c(sqrt(mean(step_err_save)),sqrt(mean(step_err_save2)),sqrt(mean(lasso_err_save)),sqrt(mean(lasso_err_save2)))
 
-
+temp = coef(step_model2)
+c(temp["green_rating"],temp["green_rating:amenities"])
