@@ -2,6 +2,7 @@ library(foreach)
 library(cluster)
 library(corrplot)
 library(plotly)
+library(GGally)
 urlfile<-'https://raw.githubusercontent.com/jgscott/ECO395M/master/data/social_marketing.csv'
 ##protein <- read.csv(url(urlfile), row.names=1)
 #36 different categories
@@ -39,7 +40,8 @@ par(mar=c(4,4,4,4))
 
 plot(k_grid, SSE_grid, xlab="K",ylab="SSE Grid", sub="SSE Grid vs K")
 
-#CH-grid to find the optimal K
+#CH-grid to find the optimal K 
+############################################## Error!
 CH_grid = foreach(k = k_grid, .combine='c') %do% {
   cluster_k = kmeans(SocialMarket_scaled, k, nstart=50)
   W = cluster_k$tot.withinss
@@ -51,6 +53,7 @@ CH_grid = foreach(k = k_grid, .combine='c') %do% {
 plot(k_grid, CH_grid, xlab="K",
      ylab="CH Grid",
      sub="CH Grid vs K")
+############################################## Error!
 
 #Gap statistics
 Market_gap = clusGap(SocialMarket_scaled, FUN = kmeans, nstart = 20, K.max = 10, B = 10)
@@ -72,6 +75,8 @@ plot_ly(x=SocialMarket$personal_fitness, y=SocialMarket$health_nutrition, z=Soci
       yaxis = list(title = "health_nutrition"),
       zaxis = list(title = "outdoors")
     ))
+XX = subset(SocialMarket,select = c("personal_fitness","health_nutrition","outdoors"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 
 #group2
 plot_ly(x=SocialMarket$fashion, y=SocialMarket$cooking, z=SocialMarket$beauty, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
@@ -82,6 +87,11 @@ plot_ly(x=SocialMarket$fashion, y=SocialMarket$cooking, z=SocialMarket$beauty, d
       yaxis = list(title = "cooking"),
       zaxis = list(title = "beauty")
     ))
+
+XX = subset(SocialMarket,select = c("fashion","cooking","beauty"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
+
+
 #group3
 plot_ly(x=SocialMarket$online_gaming, y=SocialMarket$college_uni, z=SocialMarket$sports_playing, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
   layout(
@@ -91,6 +101,10 @@ plot_ly(x=SocialMarket$online_gaming, y=SocialMarket$college_uni, z=SocialMarket
       yaxis = list(title = "college_uni"),
       zaxis = list(title = "sports_playing")
     ))
+
+XX = subset(SocialMarket,select = c("online_gaming","college_uni","sports_playing"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
+
 #group4
 plot_ly(x=SocialMarket$sports_fandom, y=SocialMarket$food, z=SocialMarket$family, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
   layout(
@@ -108,6 +122,10 @@ plot_ly(x=SocialMarket$sports_fandom, y=SocialMarket$parenting, z=SocialMarket$s
       yaxis = list(title = "parenting"),
       zaxis = list(title = "school")
     ))
+
+XX = subset(SocialMarket,select = c("sports_fandom","parenting","school","food", "family"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
+
 #group5
 plot_ly(x=SocialMarket$politics, y=SocialMarket$news, z=SocialMarket$computers, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
   layout(
@@ -117,6 +135,10 @@ plot_ly(x=SocialMarket$politics, y=SocialMarket$news, z=SocialMarket$computers, 
       yaxis = list(title = "news"),
       zaxis = list(title = "computers")
     ))
+
+XX = subset(SocialMarket,select = c("politics","news","computers"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
+
 #group6
 plot_ly(x=SocialMarket$tv_film, y=SocialMarket$art, z=SocialMarket$music, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
   layout(
@@ -127,6 +149,8 @@ plot_ly(x=SocialMarket$tv_film, y=SocialMarket$art, z=SocialMarket$music, data=S
       zaxis = list(title = "music")
     ))
 
+XX = subset(SocialMarket,select = c("tv_film","art","music"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 
 #correlation and visualization
 res <- cor(SocialMarket_scaled)
