@@ -270,6 +270,37 @@ Finally, we extracted 7 market segments.
 
 ### 4.2.4 Conclusion
 
+From the clustering and principal component analysis, we extracted 7 analysis from both of them. 
+The first market segment found by clustering is similar with the third segment found by PCA as they have same interests - Personal fitness, outdoors and health & nutrition. 
+
+The second market segment found by clustering is similar with the fourth segment found by PCA as they have same interests - Fashion, cooking, beauty, shopping and photo sharing. 
+
+The third market segment found by clustering is similar with the fifth segment found by PCA as they have same interests - Online gaming, college&university and sports playing. 
+
+The fourth market segment found by clustering is similar with the first segment found by PCA as they have same interests - Sports fandom, food, religion, parenting and school.
+
+The fifth market segment found by clustering is similar with the second segment found by PCA as they have same interests - Politics, news, computers, travel and automobiles. 
+
+The sixth market segment found by clustering is similar with the seventh segment found by PCA as they have similar interests - TV film and art. 
+
+The seventh market segment found by clustering is similar with the sixth segment found by PCA as they have similar interests - shopping and photo sharing.
+
+Finally, we labeled above seven market segments to show their unique characteristics.
+
+We named the first market segment as “Mr. fit”. Those kinds of people focus on working out and keeping in a good shape.
+
+We named the second market segment as “Mrs. fashion”. Those kinds of people like keeping up with fashion and sharing their happy moments with friends.
+
+We named the third market segment as “typical college student”. College students consist with most parts of this group. They are fond of entertainment such as online games and sports during their rest time.
+
+We named the fourth market segment as “middle-age parents”. They care about the fostering of their children. Also, they have interests in sports games. 
+
+We named the fifth market segment as “business man”. They pay attention to daily news online. Also, they like travelling during vacation. 
+
+We named the sixth market segment as “Hippie”. They like visiting gallery and enjoying movies.
+
+We named the seventh market segment as “Typical online user with interests toward everything but mainly shopping and photo sharing”. This is the typical you and me. 
+
 
 
 ## Exercise 4.3 Association rules for grocery purchases
