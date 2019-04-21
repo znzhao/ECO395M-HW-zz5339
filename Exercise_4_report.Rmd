@@ -1,0 +1,307 @@
+---
+title: "Exercise 4"
+author: "Chong Wang, Tianping Wu, Zhenning Zhao"
+date: "2019/4/26"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(foreach)
+library(cluster)
+library(corrplot)
+library(plotly)
+library(ggplot2)
+```
+
+# Exercise 4
+By Chong Wang, Tianping Wu, Zhenning Zhao
+
+## Exercise 4.1 Clustering and PCA
+
+## Exercise 4.2 Market segmentation
+### 4.2.1 Data pre-process
+First we decided to eliminate as many bots as possible from the slip through. All users with spam posts are assumed to be pots as only a few dozens of them had spam posts. Users with pornography posts are a bit complicated because more than a few couple hundred users had them and at the same time also posted significant amount of other types of posts, so they might just be actual human users with interests in pornography to some extent . To distinguish between humans and bots, we set an arbitrary rule of 20/80 to delete all users having more than 20% of their total posts in pornagraphy. Next, column chatter and uncategorized  are deleted because they are the labels that do not fit at all into any of the interest categories. At the end, we are left with 7,684 users to determine market segmentation using clustering and principal components analysis methodologies.
+
+```{r setup_4.2.1, echo=FALSE, warning=FALSE}
+urlfile<-'https://raw.githubusercontent.com/jgscott/ECO395M/master/data/social_marketing.csv'
+##protein <- read.csv(url(urlfile), row.names=1)
+#36 different categories
+SocialMarket <- read.csv(url(urlfile), row.names=1)
+head(SocialMarket, 10)
+
+#delete users with spam
+SocialMarket<-SocialMarket[(SocialMarket$spam==0),]
+
+#delete uncategorized label "chatter"
+SocialMarket <- subset(SocialMarket, select = -c(chatter, uncategorized))
+
+#add tweet sum & calculate adult ratio & delete adult ratio more than 20%
+SocialMarket <- cbind(tweet_sum = rowSums(SocialMarket), SocialMarket)
+SocialMarket <- cbind(adult_ratio = 1, SocialMarket)
+SocialMarket$adult_ratio <- SocialMarket$adult/SocialMarket$tweet_sum
+SocialMarket<-SocialMarket[(SocialMarket$adult_ratio<0.2),]
+
+#delete uncategorized label "unused attributes"
+SocialMarket <- subset(SocialMarket, select = -c(adult_ratio, tweet_sum, spam))
+
+# Center/scale the data
+#SocialMarket = SocialMarket[,-(1,35)]
+SocialMarket_scaled <- scale(SocialMarket, center=TRUE, scale=TRUE) 
+```
+
+### 4.2.2 Clustering
+In order to determine market segment by k-means clustering, we must first select the number of initial centroids, or in other words, the number of user types. 3 types of supporting analysis were used to help us determine the quantity: Elbow plot(SSE), CH index and Gap statistics.
+
+```{r graph_4.2.1, echo=FALSE, warning=FALSE}
+#K-grid to find the optimal K
+k_grid = seq(2, 20, by=1)
+SSE_grid = foreach(k = k_grid, .combine='c') %do% {
+  cluster_k = kmeans(SocialMarket_scaled, k, nstart=50)
+  cluster_k$tot.withinss
+}
+graphics.off()
+par("mar")
+par(mar=c(4,4,4,4))
+
+plot(k_grid, SSE_grid, xlab="K",ylab="SSE Grid", sub="SSE Grid vs K")
+
+#CH-grid to find the optimal K
+CH_grid = foreach(k = k_grid, .combine='c') %do% {
+  cluster_k = kmeans(SocialMarket_scaled, k, nstart=50)
+  W = cluster_k$tot.withinss
+  B = cluster_k$betweenss
+  CH = (B/W)*((N-k)/(k-1))
+  CH
+}
+
+plot(k_grid, CH_grid, xlab="K",
+     ylab="CH Grid",
+     sub="CH Grid vs K")
+
+#Gap statistics
+Market_gap = clusGap(SocialMarket_scaled, FUN = kmeans, nstart = 20, K.max = 10, B = 10)
+plot(Market_gap)
+```
+
+As shown above, the results are subtle and therefore difficult to determine the best number for K. We eventually picked K=7 for two reasons, 1. we observed a weak signal of dipping in the Gap statistic graph and 2. we found about the equal number of interest groups with relatively strong correlated interests from our correlation analysis as shown below.
+
+```{r graph_4.2.2, echo=FALSE, warning=FALSE}
+#correlation and visualization
+res <- cor(SocialMarket_scaled)
+corrplot(res, method = "color", tl.cex = 0.5, tl.col="black")
+```
+
+We created this heat map hoping to have a deeper analysis of each cluster. Even though we would never know the full picture of each cluster, we believed interests with high proximity, or high correlation, would most likely be fit into same cluster. The more common interests we find from each cluster, the better we can describe each market segment and therefore are able to help our client creating cluster based market strategies.
+
+```{r model_4.2.1, echo=FALSE, warning=FALSE}
+# k-means analysis
+clust1 = kmeans(SocialMarket_scaled, centers=7, nstart=25)
+```
+
+Some distinct market segments with highly correlated interests are listed below based on the heat map
+
+1. Personal fitness, outdoors, health & nutrition
+
+```{r graph_4.2.3, echo=FALSE, warning=FALSE}
+
+plot_ly(x=SocialMarket$personal_fitness, y=SocialMarket$health_nutrition, z=SocialMarket$outdoors, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
+  layout(
+    title = "Market Sagement in 3D",
+    scene = list(
+      xaxis = list(title = "personal_fitness"),
+      yaxis = list(title = "health_nutrition"),
+      zaxis = list(title = "outdoors")
+    ))
+```
+
+2. Fashion, cooking, beauty, shopping, photo sharing
+
+```{r graph_4.2.4.1, echo=FALSE, warning=FALSE}
+
+plot_ly(x=SocialMarket$fashion, y=SocialMarket$cooking, z=SocialMarket$beauty, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
+  layout(
+    title = "Market Sagement in 3D",
+    scene = list(
+      xaxis = list(title = "fashion"),
+      yaxis = list(title = "cooking"),
+      zaxis = list(title = "beauty")
+    ))
+```
+
+```{r graph_4.2.4.2, echo=FALSE, warning=FALSE}
+
+plot_ly(x=SocialMarket$fashion, y=SocialMarket$shopping, z=SocialMarket$photo_sharing, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
+  layout(
+    title = "Market Sagement in 3D",
+    scene = list(
+      xaxis = list(title = "fashion"),
+      yaxis = list(title = "shopping"),
+      zaxis = list(title = "photo_sharing")
+    ))
+```
+
+3. Online gaming, college&university, sports playing
+
+```{r graph_4.2.5, echo=FALSE, warning=FALSE}
+
+plot_ly(x=SocialMarket$online_gaming, y=SocialMarket$college_uni, z=SocialMarket$sports_playing, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
+  layout(
+    title = "Market Sagement in 3D",
+    scene = list(
+      xaxis = list(title = "online_gaming"),
+      yaxis = list(title = "college_uni"),
+      zaxis = list(title = "sports_playing")
+    ))
+```
+
+4. Sports fandom, food, family, religion, parenting, school
+
+``````{r graph_4.2.6.1, echo=FALSE, warning=FALSE}
+plot_ly(x=SocialMarket$sports_fandom, y=SocialMarket$parenting, z=SocialMarket$school, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
+  layout(
+    title = "Market Sagement in 3D",
+    scene = list(
+      xaxis = list(title = "sports_fandom"),
+      yaxis = list(title = "parenting"),
+      zaxis = list(title = "school")
+    ))
+```
+
+``````{r graph_4.2.6.2, echo=FALSE, warning=FALSE}
+plot_ly(x=SocialMarket$food, y=SocialMarket$family, z=SocialMarket$religion, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
+  layout(
+    title = "Market Sagement in 3D",
+    scene = list(
+      xaxis = list(title = "food"),
+      yaxis = list(title = "family"),
+      zaxis = list(title = "religion")
+    ))
+```
+
+5. Politics, news, computers, travel, automobiles
+
+```{r graph_4.2.7.1, echo=FALSE, warning=FALSE}
+
+plot_ly(x=SocialMarket$politics, y=SocialMarket$news, z=SocialMarket$computers, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
+  layout(
+    title = "Market Sagement in 3D",
+    scene = list(
+      xaxis = list(title = "politics"),
+      yaxis = list(title = "news"),
+      zaxis = list(title = "computers")
+    ))
+```
+
+```{r graph_4.2.7.2, echo=FALSE, warning=FALSE}
+
+plot_ly(x=SocialMarket$politics, y=SocialMarket$travel, z=SocialMarket$automotive, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
+  layout(
+    title = "Market Sagement in 3D",
+    scene = list(
+      xaxis = list(title = "politics"),
+      yaxis = list(title = "travel"),
+      zaxis = list(title = "automotive")
+    ))
+```
+6. TV film, art, music
+
+```{r graph_4.2.8, echo=FALSE, warning=FALSE}
+
+plot_ly(x=SocialMarket$tv_film, y=SocialMarket$art, z=SocialMarket$music, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
+  layout(
+    title = "Market Sagement in 3D",
+    scene = list(
+      xaxis = list(title = "tv_film"),
+      yaxis = list(title = "art"),
+      zaxis = list(title = "music")
+    ))
+```
+
+7. Everything, shopping, photo sharing - From the graphs above, we can see the last group being a very special one, showing moderate interests in almost all areas (compared to strong distinct tastes in other groups).  Within the group, interests toward shopping and photo sharing seems to stand out.
+
+### 4.2.3 Principal Components Analysis
+
+After data pre-process, In order to reduce dimension of 33 different categories variables, we decided to use principal components analysis methods to find principal components, which can explain most of the variability in the data.
+
+After center and scale the data, we did the correlation analysis of total 33 categories first. In the correlation matrix above, we found that the correlation of those categories are relatively weak, as most correlation coefficients are below 0.3. Thus, we suppose that the proportion of variance explained by most dominant principal components will not be as high as we expected.
+
+We first got the loadings matrix and scores matrix from principal components methods. Then we calculated proportion of variance explained (PVE) to decide the number of principal components that we need to choose. 
+
+```{r table_4.2.1, echo=FALSE, warning=FALSE}
+
+```
+
+In the above table, we can see that the first eight principal components can explain most of the variability. The first principal component explains 13% of the variability; the second principal component explains 8% of the variability; the third principal component explains 8% of the variability;the fourth principal component explains 7% of the variability; the fifth principal component explains 7% of the variability; the sixth principal component explains 5% of the variability; the seventh principal component explains 4% of the variability; the eighth principal component explains 4% of the variability. Together, the first eight principal components explain 56% of the variability.
+
+```{r graph_4.2.9, echo=FALSE, warning=FALSE}
+
+```
+
+```{r table_4.2.10, echo=FALSE, warning=FALSE}
+
+```
+
+In the PVE Plot, we can see that between eighth and ninth components, there’s a significant gap in the Scree Plot. Also, from the Cumulative PVE Plot, we can find that first eight principal components can explain more than 50% of the total variability. Thus, we choose 8 principal components to divide the market of NutrientH20 into 8 segments. The characteristics of these 8 market segments are actually latent factor inferred from 33 interests categories.
+
+Then we got top 5 interests of followers of NutrientH20 in each market segment.
+
+In the 1st market segment, top 5 interest of followers are "religion", "food", "parenting", "sports_fandom" and "school".
+
+In the 2nd market segment, top 5 interest of followers are "sports_fandom", "religion", "parenting", "food" and "school".
+
+In the 1st and 2nd market segment, the top 5 interests are same, so we combine them into one segment as new 1st market segment.
+
+In the 2nd market segment, top 5 interest of followers are  "politics", "travel", "computers", "news" and "automotive".
+
+In the 3rd market segment, top 5 interest of followers are  "health_nutrition", "personal_fitness", "outdoors", "politics" and "news".
+
+In the 4th market segment, top 5 interest of followers are "beauty", "fashion", "cooking", "photo_sharing" and "shopping". 
+
+In the 5th market segment, top 5 interest of followers are "online_gaming", "sports_playing", "college_uni", "cooking" and "automotive". 
+
+In the 6th market segment, top 5 interest of followers are "automotive", "shopping", "photo_sharing", "news" and "current_events".
+
+In the 7th market segment, top 5 interest of followers are "news", "automotive", "tv_film", "art" and "beauty". 
+
+Finally, we extracted 7 market segments.
+
+### 4.2.4 Conclusion
+
+From the clustering and principal component analysis, we extracted 7 analysis from both of them. 
+The first market segment found by clustering is similar with the third segment found by PCA as they have same interests - Personal fitness, outdoors and health & nutrition. 
+
+The second market segment found by clustering is similar with the fourth segment found by PCA as they have same interests - Fashion, cooking, beauty, shopping and photo sharing. 
+
+The third market segment found by clustering is similar with the fifth segment found by PCA as they have same interests - Online gaming, college&university and sports playing. 
+
+The fourth market segment found by clustering is similar with the first segment found by PCA as they have same interests - Sports fandom, food, religion, parenting and school.
+
+The fifth market segment found by clustering is similar with the second segment found by PCA as they have same interests - Politics, news, computers, travel and automobiles. 
+
+The sixth market segment found by clustering is similar with the seventh segment found by PCA as they have similar interests - TV film and art. 
+
+The seventh market segment found by clustering is similar with the sixth segment found by PCA as they have similar interests - shopping and photo sharing.
+
+Finally, we labeled above seven market segments to show their unique characteristics.
+
+We named the first market segment as “Mr. fit”. Those kinds of people focus on working out and keeping in a good shape.
+
+We named the second market segment as “Mrs. fashion”. Those kinds of people like keeping up with fashion and sharing their happy moments with friends.
+
+We named the third market segment as “typical college student”. College students consist with most parts of this group. They are fond of entertainment such as online games and sports during their rest time.
+
+We named the fourth market segment as “middle-age parents”. They care about the fostering of their children. Also, they have interests in sports games. 
+
+We named the fifth market segment as “business man”. They pay attention to daily news online. Also, they like travelling during vacation. 
+
+We named the sixth market segment as “Hippie”. They like visiting gallery and enjoying movies.
+
+We named the seventh market segment as “Typical online user with interests toward everything but mainly shopping and photo sharing”. This is the typical you and me. 
+
+
+
+## Exercise 4.3 Association rules for grocery purchases
+
