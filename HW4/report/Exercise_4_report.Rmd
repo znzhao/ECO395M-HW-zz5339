@@ -13,7 +13,7 @@ library(foreach)
 library(cluster)
 library(corrplot)
 library(plotly)
-library(ggplot2)
+library(GGally)
 ```
 
 # Exercise 4
@@ -23,14 +23,14 @@ By Chong Wang, Tianping Wu, Zhenning Zhao
 
 ## Exercise 4.2 Market segmentation
 ### 4.2.1 Data pre-process
-First we decided to eliminate as many bots as possible from the slip through. All users with spam posts are assumed to be pots as only a few dozens of them had spam posts. Users with pornography posts are a bit complicated because more than a few couple hundred users had them and at the same time also posted significant amount of other types of posts, so they might just be actual human users with interests in pornography to some extent . To distinguish between humans and bots, we set an arbitrary rule of 20/80 to delete all users having more than 20% of their total posts in pornagraphy. Next, column chatter and uncategorized  are deleted because they are the labels that do not fit at all into any of the interest categories. At the end, we are left with 7,684 users to determine market segmentation using clustering and principal components analysis methodologies.
+First we decided to eliminate as many bots as possible from the slip through. All users with spam posts are assumed to be pots as only a few dozens of them had spam posts. Users with pornography posts are a bit complicated because more than a few couple hundred users had them and at the same time also posted significant amount of other types of posts, so they might just be actual human users with interests in pornography to some extent . To distinguish between humans and bots, we set an arbitrary rule of 20/80 to delete all users having more than 20% of their total posts in pornagraphy. Next, column chatter and uncategorized  are deleted because they are the labels that do not fit at all into any of the interest categories. At the end, we are left with 7,676 users to determine market segmentation using clustering and principal components analysis methodologies.
 
 ```{r setup_4.2.1, echo=FALSE, warning=FALSE}
 urlfile<-'https://raw.githubusercontent.com/jgscott/ECO395M/master/data/social_marketing.csv'
 ##protein <- read.csv(url(urlfile), row.names=1)
 #36 different categories
 SocialMarket <- read.csv(url(urlfile), row.names=1)
-head(SocialMarket, 10)
+# head(SocialMarket, 10)
 
 #delete users with spam
 SocialMarket<-SocialMarket[(SocialMarket$spam==0),]
@@ -50,6 +50,7 @@ SocialMarket <- subset(SocialMarket, select = -c(adult_ratio, tweet_sum, spam))
 # Center/scale the data
 #SocialMarket = SocialMarket[,-(1,35)]
 SocialMarket_scaled <- scale(SocialMarket, center=TRUE, scale=TRUE) 
+N = nrow(SocialMarket)
 ```
 
 ### 4.2.2 Clustering
@@ -67,10 +68,12 @@ par("mar")
 par(mar=c(4,4,4,4))
 
 plot(k_grid, SSE_grid, xlab="K",ylab="SSE Grid", sub="SSE Grid vs K")
+```
 
+```{r graph_4.2.1.1, echo=FALSE, warning=FALSE}
 #CH-grid to find the optimal K
 CH_grid = foreach(k = k_grid, .combine='c') %do% {
-  cluster_k = kmeans(SocialMarket_scaled, k, nstart=50)
+  cluster_k = kmeans(SocialMarket_scaled, k, nstart=20)
   W = cluster_k$tot.withinss
   B = cluster_k$betweenss
   CH = (B/W)*((N-k)/(k-1))
@@ -80,7 +83,9 @@ CH_grid = foreach(k = k_grid, .combine='c') %do% {
 plot(k_grid, CH_grid, xlab="K",
      ylab="CH Grid",
      sub="CH Grid vs K")
+```
 
+```{r graph_4.2.1.2, echo=FALSE, warning=FALSE}
 #Gap statistics
 Market_gap = clusGap(SocialMarket_scaled, FUN = kmeans, nstart = 20, K.max = 10, B = 10)
 plot(Market_gap)
@@ -106,118 +111,43 @@ Some distinct market segments with highly correlated interests are listed below 
 1. Personal fitness, outdoors, health & nutrition
 
 ```{r graph_4.2.3, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$personal_fitness, y=SocialMarket$health_nutrition, z=SocialMarket$outdoors, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "personal_fitness"),
-      yaxis = list(title = "health_nutrition"),
-      zaxis = list(title = "outdoors")
-    ))
+XX = subset(SocialMarket,select = c("personal_fitness","health_nutrition","outdoors"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
 2. Fashion, cooking, beauty, shopping, photo sharing
 
 ```{r graph_4.2.4.1, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$fashion, y=SocialMarket$cooking, z=SocialMarket$beauty, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "fashion"),
-      yaxis = list(title = "cooking"),
-      zaxis = list(title = "beauty")
-    ))
-```
-
-```{r graph_4.2.4.2, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$fashion, y=SocialMarket$shopping, z=SocialMarket$photo_sharing, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "fashion"),
-      yaxis = list(title = "shopping"),
-      zaxis = list(title = "photo_sharing")
-    ))
+XX = subset(SocialMarket,select = c("fashion","cooking","beauty", "shopping", "photo_sharing"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
 3. Online gaming, college&university, sports playing
 
 ```{r graph_4.2.5, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$online_gaming, y=SocialMarket$college_uni, z=SocialMarket$sports_playing, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "online_gaming"),
-      yaxis = list(title = "college_uni"),
-      zaxis = list(title = "sports_playing")
-    ))
+XX = subset(SocialMarket,select = c("online_gaming","college_uni","sports_playing"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
 4. Sports fandom, food, family, religion, parenting, school
 
 ``````{r graph_4.2.6.1, echo=FALSE, warning=FALSE}
-plot_ly(x=SocialMarket$sports_fandom, y=SocialMarket$parenting, z=SocialMarket$school, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "sports_fandom"),
-      yaxis = list(title = "parenting"),
-      zaxis = list(title = "school")
-    ))
-```
-
-``````{r graph_4.2.6.2, echo=FALSE, warning=FALSE}
-plot_ly(x=SocialMarket$food, y=SocialMarket$family, z=SocialMarket$religion, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "food"),
-      yaxis = list(title = "family"),
-      zaxis = list(title = "religion")
-    ))
+XX = subset(SocialMarket,select = c("sports_fandom","parenting","school","food", "family"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
 5. Politics, news, computers, travel, automobiles
 
 ```{r graph_4.2.7.1, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$politics, y=SocialMarket$news, z=SocialMarket$computers, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "politics"),
-      yaxis = list(title = "news"),
-      zaxis = list(title = "computers")
-    ))
+XX = subset(SocialMarket,select = c("politics","news","computers", "travel", "automotive"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
-```{r graph_4.2.7.2, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$politics, y=SocialMarket$travel, z=SocialMarket$automotive, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "politics"),
-      yaxis = list(title = "travel"),
-      zaxis = list(title = "automotive")
-    ))
-```
 6. TV film, art, music
 
 ```{r graph_4.2.8, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$tv_film, y=SocialMarket$art, z=SocialMarket$music, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "tv_film"),
-      yaxis = list(title = "art"),
-      zaxis = list(title = "music")
-    ))
+XX = subset(SocialMarket,select = c("tv_film","art","music"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
 7. Everything, shopping, photo sharing - From the graphs above, we can see the last group being a very special one, showing moderate interests in almost all areas (compared to strong distinct tastes in other groups).  Within the group, interests toward shopping and photo sharing seems to stand out.
