@@ -41,7 +41,6 @@ par(mar=c(4,4,4,4))
 plot(k_grid, SSE_grid, xlab="K",ylab="SSE Grid", sub="SSE Grid vs K")
 
 #CH-grid to find the optimal K 
-############################################## Error!
 CH_grid = foreach(k = k_grid, .combine='c') %do% {
   cluster_k = kmeans(SocialMarket_scaled, k, nstart=50)
   W = cluster_k$tot.withinss
@@ -53,7 +52,6 @@ CH_grid = foreach(k = k_grid, .combine='c') %do% {
 plot(k_grid, CH_grid, xlab="K",
      ylab="CH Grid",
      sub="CH Grid vs K")
-############################################## Error!
 
 #Gap statistics
 Market_gap = clusGap(SocialMarket_scaled, FUN = kmeans, nstart = 20, K.max = 10, B = 10)
@@ -88,7 +86,7 @@ plot_ly(x=SocialMarket$fashion, y=SocialMarket$cooking, z=SocialMarket$beauty, d
       zaxis = list(title = "beauty")
     ))
 
-XX = subset(SocialMarket,select = c("fashion","cooking","beauty"))
+XX = subset(SocialMarket,select = c("fashion","cooking","beauty", "shopping", "photo_sharing"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 
 
