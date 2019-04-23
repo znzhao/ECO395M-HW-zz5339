@@ -18,6 +18,7 @@ library(cluster)
 library(corrplot)
 library(plotly)
 library(GGally)
+library(ggplot2)
 ```
 
 # Exercise 4
@@ -153,7 +154,7 @@ In conclusion, we might not be able to tell the difference among the different q
 
 ## Exercise 4.2 Market segmentation
 ### 4.2.1 Data pre-process
-First we decided to eliminate as many bots as possible from the slip through. All users with spam posts are assumed to be pots as only a few dozens of them had spam posts. Users with pornography posts are a bit complicated because more than a few couple hundred users had them and at the same time also posted significant amount of other types of posts, so they might just be actual human users with interests in pornography to some extent . To distinguish between humans and bots, we set an arbitrary rule of 20/80 to delete all users having more than 20% of their total posts in pornagraphy. Next, column chatter and uncategorized  are deleted because they are the labels that do not fit at all into any of the interest categories. At the end, we are left with 7,676 users to determine market segmentation using clustering and principal components analysis methodologies.
+First we decided to eliminate as many bots as possible from the slip through. All users with spam posts are assumed to be pots as only a few dozens of them had spam posts. Users with pornography posts are a bit complicated because more than a few couple hundred users had them and at the same time also posted significant amount of other types of posts, so they might just be actual human users with interests in pornography to some extent . To distinguish between humans and bots, we set an arbitrary rule of 20/80 to delete all users having more than 20% of their total posts in pornagraphy. Next, column chatter and uncategorized  are deleted because they are the labels that do not fit at all into any of the interest categories. At the end, we are left with 7,676 users to determine market segmentation using clustering and principal components analysis methodologies. At last, there are 33 variables left.
 
 ```{r setup_4.2.1, echo=FALSE, warning=FALSE}
 urlfile<-'https://raw.githubusercontent.com/jgscott/ECO395M/master/data/social_marketing.csv'
@@ -292,21 +293,93 @@ We first got the loadings matrix and scores matrix from principal components met
 
 ```{r table_4.2.1, echo=FALSE, warning=FALSE}
 
+urlfile<-'https://raw.githubusercontent.com/jgscott/ECO395M/master/data/social_marketing.csv'
+social_marketing = read.csv(url(urlfile), row.names=1)
+
+#delete users with spam
+social_marketing = social_marketing[(social_marketing$spam==0),]
+
+#delete uncategorized label "chatter"
+social_marketing = subset(social_marketing, select = -c(chatter, uncategorized))
+
+#add tweet sum & calculate adult ratio & delete adult ratio more than 20%
+social_marketing = cbind(tweet_sum = rowSums(social_marketing), social_marketing)
+social_marketing = cbind(adult_ratio = 1, social_marketing)
+social_marketing$adult_ratio = social_marketing$adult/social_marketing$tweet_sum
+social_marketing = social_marketing[(social_marketing$adult_ratio<0.2),]
+
+#delete uncategorized label "unused attributes"
+social_marketing = subset(social_marketing, select = -c(adult_ratio, tweet_sum, spam))
+
+#center and scale the data
+social_marketing = scale(social_marketing, center=TRUE, scale=TRUE)
+
+# correlation
+cor=cor(social_marketing)
+
+# PCA
+pca = prcomp(social_marketing,scale=TRUE)
+loadings = pca$rotation
+scores = pca$x
+
+# PVE
+VE = pca$sdev^2
+PVE = VE / sum(VE)
+round(PVE, 2)
 ```
 
 In the above table, we can see that the first eight principal components can explain most of the variability. The first principal component explains 13% of the variability; the second principal component explains 8% of the variability; the third principal component explains 8% of the variability;the fourth principal component explains 7% of the variability; the fifth principal component explains 7% of the variability; the sixth principal component explains 5% of the variability; the seventh principal component explains 4% of the variability; the eighth principal component explains 4% of the variability. Together, the first eight principal components explain 56% of the variability.
 
 ```{r graph_4.2.9, echo=FALSE, warning=FALSE}
-
+PVEplot = qplot(c(1:33), PVE) + 
+  geom_line() + 
+  xlab("Principal Component") + 
+  ylab("PVE") +
+  ggtitle("Scree Plot") +
+  ylim(0, 0.15)
+PVEplot
 ```
 
-```{r table_4.2.10, echo=FALSE, warning=FALSE}
-
+```{r graph_4.2.10, echo=FALSE, warning=FALSE}
+cumPVE = qplot(c(1:33), cumsum(PVE)) + 
+  geom_line() + 
+  xlab("Principal Component") + 
+  ylab(NULL) +
+  ggtitle("Cumulative Scree Plot") +
+  ylim(0,1)
+cumPVE
 ```
 
 In the PVE Plot, we can see that between eighth and ninth components, there’s a significant gap in the Scree Plot. Also, from the Cumulative PVE Plot, we can find that first eight principal components can explain more than 50% of the total variability. Thus, we choose 8 principal components to divide the market of NutrientH20 into 8 segments. The characteristics of these 8 market segments are actually latent factor inferred from 33 interests categories.
 
 Then we got top 5 interests of followers of NutrientH20 in each market segment.
+
+```{r table_4.2.2, echo=FALSE, warning=FALSE}
+# extract market segments
+o1 = order(loadings[,1], decreasing=TRUE)
+colnames(social_marketing)[head(o1,5)]
+
+o2 = order(loadings[,2], decreasing=TRUE)
+colnames(social_marketing)[head(o2,5)]
+
+o3 = order(loadings[,3], decreasing=TRUE)
+colnames(social_marketing)[head(o3,5)]
+
+o4 = order(loadings[,4], decreasing=TRUE)
+colnames(social_marketing)[head(o4,5)]
+
+o5 = order(loadings[,5], decreasing=TRUE)
+colnames(social_marketing)[head(o5,5)]
+
+o6 = order(loadings[,6], decreasing=TRUE)
+colnames(social_marketing)[head(o6,5)]
+
+o7 = order(loadings[,7], decreasing=TRUE)
+colnames(social_marketing)[head(o7,5)]
+
+o8 = order(loadings[,8], decreasing=TRUE)
+colnames(social_marketing)[head(o8,5)]
+```
 
 In the 1st market segment, top 5 interest of followers are "religion", "food", "parenting", "sports_fandom" and "school".
 
@@ -347,7 +420,7 @@ The seventh market segment found by clustering is similar with the sixth segment
 
 Finally, we labeled above seven market segments to show their unique characteristics.
 
-We named the first market segment as “Mr. fit”. Those kinds of people focus on working out and keeping in a good shape.
+We named the first market segment as “Mr. fitness”. Those kinds of people focus on working out and keeping in a good shape.
 
 We named the second market segment as “Mrs. fashion”. Those kinds of people like keeping up with fashion and sharing their happy moments with friends.
 
