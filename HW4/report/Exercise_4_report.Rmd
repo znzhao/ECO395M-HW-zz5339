@@ -9,6 +9,10 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(LICORS)
+library(ISLR)
+library(mosaic)
 library(foreach)
 library(cluster)
 library(corrplot)
@@ -20,6 +24,70 @@ library(GGally)
 By Chong Wang, Tianping Wu, Zhenning Zhao
 
 ## Exercise 4.1 Clustering and PCA
+```{r setup_4.1, echo=FALSE, warning=FALSE}
+myurl <- "https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW4/wine.csv"
+wine <- read.csv(url(myurl))
+```
+
+### Distinguishing the color of the wine
+
+First we normalize the data. After demeaning and scaling with their standard deviation, we end up with a 6,497*11 dataset. The following is the heatmap of the correlation between these 11 chemical properties.
+
+Although there are 11 chemical properties, we choose to visualize the data through only 4 dimensions: total sulfur dioxide, density, pH, and volatile acidity. The following graph shows the distribution of the red wines and the white wine on these 4 dimensions. We randomly pick these 4 properties to give a first taste of the data. From the graph we can tell that the red wine and the white wine have different features, so it is highly possible for us to distinguish these two different type of wines.
+
+```{r plot4.1.1, echo=FALSE, warning=FALSE}
+# Center and scale the data, data visualization
+X = wine[,1:11]
+X = scale(X, center=TRUE, scale=TRUE)
+mu = attr(X,"scaled:center")
+sigma = attr(X,"scaled:scale")
+```
+
+```{r plot4.1.2, echo=FALSE, warning=FALSE}
+# distribution plot
+XX = subset(wine,select = c("total.sulfur.dioxide","density","pH","volatile.acidity"))
+ggpairs(XX,aes(col = wine$color, alpha = 0.8))
+```
+
+Since we have already have a basic impression of 2 categories in mind, we choose to do clustering with K=2.
+
+First, by using K-means, we can divide the wines into 2 category. Visualizing through the total sulfur dioxide and the density, we can tell that K=means did an excellent work distinguishing red wines and white wines.
+
+```{r plot4.1.3, echo=FALSE, warning=FALSE}
+# First do clusting
+clust1 = kmeans(X, 2, nstart=20)
+qplot(wine$density,wine$total.sulfur.dioxide, data=wine, shape=factor(clust1$cluster), col=factor(wine$color))
+res <- cor(X)
+```
+
+More specifically, we can calculate the accuracy rate by looking at the following confusion matrix. The accuracy rate for K-means is (4,830+1,575)/6,497 = 98.6%, which is pretty high. This means by looking at the chemical properties, the K-means can characterize the red wine and white wine almost perfectly.
+
+```{r table4.1.4, echo=FALSE, warning=FALSE}
+# table for the correctly clustering
+xtabs(~clust1$cluster + wine$color)
+table1 = xtabs(~clust1$cluster + wine$color)
+```
+
+Second, we use the PCA method. The summary of the scores is listed below. The first four principal components capture about 73% of the variance in the data. So I choose to use the first four principal components to do the clustering. The following is the graph of different wines and different categories on the scale of the first two components. As the graph shows, the PCA is also a good way to differ red wines from white wines.
+```{r table4.1.5, echo=FALSE, warning=FALSE}
+# Next try PCA
+pc = prcomp(X, scale=TRUE)
+summary(pc)
+loadings = pc$rotation
+scores = pc$x
+# PCA for clustering
+clustPCA = kmeans(scores[,1:4], 2, nstart=20)
+qplot(scores[,1], scores[,2], color=factor(wine$color), shape=factor(clustPCA$cluster), xlab='Component 1', ylab='Component 2')
+```
+
+More specifically, we can calculate the accuracy rate by looking at the following confusion matrix. The accuracy rate for K-PCA is (4,818+1,575)/6,497 = 98.4%, which is slightly lower than the K-mean result. In conclusion, to differ white wines and red wines, we can simply use the K-mean method and it will give us a pretty good result.
+
+```{r table4.1.6, echo=FALSE, warning=FALSE}
+# table for the correctly clustering
+xtabs(~clustPCA$cluster + wine$color)
+tablePCA = xtabs(~clustPCA$cluster + wine$color)
+```
+
 
 ## Exercise 4.2 Market segmentation
 ### 4.2.1 Data pre-process
@@ -27,7 +95,7 @@ First we decided to eliminate as many bots as possible from the slip through. Al
 
 ```{r setup_4.2.1, echo=FALSE, warning=FALSE}
 urlfile<-'https://raw.githubusercontent.com/jgscott/ECO395M/master/data/social_marketing.csv'
-##protein <- read.csv(url(urlfile), row.names=1)
+
 #36 different categories
 SocialMarket <- read.csv(url(urlfile), row.names=1)
 # head(SocialMarket, 10)
@@ -64,7 +132,7 @@ SSE_grid = foreach(k = k_grid, .combine='c') %do% {
   cluster_k$tot.withinss
 }
 graphics.off()
-par("mar")
+#par("mar")
 par(mar=c(4,4,4,4))
 
 plot(k_grid, SSE_grid, xlab="K",ylab="SSE Grid", sub="SSE Grid vs K")
