@@ -9,28 +9,158 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(LICORS)
+library(ISLR)
+library(mosaic)
 library(foreach)
 library(cluster)
 library(corrplot)
 library(plotly)
-library(ggplot2)
+library(GGally)
 ```
 
 # Exercise 4
 By Chong Wang, Tianping Wu, Zhenning Zhao
 
 ## Exercise 4.1 Clustering and PCA
+```{r setup_4.1, echo=FALSE, warning=FALSE}
+myurl <- "https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW4/wine.csv"
+wine <- read.csv(url(myurl))
+```
+
+### Distinguishing the color of the wine
+
+First we normalize the data. After demeaning and scaling with their standard deviation, we end up with a 6,497*11 dataset. The following is the heatmap of the correlation between these 11 chemical properties.
+
+Although there are 11 chemical properties, we choose to visualize the data through only 4 dimensions: total sulfur dioxide, density, pH, and volatile acidity. The following graph shows the distribution of the red wines and the white wine on these 4 dimensions. We randomly pick these 4 properties to give a first taste of the data. From the graph we can tell that the red wine and the white wine have different features, so it is highly possible for us to distinguish these two different type of wines.
+
+```{r plot4.1.1, echo=FALSE, warning=FALSE}
+# Center and scale the data, data visualization
+X = wine[,1:11]
+X = scale(X, center=TRUE, scale=TRUE)
+mu = attr(X,"scaled:center")
+sigma = attr(X,"scaled:scale")
+```
+
+```{r plot4.1.2, echo=FALSE, warning=FALSE}
+# distribution plot
+XX = subset(wine,select = c("total.sulfur.dioxide","density","pH","volatile.acidity"))
+ggpairs(XX,aes(col = wine$color, alpha = 0.8))
+```
+
+Since we have already have a basic impression of 2 categories in mind, we choose to do clustering with K=2.
+
+First, by using K-means, we can divide the wines into 2 category. Visualizing through the total sulfur dioxide and the density, we can tell that K=means did an excellent work distinguishing red wines and white wines.
+
+```{r plot4.1.3, echo=FALSE, warning=FALSE}
+# First do clusting
+clust1 = kmeans(X, 2, nstart=20)
+qplot(wine$density,wine$total.sulfur.dioxide, data=wine, shape=factor(clust1$cluster), col=factor(wine$color))
+res <- cor(X)
+```
+
+More specifically, we can calculate the accuracy rate by looking at the following confusion matrix. The accuracy rate for K-means is (4,830+1,575)/6,497 = 98.6%, which is pretty high. This means by looking at the chemical properties, the K-means can characterize the red wine and white wine almost perfectly.
+
+```{r table4.1.4, echo=FALSE, warning=FALSE}
+# table for the correctly clustering
+xtabs(~clust1$cluster + wine$color)
+table1 = xtabs(~clust1$cluster + wine$color)
+```
+
+Second, we use the PCA method. The summary of the scores is listed below. The first four principal components capture about 73% of the variance in the data. So I choose to use the first four principal components to do the clustering. The following is the graph of different wines and different categories on the scale of the first two components. As the graph shows, the PCA is also a good way to differ red wines from white wines.
+```{r table4.1.5, echo=FALSE, warning=FALSE}
+# Next try PCA
+pc = prcomp(X, scale=TRUE)
+summary(pc)
+loadings = pc$rotation
+scores = pc$x
+# PCA for clustering
+clustPCA = kmeans(scores[,1:4], 2, nstart=20)
+qplot(scores[,1], scores[,2], color=factor(wine$color), shape=factor(clustPCA$cluster), xlab='Component 1', ylab='Component 2')
+```
+
+More specifically, we can calculate the accuracy rate by looking at the following confusion matrix. The accuracy rate for K-PCA is (4,818+1,575)/6,497 = 98.4%, which is slightly lower than the K-mean result. In conclusion, to differ white wines and red wines, we can simply use the K-mean method and it will give us a pretty good result.
+
+```{r table4.1.6, echo=FALSE, warning=FALSE}
+# table for the correctly clustering
+xtabs(~clustPCA$cluster + wine$color)
+tablePCA = xtabs(~clustPCA$cluster + wine$color)
+```
+
+### Distinguishing the quality of the wine
+
+Before we do the clustering, the following barplot shows the distribution of the different qualities. There are only 7 different qualities of wines in the dataset. It seems that most of the wines have quality of 5 or 6, and only a few of them have very high or very low quality. Since normally the clustering method would divide the data into different categories quite equally, it might be very hard for K-means algorithm to successfully identify the quality of the wines.
+
+```{r graph4.1.7, echo=FALSE, warning=FALSE}
+# by the barplot we can see that most wines' quality is 6
+ggplot(wine)+
+  geom_bar(aes(x = quality))
+``` 
+
+What’s more, by data visualization, it seems that the wines with different qualities have similar chemistry features, making it even more difficult to identify the quality of the wine.
+
+```{r graph4.1.8, echo=FALSE, warning=FALSE}
+# it seems very hard to cluster them into 7 categories
+ggpairs(XX,aes(col = factor(wine$quality),alpha = 0.6))
+```
+
+First, by using K-means, we can divide the wines into 7 category. The perfect density graph should be as follow. 
+
+```{r graph4.1.9, echo=FALSE, warning=FALSE}
+#the perfect density plot
+ggplot(wine)+ geom_density(aes(x = wine$quality, col = factor(wine$quality), fill = factor(wine$quality)), alpha = 0.3)
+```
+
+However, the density of different wine should be concentrating on different categories. The result, as is shown in the following density graph and the confusion matrix, is not so good. There is no obvious pattern that could be pointed out from the clustering. Hence the K-mean method fails at this challenge, just as we expected.
+
+```{r graph4.1.10, echo=FALSE, warning=FALSE}
+# First do clusting
+clust2 = kmeans(X, 7, nstart=20)
+
+# table for the correctly clustering
+xtabs(~clust2$cluster + wine$quality)
+table2 = xtabs(~clust2$cluster + wine$quality)
+# look what we got here! it looks very different from the perfect graph.
+ggplot(wine)+ geom_density(aes(x = clust2$cluster, col = factor(wine$quality), fill = factor(wine$quality)), alpha = 0.3)
+```
+
+Second, we use the PCA method. Still we choose to use the first four principal components to do the clustering with K=7. The following is the graph of different wines qualities and different categories on the scale of the first two components. From the graph we can hardly tell any relations between the quality of the wine and the categories that we find.
+
+```{r graph4.1.11, echo=FALSE, warning=FALSE}
+# Next try PCA
+pc = prcomp(X, scale=TRUE)
+loadings = pc$rotation
+scores = pc$x
+
+# PCA for clustering
+clustPCA2 = kmeans(scores[,1:4], 7, nstart=20)
+qplot(scores[,1], scores[,2], color=factor(wine$quality), shape = factor(clustPCA2$cluster) , xlab='Component 1', ylab='Component 2')
+```
+
+The similar story can be told by looking at the confusion matrix and the density graph. However, the PCA method is slightly better than the K-means, since the high quality wine tends to cluster into similar categories. Saying that, the overall result of the prediction is still a nightmare. The chemistry feature just might not be the reason for the different qualities of the wine.
+
+```{r graph4.1.12, echo=FALSE, warning=FALSE}
+# table for the correctly clustering
+xtabs(~clustPCA2$cluster + wine$quality)
+tablePCA = xtabs(~clustPCA2$cluster + wine$quality)
+ggplot(wine)+ geom_density(aes(x = clustPCA2$cluster, col = factor(wine$quality), fill = factor(wine$quality)), alpha = 0.3)
+```
+
+In conclusion, we might not be able to tell the difference among the different quality wine by only looking at the chemical features of the wine.
+
+
 
 ## Exercise 4.2 Market segmentation
 ### 4.2.1 Data pre-process
-First we decided to eliminate as many bots as possible from the slip through. All users with spam posts are assumed to be pots as only a few dozens of them had spam posts. Users with pornography posts are a bit complicated because more than a few couple hundred users had them and at the same time also posted significant amount of other types of posts, so they might just be actual human users with interests in pornography to some extent . To distinguish between humans and bots, we set an arbitrary rule of 20/80 to delete all users having more than 20% of their total posts in pornagraphy. Next, column chatter and uncategorized  are deleted because they are the labels that do not fit at all into any of the interest categories. At the end, we are left with 7,684 users to determine market segmentation using clustering and principal components analysis methodologies.
+First we decided to eliminate as many bots as possible from the slip through. All users with spam posts are assumed to be pots as only a few dozens of them had spam posts. Users with pornography posts are a bit complicated because more than a few couple hundred users had them and at the same time also posted significant amount of other types of posts, so they might just be actual human users with interests in pornography to some extent . To distinguish between humans and bots, we set an arbitrary rule of 20/80 to delete all users having more than 20% of their total posts in pornagraphy. Next, column chatter and uncategorized  are deleted because they are the labels that do not fit at all into any of the interest categories. At the end, we are left with 7,676 users to determine market segmentation using clustering and principal components analysis methodologies.
 
 ```{r setup_4.2.1, echo=FALSE, warning=FALSE}
 urlfile<-'https://raw.githubusercontent.com/jgscott/ECO395M/master/data/social_marketing.csv'
-##protein <- read.csv(url(urlfile), row.names=1)
+
 #36 different categories
 SocialMarket <- read.csv(url(urlfile), row.names=1)
-head(SocialMarket, 10)
+# head(SocialMarket, 10)
 
 #delete users with spam
 SocialMarket<-SocialMarket[(SocialMarket$spam==0),]
@@ -50,6 +180,7 @@ SocialMarket <- subset(SocialMarket, select = -c(adult_ratio, tweet_sum, spam))
 # Center/scale the data
 #SocialMarket = SocialMarket[,-(1,35)]
 SocialMarket_scaled <- scale(SocialMarket, center=TRUE, scale=TRUE) 
+N = nrow(SocialMarket)
 ```
 
 ### 4.2.2 Clustering
@@ -63,14 +194,16 @@ SSE_grid = foreach(k = k_grid, .combine='c') %do% {
   cluster_k$tot.withinss
 }
 graphics.off()
-par("mar")
+#par("mar")
 par(mar=c(4,4,4,4))
 
 plot(k_grid, SSE_grid, xlab="K",ylab="SSE Grid", sub="SSE Grid vs K")
+```
 
+```{r graph_4.2.1.1, echo=FALSE, warning=FALSE}
 #CH-grid to find the optimal K
 CH_grid = foreach(k = k_grid, .combine='c') %do% {
-  cluster_k = kmeans(SocialMarket_scaled, k, nstart=50)
+  cluster_k = kmeans(SocialMarket_scaled, k, nstart=20)
   W = cluster_k$tot.withinss
   B = cluster_k$betweenss
   CH = (B/W)*((N-k)/(k-1))
@@ -80,7 +213,9 @@ CH_grid = foreach(k = k_grid, .combine='c') %do% {
 plot(k_grid, CH_grid, xlab="K",
      ylab="CH Grid",
      sub="CH Grid vs K")
+```
 
+```{r graph_4.2.1.2, echo=FALSE, warning=FALSE}
 #Gap statistics
 Market_gap = clusGap(SocialMarket_scaled, FUN = kmeans, nstart = 20, K.max = 10, B = 10)
 plot(Market_gap)
@@ -106,118 +241,43 @@ Some distinct market segments with highly correlated interests are listed below 
 1. Personal fitness, outdoors, health & nutrition
 
 ```{r graph_4.2.3, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$personal_fitness, y=SocialMarket$health_nutrition, z=SocialMarket$outdoors, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "personal_fitness"),
-      yaxis = list(title = "health_nutrition"),
-      zaxis = list(title = "outdoors")
-    ))
+XX = subset(SocialMarket,select = c("personal_fitness","health_nutrition","outdoors"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
 2. Fashion, cooking, beauty, shopping, photo sharing
 
 ```{r graph_4.2.4.1, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$fashion, y=SocialMarket$cooking, z=SocialMarket$beauty, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "fashion"),
-      yaxis = list(title = "cooking"),
-      zaxis = list(title = "beauty")
-    ))
-```
-
-```{r graph_4.2.4.2, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$fashion, y=SocialMarket$shopping, z=SocialMarket$photo_sharing, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "fashion"),
-      yaxis = list(title = "shopping"),
-      zaxis = list(title = "photo_sharing")
-    ))
+XX = subset(SocialMarket,select = c("fashion","cooking","beauty", "shopping", "photo_sharing"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
 3. Online gaming, college&university, sports playing
 
 ```{r graph_4.2.5, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$online_gaming, y=SocialMarket$college_uni, z=SocialMarket$sports_playing, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "online_gaming"),
-      yaxis = list(title = "college_uni"),
-      zaxis = list(title = "sports_playing")
-    ))
+XX = subset(SocialMarket,select = c("online_gaming","college_uni","sports_playing"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
 4. Sports fandom, food, family, religion, parenting, school
 
 ``````{r graph_4.2.6.1, echo=FALSE, warning=FALSE}
-plot_ly(x=SocialMarket$sports_fandom, y=SocialMarket$parenting, z=SocialMarket$school, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "sports_fandom"),
-      yaxis = list(title = "parenting"),
-      zaxis = list(title = "school")
-    ))
-```
-
-``````{r graph_4.2.6.2, echo=FALSE, warning=FALSE}
-plot_ly(x=SocialMarket$food, y=SocialMarket$family, z=SocialMarket$religion, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "food"),
-      yaxis = list(title = "family"),
-      zaxis = list(title = "religion")
-    ))
+XX = subset(SocialMarket,select = c("sports_fandom","parenting","school","food", "family"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
 5. Politics, news, computers, travel, automobiles
 
 ```{r graph_4.2.7.1, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$politics, y=SocialMarket$news, z=SocialMarket$computers, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "politics"),
-      yaxis = list(title = "news"),
-      zaxis = list(title = "computers")
-    ))
+XX = subset(SocialMarket,select = c("politics","news","computers", "travel", "automotive"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
-```{r graph_4.2.7.2, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$politics, y=SocialMarket$travel, z=SocialMarket$automotive, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "politics"),
-      yaxis = list(title = "travel"),
-      zaxis = list(title = "automotive")
-    ))
-```
 6. TV film, art, music
 
 ```{r graph_4.2.8, echo=FALSE, warning=FALSE}
-
-plot_ly(x=SocialMarket$tv_film, y=SocialMarket$art, z=SocialMarket$music, data=SocialMarket, type="scatter3d", mode="markers", color=factor(clust1$cluster))%>%
-  layout(
-    title = "Market Sagement in 3D",
-    scene = list(
-      xaxis = list(title = "tv_film"),
-      yaxis = list(title = "art"),
-      zaxis = list(title = "music")
-    ))
+XX = subset(SocialMarket,select = c("tv_film","art","music"))
+ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
 7. Everything, shopping, photo sharing - From the graphs above, we can see the last group being a very special one, showing moderate interests in almost all areas (compared to strong distinct tastes in other groups).  Within the group, interests toward shopping and photo sharing seems to stand out.
