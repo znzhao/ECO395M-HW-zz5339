@@ -88,6 +88,68 @@ xtabs(~clustPCA$cluster + wine$color)
 tablePCA = xtabs(~clustPCA$cluster + wine$color)
 ```
 
+### Distinguishing the quality of the wine
+
+Before we do the clustering, the following barplot shows the distribution of the different qualities. There are only 7 different qualities of wines in the dataset. It seems that most of the wines have quality of 5 or 6, and only a few of them have very high or very low quality. Since normally the clustering method would divide the data into different categories quite equally, it might be very hard for K-means algorithm to successfully identify the quality of the wines.
+
+```{r graph4.1.7, echo=FALSE, warning=FALSE}
+# by the barplot we can see that most wines' quality is 6
+ggplot(wine)+
+  geom_bar(aes(x = quality))
+``` 
+
+What’s more, by data visualization, it seems that the wines with different qualities have similar chemistry features, making it even more difficult to identify the quality of the wine.
+
+```{r graph4.1.8, echo=FALSE, warning=FALSE}
+# it seems very hard to cluster them into 7 categories
+ggpairs(XX,aes(col = factor(wine$quality),alpha = 0.6))
+```
+
+First, by using K-means, we can divide the wines into 7 category. The perfect density graph should be as follow. 
+
+```{r graph4.1.9, echo=FALSE, warning=FALSE}
+#the perfect density plot
+ggplot(wine)+ geom_density(aes(x = wine$quality, col = factor(wine$quality), fill = factor(wine$quality)), alpha = 0.3)
+```
+
+However, the density of different wine should be concentrating on different categories. The result, as is shown in the following density graph and the confusion matrix, is not so good. There is no obvious pattern that could be pointed out from the clustering. Hence the K-mean method fails at this challenge, just as we expected.
+
+```{r graph4.1.10, echo=FALSE, warning=FALSE}
+# First do clusting
+clust2 = kmeans(X, 7, nstart=20)
+
+# table for the correctly clustering
+xtabs(~clust2$cluster + wine$quality)
+table2 = xtabs(~clust2$cluster + wine$quality)
+# look what we got here! it looks very different from the perfect graph.
+ggplot(wine)+ geom_density(aes(x = clust2$cluster, col = factor(wine$quality), fill = factor(wine$quality)), alpha = 0.3)
+```
+
+Second, we use the PCA method. Still we choose to use the first four principal components to do the clustering with K=7. The following is the graph of different wines qualities and different categories on the scale of the first two components. From the graph we can hardly tell any relations between the quality of the wine and the categories that we find.
+
+```{r graph4.1.11, echo=FALSE, warning=FALSE}
+# Next try PCA
+pc = prcomp(X, scale=TRUE)
+loadings = pc$rotation
+scores = pc$x
+
+# PCA for clustering
+clustPCA2 = kmeans(scores[,1:4], 7, nstart=20)
+qplot(scores[,1], scores[,2], color=factor(wine$quality), shape = factor(clustPCA2$cluster) , xlab='Component 1', ylab='Component 2')
+```
+
+The similar story can be told by looking at the confusion matrix and the density graph. However, the PCA method is slightly better than the K-means, since the high quality wine tends to cluster into similar categories. Saying that, the overall result of the prediction is still a nightmare. The chemistry feature just might not be the reason for the different qualities of the wine.
+
+```{r graph4.1.12, echo=FALSE, warning=FALSE}
+# table for the correctly clustering
+xtabs(~clustPCA2$cluster + wine$quality)
+tablePCA = xtabs(~clustPCA2$cluster + wine$quality)
+ggplot(wine)+ geom_density(aes(x = clustPCA2$cluster, col = factor(wine$quality), fill = factor(wine$quality)), alpha = 0.3)
+```
+
+In conclusion, we might not be able to tell the difference among the different quality wine by only looking at the chemical features of the wine.
+
+
 
 ## Exercise 4.2 Market segmentation
 ### 4.2.1 Data pre-process
