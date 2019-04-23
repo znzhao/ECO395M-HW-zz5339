@@ -24,8 +24,8 @@ More specifically, we can calculate the accuracy rate by looking at the followin
 
     ##               wine$color
     ## clust1$cluster  red white
-    ##              1 1575    68
-    ##              2   24  4830
+    ##              1   24  4830
+    ##              2 1575    68
 
 Second, we use the PCA method. The summary of the scores is listed below. The first four principal components capture about 73% of the variance in the data. So I choose to use the first four principal components to do the clustering. The following is the graph of different wines and different categories on the scale of the first two components. As the graph shows, the PCA is also a good way to differ red wines from white wines.
 
@@ -45,8 +45,56 @@ More specifically, we can calculate the accuracy rate by looking at the followin
 
     ##                 wine$color
     ## clustPCA$cluster  red white
-    ##                1 1575    80
-    ##                2   24  4818
+    ##                1   24  4818
+    ##                2 1575    80
+
+### Distinguishing the quality of the wine
+
+Before we do the clustering, the following barplot shows the distribution of the different qualities. There are only 7 different qualities of wines in the dataset. It seems that most of the wines have quality of 5 or 6, and only a few of them have very high or very low quality. Since normally the clustering method would divide the data into different categories quite equally, it might be very hard for K-means algorithm to successfully identify the quality of the wines.
+
+![](Exercise_4_report_files/figure-markdown_github/graph4.1.7-1.png)
+
+What’s more, by data visualization, it seems that the wines with different qualities have similar chemistry features, making it even more difficult to identify the quality of the wine.
+
+![](Exercise_4_report_files/figure-markdown_github/graph4.1.8-1.png)
+
+First, by using K-means, we can divide the wines into 7 category. The perfect density graph should be as follow.
+
+![](Exercise_4_report_files/figure-markdown_github/graph4.1.9-1.png)
+
+However, the density of different wine should be concentrating on different categories. The result, as is shown in the following density graph and the confusion matrix, is not so good. There is no obvious pattern that could be pointed out from the clustering. Hence the K-mean method fails at this challenge, just as we expected.
+
+    ##               wine$quality
+    ## clust2$cluster   3   4   5   6   7   8   9
+    ##              1   4  21  77 548 446  97   4
+    ##              2   5  64 446 549 137  27   1
+    ##              3   4  15 197 262 140  14   0
+    ##              4   2  27 269 475 189  31   0
+    ##              5   6  63 470 346  43   2   0
+    ##              6   7  24 652 640 122  22   0
+    ##              7   2   2  27  16   2   0   0
+
+![](Exercise_4_report_files/figure-markdown_github/graph4.1.10-1.png)
+
+Second, we use the PCA method. Still we choose to use the first four principal components to do the clustering with K=7. The following is the graph of different wines qualities and different categories on the scale of the first two components. From the graph we can hardly tell any relations between the quality of the wine and the categories that we find.
+
+![](Exercise_4_report_files/figure-markdown_github/graph4.1.11-1.png)
+
+The similar story can be told by looking at the confusion matrix and the density graph. However, the PCA method is slightly better than the K-means, since the high quality wine tends to cluster into similar categories. Saying that, the overall result of the prediction is still a nightmare. The chemistry feature just might not be the reason for the different qualities of the wine.
+
+    ##                  wine$quality
+    ## clustPCA2$cluster   3   4   5   6   7   8   9
+    ##                 1   0  19 267 247  97   8   0
+    ##                 2   6  42 448 587 143  23   0
+    ##                 3   2  17 118 530 438  94   4
+    ##                 4   7  57 364 274  36   2   0
+    ##                 5   5  53 305 542 208  42   0
+    ##                 6   4   5  90 121  55   6   0
+    ##                 7   6  23 546 535 102  18   1
+
+![](Exercise_4_report_files/figure-markdown_github/graph4.1.12-1.png)
+
+In conclusion, we might not be able to tell the difference among the different quality wine by only looking at the chemical features of the wine.
 
 Exercise 4.2 Market segmentation
 --------------------------------
