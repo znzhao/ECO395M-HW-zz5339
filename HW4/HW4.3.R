@@ -57,3 +57,7 @@ inspect(subset(consumerrules, confidence > 0.5))
 inspect(subset(consumerrules, lift > 2.5 & confidence > 0.3))
 
 plot(consumerrules)
+
+# graph-based visualization
+# export a graph
+saveAsGraph(consumerrules, file = "consumerrules.graphml")
