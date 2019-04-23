@@ -6,6 +6,48 @@ By Chong Wang, Tianping Wu, Zhenning Zhao
 Exercise 4.1 Clustering and PCA
 -------------------------------
 
+### Distinguishing the color of the wine
+
+First we normalize the data. After demeaning and scaling with their standard deviation, we end up with a 6,497\*11 dataset. The following is the heatmap of the correlation between these 11 chemical properties.
+
+Although there are 11 chemical properties, we choose to visualize the data through only 4 dimensions: total sulfur dioxide, density, pH, and volatile acidity. The following graph shows the distribution of the red wines and the white wine on these 4 dimensions. We randomly pick these 4 properties to give a first taste of the data. From the graph we can tell that the red wine and the white wine have different features, so it is highly possible for us to distinguish these two different type of wines.
+
+![](Exercise_4_report_files/figure-markdown_github/plot4.1.2-1.png)
+
+Since we have already have a basic impression of 2 categories in mind, we choose to do clustering with K=2.
+
+First, by using K-means, we can divide the wines into 2 category. Visualizing through the total sulfur dioxide and the density, we can tell that K=means did an excellent work distinguishing red wines and white wines.
+
+![](Exercise_4_report_files/figure-markdown_github/plot4.1.3-1.png)
+
+More specifically, we can calculate the accuracy rate by looking at the following confusion matrix. The accuracy rate for K-means is (4,830+1,575)/6,497 = 98.6%, which is pretty high. This means by looking at the chemical properties, the K-means can characterize the red wine and white wine almost perfectly.
+
+    ##               wine$color
+    ## clust1$cluster  red white
+    ##              1 1575    68
+    ##              2   24  4830
+
+Second, we use the PCA method. The summary of the scores is listed below. The first four principal components capture about 73% of the variance in the data. So I choose to use the first four principal components to do the clustering. The following is the graph of different wines and different categories on the scale of the first two components. As the graph shows, the PCA is also a good way to differ red wines from white wines.
+
+    ## Importance of components:
+    ##                           PC1    PC2    PC3     PC4     PC5     PC6
+    ## Standard deviation     1.7407 1.5792 1.2475 0.98517 0.84845 0.77930
+    ## Proportion of Variance 0.2754 0.2267 0.1415 0.08823 0.06544 0.05521
+    ## Cumulative Proportion  0.2754 0.5021 0.6436 0.73187 0.79732 0.85253
+    ##                            PC7     PC8     PC9   PC10    PC11
+    ## Standard deviation     0.72330 0.70817 0.58054 0.4772 0.18119
+    ## Proportion of Variance 0.04756 0.04559 0.03064 0.0207 0.00298
+    ## Cumulative Proportion  0.90009 0.94568 0.97632 0.9970 1.00000
+
+![](Exercise_4_report_files/figure-markdown_github/table4.1.5-1.png)
+
+More specifically, we can calculate the accuracy rate by looking at the following confusion matrix. The accuracy rate for K-PCA is (4,818+1,575)/6,497 = 98.4%, which is slightly lower than the K-mean result. In conclusion, to differ white wines and red wines, we can simply use the K-mean method and it will give us a pretty good result.
+
+    ##                 wine$color
+    ## clustPCA$cluster  red white
+    ##                1 1575    80
+    ##                2   24  4818
+
 Exercise 4.2 Market segmentation
 --------------------------------
 
@@ -13,80 +55,13 @@ Exercise 4.2 Market segmentation
 
 First we decided to eliminate as many bots as possible from the slip through. All users with spam posts are assumed to be pots as only a few dozens of them had spam posts. Users with pornography posts are a bit complicated because more than a few couple hundred users had them and at the same time also posted significant amount of other types of posts, so they might just be actual human users with interests in pornography to some extent . To distinguish between humans and bots, we set an arbitrary rule of 20/80 to delete all users having more than 20% of their total posts in pornagraphy. Next, column chatter and uncategorized are deleted because they are the labels that do not fit at all into any of the interest categories. At the end, we are left with 7,676 users to determine market segmentation using clustering and principal components analysis methodologies.
 
-    ##           chatter current_events travel photo_sharing uncategorized
-    ## hmjoe4g3k       2              0      2             2             2
-    ## clk1m5w8s       3              3      2             1             1
-    ## jcsovtak3       6              3      4             3             1
-    ## 3oeb4hiln       1              5      2             2             0
-    ## fd75x1vgk       5              2      0             6             1
-    ## h6nvj91yp       6              4      2             7             0
-    ## ma7kfewxq       1              2      7             1             0
-    ## u48d61ztj       5              3      3             6             1
-    ## y2g68vhkf       6              2      0             1             0
-    ## n467yj1st       5              2      4             4             0
-    ##           tv_film sports_fandom politics food family home_and_garden music
-    ## hmjoe4g3k       1             1        0    4      1               2     0
-    ## clk1m5w8s       1             4        1    2      2               1     0
-    ## jcsovtak3       5             0        2    1      1               1     1
-    ## 3oeb4hiln       1             0        1    0      1               0     0
-    ## fd75x1vgk       0             0        2    0      1               0     0
-    ## h6nvj91yp       1             1        0    2      1               1     1
-    ## ma7kfewxq       1             1       11    1      0               0     0
-    ## u48d61ztj       1             1        0    0      0               0     2
-    ## y2g68vhkf       0             0        0    2      2               1     1
-    ## n467yj1st       5             9        1    5      4               0     1
-    ##           news online_gaming shopping health_nutrition college_uni
-    ## hmjoe4g3k    0             0        1               17           0
-    ## clk1m5w8s    0             0        0                0           0
-    ## jcsovtak3    1             0        2                0           0
-    ## 3oeb4hiln    0             0        0                0           1
-    ## fd75x1vgk    0             3        2                0           4
-    ## h6nvj91yp    0             0        5                0           0
-    ## ma7kfewxq    1             0        1                1           1
-    ## u48d61ztj    0             1        3                1           0
-    ## y2g68vhkf    0             2        0               22           1
-    ## n467yj1st    0             1        0                7           4
-    ##           sports_playing cooking eco computers business outdoors crafts
-    ## hmjoe4g3k              2       5   1         1        0        2      1
-    ## clk1m5w8s              1       0   0         0        1        0      2
-    ## jcsovtak3              0       2   1         0        0        0      2
-    ## 3oeb4hiln              0       0   0         0        1        0      3
-    ## fd75x1vgk              0       1   0         1        0        1      0
-    ## h6nvj91yp              0       0   0         1        1        0      0
-    ## ma7kfewxq              1       1   0         1        3        1      0
-    ## u48d61ztj              0      10   0         1        0        0      1
-    ## y2g68vhkf              0       5   2         1        1        3      0
-    ## n467yj1st              1       4   1         2        0        0      0
-    ##           automotive art religion beauty parenting dating school
-    ## hmjoe4g3k          0   0        1      0         1      1      0
-    ## clk1m5w8s          0   0        0      0         0      1      4
-    ## jcsovtak3          0   8        0      1         0      1      0
-    ## 3oeb4hiln          0   2        0      1         0      0      0
-    ## fd75x1vgk          0   0        0      0         0      0      0
-    ## h6nvj91yp          1   0        0      0         0      0      0
-    ## ma7kfewxq          0   1        1      0         0      0      0
-    ## u48d61ztj          1   0        0      5         1      0      0
-    ## y2g68vhkf          0   1        0      5         0      0      1
-    ## n467yj1st          4   0       13      1         3      0      3
-    ##           personal_fitness fashion small_business spam adult
-    ## hmjoe4g3k               11       0              0    0     0
-    ## clk1m5w8s                0       0              0    0     0
-    ## jcsovtak3                0       1              0    0     0
-    ## 3oeb4hiln                0       0              0    0     0
-    ## fd75x1vgk                0       0              1    0     0
-    ## h6nvj91yp                0       0              0    0     0
-    ## ma7kfewxq                0       0              0    0     0
-    ## u48d61ztj                0       4              0    0     0
-    ## y2g68vhkf               12       3              1    0     0
-    ## n467yj1st                2       1              0    0     0
-
 ### 4.2.2 Clustering
 
 In order to determine market segment by k-means clustering, we must first select the number of initial centroids, or in other words, the number of user types. 3 types of supporting analysis were used to help us determine the quantity: Elbow plot(SSE), CH index and Gap statistics.
 
-    ## [1] 5.1 4.1 4.1 2.1
-
 ![](Exercise_4_report_files/figure-markdown_github/graph_4.2.1.1-1.png)
+
+![](Exercise_4_report_files/figure-markdown_github/graph_4.2.1.2-1.png)
 
 As shown above, the results are subtle and therefore difficult to determine the best number for K. We eventually picked K=7 for two reasons, 1. we observed a weak signal of dipping in the Gap statistic graph and 2. we found about the equal number of interest groups with relatively strong correlated interests from our correlation analysis as shown below.
 
