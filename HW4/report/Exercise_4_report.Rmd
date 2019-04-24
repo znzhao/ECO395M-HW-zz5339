@@ -239,47 +239,60 @@ clust1 = kmeans(SocialMarket_scaled, centers=7, nstart=25)
 
 Some distinct market segments with highly correlated interests are listed below based on the heat map
 
+
 #### 1. Personal fitness, outdoors, health & nutrition
+
 
 ```{r graph_4.2.3, echo=FALSE, warning=FALSE}
 XX = subset(SocialMarket,select = c("personal_fitness","health_nutrition","outdoors"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
+
 #### 2. Fashion, cooking, beauty, shopping, photo sharing
+
 
 ```{r graph_4.2.4.1, echo=FALSE, warning=FALSE}
 XX = subset(SocialMarket,select = c("fashion","cooking","beauty", "shopping", "photo_sharing"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
+
 #### 3. Online gaming, college&university, sports playing
+
 
 ```{r graph_4.2.5, echo=FALSE, warning=FALSE}
 XX = subset(SocialMarket,select = c("online_gaming","college_uni","sports_playing"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
+
 #### 4. Sports fandom, food, family, religion, parenting, school
+
 
 ``````{r graph_4.2.6.1, echo=FALSE, warning=FALSE}
 XX = subset(SocialMarket,select = c("sports_fandom","parenting","school","food", "family"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
+
 #### 5. Politics, news, computers, travel, automobiles
+
 
 ```{r graph_4.2.7.1, echo=FALSE, warning=FALSE}
 XX = subset(SocialMarket,select = c("politics","news","computers", "travel", "automotive"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
+
 #### 6. TV film, art, music
+
 
 ```{r graph_4.2.8, echo=FALSE, warning=FALSE}
 XX = subset(SocialMarket,select = c("tv_film","art","music"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
+
 
 #### 7. Everything, shopping, photo sharing 
 From the graphs above, we can see the last group being a very special one, showing moderate interests in almost all areas (compared to strong distinct tastes in other groups).  Within the group, interests toward shopping and photo sharing seems to stand out.
