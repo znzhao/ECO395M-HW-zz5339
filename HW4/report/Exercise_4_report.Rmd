@@ -283,7 +283,7 @@ ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 
 #### 7. Everything, shopping, photo sharing 
 From the graphs above, we can see the last group being a very special one, showing moderate interests in almost all areas (compared to strong distinct tastes in other groups).  Within the group, interests toward shopping and photo sharing seems to stand out.
-
+haha
 
 ### 4.2.3 Principal Components Analysis
 
