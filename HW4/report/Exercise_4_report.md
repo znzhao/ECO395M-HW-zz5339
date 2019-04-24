@@ -437,6 +437,7 @@ The following is the scatter plot of all the rules.
 
 ![](Exercise_4_report_files/figure-markdown_github/graph4.3.4-1.png)
 
-![](Exercise_4_report_files/figure-markdown_github/Untitled.png)
 
 After this, we use the data and gephi to draw a network graph of the connections. In the following graph, the nodes with larger size have higher degree. In conclusion, other vegetables has the highest degree.
+
+![](Exercise_4_report_files/figure-markdown_github/Untitled.png)
