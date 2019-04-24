@@ -19,6 +19,8 @@ library(corrplot)
 library(plotly)
 library(GGally)
 library(ggplot2)
+library(arules)
+library(arulesViz)
 ```
 
 # Exercise 4
@@ -239,47 +241,60 @@ clust1 = kmeans(SocialMarket_scaled, centers=7, nstart=25)
 
 Some distinct market segments with highly correlated interests are listed below based on the heat map
 
+
 #### 1. Personal fitness, outdoors, health & nutrition
+
 
 ```{r graph_4.2.3, echo=FALSE, warning=FALSE}
 XX = subset(SocialMarket,select = c("personal_fitness","health_nutrition","outdoors"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
+
 #### 2. Fashion, cooking, beauty, shopping, photo sharing
+
 
 ```{r graph_4.2.4.1, echo=FALSE, warning=FALSE}
 XX = subset(SocialMarket,select = c("fashion","cooking","beauty", "shopping", "photo_sharing"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
+
 #### 3. Online gaming, college&university, sports playing
+
 
 ```{r graph_4.2.5, echo=FALSE, warning=FALSE}
 XX = subset(SocialMarket,select = c("online_gaming","college_uni","sports_playing"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
+
 #### 4. Sports fandom, food, family, religion, parenting, school
+
 
 ``````{r graph_4.2.6.1, echo=FALSE, warning=FALSE}
 XX = subset(SocialMarket,select = c("sports_fandom","parenting","school","food", "family"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
+
 #### 5. Politics, news, computers, travel, automobiles
+
 
 ```{r graph_4.2.7.1, echo=FALSE, warning=FALSE}
 XX = subset(SocialMarket,select = c("politics","news","computers", "travel", "automotive"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
 
+
 #### 6. TV film, art, music
+
 
 ```{r graph_4.2.8, echo=FALSE, warning=FALSE}
 XX = subset(SocialMarket,select = c("tv_film","art","music"))
 ggpairs(XX,aes(col = factor(clust1$cluster), alpha = 0.8))
 ```
+
 
 #### 7. Everything, shopping, photo sharing 
 From the graphs above, we can see the last group being a very special one, showing moderate interests in almost all areas (compared to strong distinct tastes in other groups).  Within the group, interests toward shopping and photo sharing seems to stand out.
@@ -442,12 +457,92 @@ We named the seventh market segment as “Typical online user with interests tow
 
 For the given shopping baskets, first we draw the barplot of the 20 most popular goods among the consumers. From the graph below, the most popular good is whole milk, followed by other vegetables, rolls and buns, soda and yogurt.
 
+```{r graph1_4.3.1, echo=FALSE, warning=FALSE}
+# get the data
+myurl <- "https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/HW4/groceries.txt"
+my_data <- read.delim(url(myurl),header = FALSE)
+colnames(x = my_data) <- c("goods")
+my_data$goods = my_data$goods %>% as.character() 
+# formalize the data set
+# initialization
+buyer <- c()
+goods <- c()
+# for loop to generate a 1-1 projection on users and goods
+for(i in c(1:nrow(my_data))){
+  n = length(goods)
+  for(x in strsplit(my_data$goods[i], ",")){
+    goods <- c(goods, x)
+  }
+  for(j in c(1:(length(goods)-n))){
+    buyer <- c(buyer, as.character(i))
+  }
+}
+# final good dataset
+groceries <- data.frame(buyer, goods)
+
+# statistics of the goods
+groceries$goods %>%
+  summary(maxsum=Inf) %>%
+  sort(decreasing=TRUE) %>%
+  head(20) %>%
+  barplot(las=2, cex.names=0.6)
+```
+
 Then we use the criteria that support >= 0.01, confidence >= 0.1, maxlen <= 5 to find all the association rules. The criteria is very ad hoc, but it did help us find 435 rules in total. The following table is the summary of all the association rules.
+
+```{r table111_4.3.1, echo=FALSE, warning=FALSE}
+# First create a list of baskets: vectors of items by consumer
+
+# apriori algorithm expects a list of baskets in a special format
+# In this case, one "basket" of goods per user
+# First split data into a list of artists for each user
+basket = split(x=groceries$goods, f=groceries$buyer)
+
+## Remove duplicates ("de-dupe")
+# lapply says "apply a function to every element in a list"
+basket = lapply(basket, unique)
+
+## Cast this variable as a special arules "transactions" class.
+baskettrans = as(basket, "transactions")
+
+# Now run the 'apriori' algorithm
+# Look at rules with support > .01 & confidence >.1 & length (# artists) <= 5
+consumerrules = apriori(baskettrans, 
+                     parameter=list(support = 0.01, confidence=.1, maxlen=5))
+## summary
+summary(consumerrules)
+```
 
 Because there are too many rules, we looked at the subsets of the rules. 
 
 First, the following rules have lift>=3, indicating strong connections. There are 8 rules having lift>=3. For example, the first rule shows that if a consumer bought beef, the probability that she also bought root vegetables are three times higher than the prior probability of buying root vegetables. It is highly possible that this type of consumers is buying them to make a beef soup or roasted beef or other beef dishes that includes root vegetables.
 
+```{r table_4.3.1, echo=FALSE, warning=FALSE}
+## Choose a subset
+inspect(subset(consumerrules, lift >= 3))
+```
+
 Second, there are 14 rules having confidence > 0.5. For example, the first rule shows that if a consumer bought curd and yogurt, the probability of buying whole milk is 0.58. It’s highly possible that this type of consumers wants to mix curd, yogurt and whole to make desserts.
+
+```{r table4.3.2, echo=FALSE, warning=FALSE}
+inspect(subset(consumerrules, confidence > 0.5))
+```
+
 Third, as the thresholds we set above are too strict that once we combine them there would be too little associations, we purposely relaxed the constraints. After contemplating the significance of the associations and the overall visualization, we set lift>2 & confidence>0.3, resulting 44 rules. For example, the first rule shows that if a consumer bought onions, the probability that he also bought other vegetables are 2.3 times higher than the prior probability of buying other vegetables. With the same rule, if he bought onions, the probability of buying other vegetables is 0.46. It’s highly possible that this type of consumers wants to use onions and other vegetables to make salad. 
 
+```{r table4.3.3, echo=FALSE, warning=FALSE}
+inspect(subset(consumerrules, lift > 2 & confidence > 0.3))
+```
+
+The following is the scatter plot of all the rules.
+
+```{r graph4.3.4, echo=FALSE, warning=FALSE}
+plot(consumerrules)
+# graph-based visualization
+# export a graph
+saveAsGraph(subset(consumerrules, subset=confidence > 0.3 & lift > 2), file = "consumerrules.graphml",type="items")
+```
+
+![](Exercise_4_report_files/figure-markdown_github/Untitled.png)
+
+After this, we use the data and gephi to draw a network graph of the connections. In the following graph, the nodes with larger size have higher degree. In conclusion, other vegetables has the highest degree.

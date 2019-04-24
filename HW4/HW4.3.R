@@ -59,4 +59,4 @@ plot(consumerrules)
 
 # graph-based visualization
 # export a graph
-saveAsGraph(subset(consumerrules, subset=confidence > 0.2 & lift > 1), file = "consumerrules.graphml")
+saveAsGraph(subset(consumerrules, subset=confidence > 0.3 & lift > 2), file = "consumerrules.graphml",type="items")
