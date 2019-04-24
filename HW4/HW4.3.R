@@ -43,7 +43,6 @@ basket = lapply(basket, unique)
 
 ## Cast this variable as a special arules "transactions" class.
 baskettrans = as(basket, "transactions")
-summary(baskettrans)
 
 # Now run the 'apriori' algorithm
 # Look at rules with support > .01 & confidence >.1 & length (# artists) <= 5
@@ -54,10 +53,10 @@ summary(consumerrules)
 ## Choose a subset
 inspect(subset(consumerrules, lift >= 3))
 inspect(subset(consumerrules, confidence > 0.5))
-inspect(subset(consumerrules, lift > 2.5 & confidence > 0.3))
+inspect(subset(consumerrules, lift > 2 & confidence > 0.3))
 
 plot(consumerrules)
 
 # graph-based visualization
 # export a graph
-saveAsGraph(consumerrules, file = "consumerrules.graphml")
+saveAsGraph(subset(consumerrules, subset=confidence > 0.2 & lift > 1), file = "consumerrules.graphml")
