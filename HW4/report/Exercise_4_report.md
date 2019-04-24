@@ -24,8 +24,8 @@ More specifically, we can calculate the accuracy rate by looking at the followin
 
     ##               wine$color
     ## clust1$cluster  red white
-    ##              1 1575    68
-    ##              2   24  4830
+    ##              1   24  4830
+    ##              2 1575    68
 
 Second, we use the PCA method. The summary of the scores is listed below. The first four principal components capture about 73% of the variance in the data. So I choose to use the first four principal components to do the clustering. The following is the graph of different wines and different categories on the scale of the first two components. As the graph shows, the PCA is also a good way to differ red wines from white wines.
 
@@ -66,13 +66,13 @@ However, the density of different wine should be concentrating on different cate
 
     ##               wine$quality
     ## clust2$cluster   3   4   5   6   7   8   9
-    ##              1   2  27 267 475 189  31   0
-    ##              2   6  63 470 346  43   2   0
-    ##              3   5  64 449 549 137  27   1
-    ##              4   4  15 197 262 140  14   0
-    ##              5   4  21  77 548 446  97   4
-    ##              6   2   2  27  16   2   0   0
-    ##              7   7  24 651 640 122  22   0
+    ##              1   2   2  27  16   2   0   0
+    ##              2   4  15 197 262 140  14   0
+    ##              3   5  63 453 545 133  25   1
+    ##              4   4  23  77 552 449  99   4
+    ##              5   2  26 266 475 190  31   0
+    ##              6   7  24 648 640 122  22   0
+    ##              7   6  63 470 346  43   2   0
 
 ![](Exercise_4_report_files/figure-markdown_github/graph4.1.10-1.png)
 
@@ -84,12 +84,12 @@ The similar story can be told by looking at the confusion matrix and the density
 
     ##                  wine$quality
     ## clustPCA2$cluster   3   4   5   6   7   8   9
-    ##                 1   0  19 263 248  98   8   0
-    ##                 2   4   5  90 121  54   6   0
-    ##                 3   5  39 493 603 134  24   1
-    ##                 4   7  57 363 274  36   2   0
+    ##                 1   5  39 493 603 134  24   1
+    ##                 2   0  19 263 248  98   8   0
+    ##                 3   4   5  90 121  54   6   0
+    ##                 4   7  21 496 485  97  17   0
     ##                 5   5  53 297 565 232  43   0
-    ##                 6   7  21 496 485  97  17   0
+    ##                 6   7  57 363 274  36   2   0
     ##                 7   2  22 136 540 428  93   4
 
 ![](Exercise_4_report_files/figure-markdown_github/graph4.1.12-1.png)
@@ -106,6 +106,8 @@ First we decided to eliminate as many bots as possible from the slip through. Al
 ### 4.2.2 Clustering
 
 In order to determine market segment by k-means clustering, we must first select the number of initial centroids, or in other words, the number of user types. 3 types of supporting analysis were used to help us determine the quantity: Elbow plot(SSE), CH index and Gap statistics.
+
+![](Exercise_4_report_files/figure-markdown_github/graph_4.2.1-1.png)
 
 ![](Exercise_4_report_files/figure-markdown_github/graph_4.2.1.1-1.png)
 
@@ -436,7 +438,6 @@ The following is the scatter plot of all the rules.
     ## To reduce overplotting, jitter is added! Use jitter = 0 to prevent jitter.
 
 ![](Exercise_4_report_files/figure-markdown_github/graph4.3.4-1.png)
-
 
 After this, we use the data and gephi to draw a network graph of the connections. In the following graph, the nodes with larger size have higher degree. In conclusion, other vegetables has the highest degree.
 
