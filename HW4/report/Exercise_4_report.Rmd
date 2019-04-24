@@ -440,3 +440,14 @@ We named the seventh market segment as “Typical online user with interests tow
 
 ## Exercise 4.3 Association rules for grocery purchases
 
+For the given shopping baskets, first we draw the barplot of the 20 most popular goods among the consumers. From the graph below, the most popular good is whole milk, followed by other vegetables, rolls and buns, soda and yogurt.
+
+Then we use the criteria that support >= 0.01, confidence >= 0.1, maxlen <= 5 to find all the association rules. The criteria is very ad hoc, but it did help us find 435 rules in total. The following table is the summary of all the association rules.
+
+Because there are too many rules, we looked at the subsets of the rules. 
+
+First, the following rules have lift>=3, indicating strong connections. There are 8 rules having lift>=3. For example, the first rule shows that if a consumer bought beef, the probability that she also bought root vegetables are three times higher than the prior probability of buying root vegetables. It is highly possible that this type of consumers is buying them to make a beef soup or roasted beef or other beef dishes that includes root vegetables.
+
+Second, there are 14 rules having confidence > 0.5. For example, the first rule shows that if a consumer bought curd and yogurt, the probability of buying whole milk is 0.58. It’s highly possible that this type of consumers wants to mix curd, yogurt and whole to make desserts.
+Third, as the thresholds we set above are too strict that once we combine them there would be too little associations, we purposely relaxed the constraints. After contemplating the significance of the associations and the overall visualization, we set lift>2 & confidence>0.3, resulting 44 rules. For example, the first rule shows that if a consumer bought onions, the probability that he also bought other vegetables are 2.3 times higher than the prior probability of buying other vegetables. With the same rule, if he bought onions, the probability of buying other vegetables is 0.46. It’s highly possible that this type of consumers wants to use onions and other vegetables to make salad. 
+
