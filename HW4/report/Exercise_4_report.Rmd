@@ -196,7 +196,7 @@ SSE_grid = foreach(k = k_grid, .combine='c') %do% {
   cluster_k = kmeans(SocialMarket_scaled, k, nstart=50)
   cluster_k$tot.withinss
 }
-graphics.off()
+#graphics.off()
 #par("mar")
 par(mar=c(4,4,4,4))
 
@@ -543,6 +543,6 @@ plot(consumerrules)
 saveAsGraph(subset(consumerrules, subset=confidence > 0.3 & lift > 2), file = "consumerrules.graphml",type="items")
 ```
 
-![](Exercise_4_report_files/figure-markdown_github/Untitled.png)
-
 After this, we use the data and gephi to draw a network graph of the connections. In the following graph, the nodes with larger size have higher degree. In conclusion, other vegetables has the highest degree.
+
+![](Exercise_4_report_files/figure-markdown_github/Untitled.png)
