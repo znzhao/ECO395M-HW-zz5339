@@ -1,0 +1,13 @@
+---
+title: "Final Project: The Trend in Pop Music"
+author: "Chong Wang, Tianping Wu, Zhenning Zhao, Zhiyang Lin"
+date: "2019/5/16"
+output:
+  md_document:
+    variant: markdown_github
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(foreach)
+library(tidyverse)
+```
