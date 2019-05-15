@@ -1,3 +1,19 @@
+Introduction
+------------
+
+Popular music market is extremely large, especially in recent years. Pop songs inspire generations from all walks of life. Every day, oceans of pop tracks jump on to the Top 200 List of Spotify. In this project, we analysed the data of the 2018 popular music database from Spotify.com, in order to help the big digital music server improve playlist song recommendations and to help the record companies make decisions on which album to promote according to the predictions on the playing streams.
+
+This project mainly answers the following questions: first, predict the streams of the tracks; and second, analysis the pattern of the popularity trend. To answer the first question, we used stepwise method, the lasso method and the random forest and boosting to build a prediction model of the streams of the tracks, with the features of the songs and the albums as predictor. In order to answer the second question, we first used PCA and K-means to cluster the songs by features, dividing songs into different categories. Then we plotted the trend of the popularity of different type of songs, showing the change in the trend of the listener’s taste.
+
+Data
+----
+
+The dataset that we use comes from spotify.com. Spotify is one of the biggest digital music servicer that gives you access to many songs. From <https://spotifycharts.com>, we have the weekly data of the top 200 songs in the US. We use the data of 2018, giving us 1,497 different songs.
+
+Fortunately, Spotify has a public API, which provides us many useful features of the songs. We use python robot to gather the data of not only the song features but also the data of the artists and the album. In the end, the formal dataset includes the following variables:
+
+Table1: Variable Descriptions
+
 <table style="width:56%;">
 <colgroup>
 <col width="23%" />
@@ -72,3 +88,5 @@
 </tr>
 </tbody>
 </table>
+
+The explanation of the variables comes from the following link\[<https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/>\]. Although this project only run on the dataset of 2018, we can do similar analysis for spotify for more songs and more recent data with similar method.
