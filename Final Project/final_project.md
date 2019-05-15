@@ -96,6 +96,17 @@ Table1: Variable Descriptions
 
 The explanation of the variables comes from the following link: <https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/> Although this project only run on the dataset of 2018, we can do similar analysis for spotify for more songs and more recent data with similar method.
 
+Prediction
+----------
+
+We want to build the best predictive model for streams. We chose between linear regression model and decision tree models, using methods like stepwise selection, lasso regression and random forests.
+
+In the first model, We started with the null model by regressing streams on one, followed by running stepwise selection within 25 song feature variables and obtained our final model.
+
+In the second model, We began with the medium model by regressing streams on all other 25 variables, and used stepwise method to choose variables within all the 25 song features and their interactions.
+
+The two selected models are shown below. we had 5 and 31 significant coefficients, respectively in the first and second model.
+
     ## Streams ~ danceability + speechiness + explicitTRUE + key8
 
     ## Streams ~ duration_ms_x + acousticness + danceability + energy + 
@@ -106,67 +117,74 @@ The explanation of the variables comes from the following link: <https://develop
     ##     liveness:key6 + acousticness:energy + valence:key6 + mode:key6 + 
     ##     danceability:key8 + key8:explicitTRUE + valence:key8 + speechiness:key8
 
+We then used the Lasso model to assemble the best predictive model possible for streams. We used this method to select above two models. We didn’t consider the interaction terms in model 3, while included the interaction terms in model 4.
+
+In the model 3, from the path plot below we could see that minimum AIC occurs at segment 8
+
 ![](final_project_files/figure-markdown_github/pathplot3-1.png)
+
+Thus, we used the model at the segment 8 and chose 6 coefficients. The specific model is shown below.
 
     ## Streams ~ danceability + speechiness + key8 + explicitTRUE + 
     ##     relseaseDuration
 
+In the model4, from the path plot below we could see that minimum AIC occurs at segment 5.
+
 ![](final_project_files/figure-markdown_github/pathplot4-1.png)
+
+Thus, we used the model at the segment 5 and chose 8 coefficients. The specific model is shown below.
 
     ## Streams ~ danceability + danceability:time_signature4 + danceability:explicitTRUE + 
     ##     energy:speechiness + speechiness:relseaseDuration + key8:explicitTRUE + 
     ##     time_signature4:explicitTRUE
 
-    ## Distribution not specified, assuming gaussian ...
+Afterwards, we used the decision tree models to assemble the best predictive model possible for streams. We tried the random forest model and the boosting model on the dataset, which gave us 2 non-linear models: model 5 and model 6.
 
-    ## Distribution not specified, assuming gaussian ...
-    ## Distribution not specified, assuming gaussian ...
-    ## Distribution not specified, assuming gaussian ...
-    ## Distribution not specified, assuming gaussian ...
-    ## Distribution not specified, assuming gaussian ...
-    ## Distribution not specified, assuming gaussian ...
-    ## Distribution not specified, assuming gaussian ...
-    ## Distribution not specified, assuming gaussian ...
-    ## Distribution not specified, assuming gaussian ...
-    ## Distribution not specified, assuming gaussian ...
+    ## [1] 34861789 34604471 34848498 34852566 34812298 35412832
 
-    ## [1] 34861269 34583941 34849850 34820011 34618342 34914735
+Lastly, we used k-fold cross validation in order to compare 6 models above. We found that the CVs of model 2 has the minimum CV, and therefore it is our best predictive model possible for streams. A linear model with interactions is easy to interpret.
+
+The second best model is model 5, which came from the random forest method. The random forest model has one advantage over the linear regression: it will only give us positive predictions. As a result, we used both model 2 and model 5 to do the predictions.
 
 |                               |  coefficients.Estimate|  coefficients.Std..Error|  coefficients.t.value|  coefficients.Pr...t..|
 |-------------------------------|----------------------:|------------------------:|---------------------:|----------------------:|
-| (Intercept)                   |           1.140462e+07|             1.451707e+07|             0.7856007|              0.4322428|
-| duration\_ms\_x               |          -2.302173e+01|             2.060254e+01|            -1.1174219|              0.2640178|
-| acousticness                  |           4.443487e+06|             1.358047e+07|             0.3271969|              0.7435710|
-| danceability                  |           2.404583e+07|             8.182758e+06|             2.9385973|              0.0033544|
-| energy                        |           6.793030e+06|             1.422992e+07|             0.4773767|              0.6331731|
-| liveness                      |           1.496744e+08|             3.930043e+07|             3.8084674|              0.0001463|
-| loudness                      |           1.181442e+06|             6.012029e+05|             1.9651304|              0.0496091|
-| mode                          |           6.088800e+06|             3.053952e+06|             1.9937446|              0.0463859|
-| speechiness                   |           2.154659e+07|             1.780755e+07|             1.2099690|              0.2265079|
-| valence                       |          -2.187674e+07|             7.722874e+06|            -2.8327203|              0.0046857|
-| key6                          |           2.892070e+06|             1.113720e+07|             0.2596765|              0.7951539|
-| key8                          |          -2.342799e+07|             2.361419e+07|            -0.9921151|              0.3213236|
-| key10                         |          -5.988868e+06|             4.280707e+06|            -1.3990372|              0.1620373|
-| explicitTRUE                  |          -1.135980e+08|             3.007322e+07|            -3.7773811|              0.0001656|
-| relseaseDuration              |          -1.962746e+00|             3.425947e+02|            -0.0057291|              0.9954298|
-| explicitTRUE:relseaseDuration |           1.468476e+04|             3.904863e+03|             3.7606331|              0.0001769|
-| valence:explicitTRUE          |           2.451811e+07|             9.206285e+06|             2.6631926|              0.0078347|
-| duration\_ms\_x:key8          |           1.624178e+02|             7.129942e+01|             2.2779685|              0.0228881|
-| energy:liveness               |          -1.902833e+08|             5.196448e+07|            -3.6617947|              0.0002604|
-| acousticness:liveness         |          -1.338086e+08|             3.846141e+07|            -3.4790356|              0.0005196|
-| mode:speechiness              |          -2.584703e+07|             1.445181e+07|            -1.7884978|              0.0739255|
-| mode:key10                    |           7.638239e+06|             6.888008e+06|             1.1089185|              0.2676678|
-| speechiness:explicitTRUE      |          -4.126666e+07|             1.870125e+07|            -2.2066260|              0.0275122|
-| liveness:key6                 |           6.680831e+07|             3.080819e+07|             2.1685246|              0.0302973|
-| acousticness:energy           |           3.767796e+07|             2.233166e+07|             1.6871993|              0.0918018|
-| valence:key6                  |          -3.243932e+07|             1.936793e+07|            -1.6748986|              0.0941915|
-| mode:key6                     |           1.352786e+07|             8.023182e+06|             1.6860971|              0.0920140|
-| danceability:key8             |          -5.022478e+07|             2.383914e+07|            -2.1068201|              0.0353219|
-| key8:explicitTRUE             |           2.632320e+07|             9.186314e+06|             2.8654799|              0.0042299|
-| valence:key8                  |           4.048841e+07|             1.606122e+07|             2.5208805|              0.0118235|
-| speechiness:key8              |          -2.803594e+07|             2.610494e+07|            -1.0739704|              0.2830327|
+| (Intercept)                   |           1.646100e+07|             1.452541e+07|             1.1332558|              0.2573131|
+| duration\_ms\_x               |          -2.172727e+01|             2.087135e+01|            -1.0410092|              0.2980624|
+| acousticness                  |          -5.616762e+05|             1.367282e+07|            -0.0410798|              0.9672385|
+| danceability                  |           2.364541e+07|             8.254704e+06|             2.8644771|              0.0042433|
+| energy                        |          -7.675973e+05|             1.429147e+07|            -0.0537102|              0.9571742|
+| liveness                      |           1.162265e+08|             3.825623e+07|             3.0381073|              0.0024275|
+| loudness                      |           9.342085e+05|             5.982664e+05|             1.5615260|              0.1186399|
+| mode                          |           5.195895e+06|             3.091328e+06|             1.6807970|              0.0930395|
+| speechiness                   |           1.675947e+07|             1.822265e+07|             0.9197054|              0.3578951|
+| valence                       |          -1.835778e+07|             7.807869e+06|            -2.3511902|              0.0188602|
+| key6                          |          -2.396707e+06|             1.078424e+07|            -0.2222415|              0.8241603|
+| key8                          |          -3.773707e+07|             2.441152e+07|            -1.5458713|              0.1223759|
+| key10                         |          -6.653445e+06|             4.303636e+06|            -1.5460056|              0.1223435|
+| explicitTRUE                  |          -9.515646e+07|             2.669989e+07|            -3.5639269|              0.0003784|
+| relseaseDuration              |          -7.172592e+01|             3.537077e+02|            -0.2027831|              0.8393359|
+| explicitTRUE:relseaseDuration |           1.187783e+04|             3.432025e+03|             3.4608806|              0.0005556|
+| valence:explicitTRUE          |           2.769236e+07|             9.218679e+06|             3.0039404|              0.0027154|
+| duration\_ms\_x:key8          |           2.328996e+02|             7.181771e+01|             3.2429264|              0.0012127|
+| energy:liveness               |          -1.493510e+08|             5.134338e+07|            -2.9088650|              0.0036883|
+| acousticness:liveness         |          -1.126892e+08|             3.795888e+07|            -2.9687190|              0.0030445|
+| mode:speechiness              |          -2.902330e+07|             1.437260e+07|            -2.0193487|              0.0436532|
+| mode:key10                    |           1.896886e+07|             6.976023e+06|             2.7191505|              0.0066310|
+| speechiness:explicitTRUE      |          -2.920611e+07|             1.893065e+07|            -1.5427947|              0.1231208|
+| liveness:key6                 |           8.207375e+07|             3.105448e+07|             2.6428951|              0.0083175|
+| acousticness:energy           |           3.696090e+07|             2.256555e+07|             1.6379345|              0.1016742|
+| valence:key6                  |          -3.256067e+07|             1.836554e+07|            -1.7729216|              0.0764728|
+| mode:key6                     |           1.421859e+07|             8.024995e+06|             1.7717877|              0.0766610|
+| danceability:key8             |          -5.464746e+07|             2.495492e+07|            -2.1898470|              0.0287102|
+| key8:explicitTRUE             |           2.921233e+07|             9.725016e+06|             3.0038335|              0.0027163|
+| valence:key8                  |           4.742451e+07|             1.782397e+07|             2.6607156|              0.0078922|
+| speechiness:key8              |          -4.504812e+07|             2.673174e+07|            -1.6851926|              0.0921883|
+
+From the model 2, we can clearly see that danceability, energy, liveness, loudness, mode, spechiness and key6 have positive effects on streams, which means the more these factors used in the song, the song will be played by more people. Also, we need to pay attention to release duration. The longer the release duration is, the song will be played by less people, which means people prefer to play latest songs on Spotify.
 
 ![](final_project_files/figure-markdown_github/pdp-1.png)
+
+From model 5, we get the Partial dependence functions of the song features, and the result seems robust to the model 2.
 
 PCA and Clustering
 ------------------
