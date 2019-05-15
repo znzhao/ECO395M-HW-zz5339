@@ -123,3 +123,15 @@ The explanation of the variables comes from the following link: <https://develop
 | PC23 | 0.209254918185628   | 0.00837019672742513    | 0.9957                |
 | PC24 | 0.100442731001129   | 0.00401770924004517    | 0.9997                |
 | PC25 | 0.00698743489964209 | 0.000279497395985684   | 1                     |
+
+![](final_project_files/figure-markdown_github/K-grid-1.png)
+
+![](final_project_files/figure-markdown_github/CH-grid-1.png)
+
+![](final_project_files/figure-markdown_github/Gap-1.png)
+
+![](final_project_files/figure-markdown_github/PC1-1.png)
+
+![](final_project_files/figure-markdown_github/PC2-1.png)
+
+![](final_project_files/figure-markdown_github/PC3-1.png)

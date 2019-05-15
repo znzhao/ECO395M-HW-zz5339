@@ -155,3 +155,30 @@ plot(k_grid, CH_grid, xlab="K",
 Market_gap = clusGap(pca_top_data, FUN = kmeans, nstart = 40, K.max = 20, B = 10)
 plot(Market_gap)
 ```
+
+
+```{r K_means, echo = FALSE, warning = FALSE}
+# k-means analysis
+clust2 = kmeanspp(pca_top_data, k=5, nstart=50)
+cluster_result2 = as.data.frame(clust2[1])
+cluster_result2 <- cbind(cluster_result2,sounddata_2018$artist_name,sounddata_2018$name)
+#xtabs(~1+cluster_result2$cluster)
+```
+
+```{r PC1, echo = FALSE, warning = FALSE}
+#PC1
+XX = subset(sounddata_2018,select = c(acousticness, time_signature3, time_signature5, instrumentalness, time_signature1))
+ggpairs(XX,aes(col = as.factor(cluster_result2$cluster), alpha = 0.8))
+```
+
+```{r PC2, echo = FALSE, warning = FALSE}
+#PC2
+XX = subset(sounddata_2018,select = c(energy, loudness, time_signature5, time_signature3, liveness))
+ggpairs(XX,aes(col = as.factor(cluster_result2$cluster), alpha = 0.8))
+```
+
+```{r PC3, echo = FALSE, warning = FALSE}
+#PC3
+XX = subset(sounddata_2018,select = c(speechiness, danceability, time_signature5, key11, key1))
+ggpairs(XX,aes(col = as.factor(cluster_result2$cluster), alpha = 0.8))
+```
