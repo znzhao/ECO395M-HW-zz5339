@@ -1,3 +1,8 @@
+The Streams Analysis of Pop Music in 2018
+=========================================
+
+By Chong Wang, Tianping Wu, Zhenning Zhao, Zhiyang Lin
+
 Introduction
 ------------
 
@@ -89,4 +94,4 @@ Table1: Variable Descriptions
 </tbody>
 </table>
 
-The explanation of the variables comes from the following link\[<https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/>\]. Although this project only run on the dataset of 2018, we can do similar analysis for spotify for more songs and more recent data with similar method.
+The explanation of the variables comes from the following link: <https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/> Although this project only run on the dataset of 2018, we can do similar analysis for spotify for more songs and more recent data with similar method.

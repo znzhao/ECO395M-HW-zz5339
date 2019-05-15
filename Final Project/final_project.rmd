@@ -14,6 +14,10 @@ library(gbm)
 library(randomForest)
 ```
 
+# The Streams Analysis of Pop Music in 2018
+
+By Chong Wang, Tianping Wu, Zhenning Zhao, Zhiyang Lin
+
 ## Introduction
 
 Popular music market is extremely large, especially in recent years. Pop songs inspire generations from all walks of life. Every day, oceans of pop tracks jump on to the Top 200 List of Spotify. In this project, we analysed the data of the 2018 popular music database from Spotify.com, in order to help the big digital music server improve playlist song recommendations and to help the record companies make decisions on which album to promote according to the predictions on the playing streams.
@@ -44,6 +48,9 @@ sounddata_2018 = cbind(sounddata_2018, relseaseDuration)
 #delete uncategorized label "unused attributes"
 Clean_data <- subset(sounddata_2018, select = -c(releaseDate, artist_name, album_name, explicit, is_local, name, popularity, key0, key, time_signature, time_signature1, explicitFALSE))
 Clean_data$acousticness <- Clean_data$acousticness %>% as.numeric()
+
+myurl <- "https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/Final%20Project/data/sounddata_2018weekly.csv"
+sounddata_2018_weekly <- read.csv(url(myurl))
 ```
 
 The dataset that we use comes from spotify.com. Spotify is one of the biggest digital music servicer that gives you access to many songs. From https://spotifycharts.com, we have the weekly data of the top 200 songs in the US. We use the data of 2018, giving us 1,497 different songs.
@@ -70,7 +77,7 @@ Table1: Variable Descriptions
 |time_signature|An estimated overall time signature of a track. The time signature (meter) is a notational convention to specify how many beats are in each bar (or measure).|
 |relseaseDuration|The date the album was first released.|
 
-The explanation of the variables comes from the following link[https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/]. Although this project only run on the dataset of 2018, we can do similar analysis for spotify for more songs and more recent data with similar method.
+The explanation of the variables comes from the following link: https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/ Although this project only run on the dataset of 2018, we can do similar analysis for spotify for more songs and more recent data with similar method.
 
 
 
