@@ -6,7 +6,7 @@ output:
   md_document:
     variant: markdown_github
 ---
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(foreach)
 library(cluster)
@@ -33,7 +33,7 @@ This project mainly answers the following questions: first, predict the streams 
 
 ## Data
 
-```{r data_intro, echo=FALSE}
+```{r data_intro, echo=FALSE, warning = FALSE}
 myurl <- "https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/Final%20Project/data/sounddata_2018.csv"
 sounddata_2018 <- read.csv(url(myurl), row.names=1)
 sounddata_2018 = subset(sounddata_2018,is.na(sounddata_2018$valence)==FALSE)
@@ -88,7 +88,7 @@ The explanation of the variables comes from the following link: https://develope
 
 
 
-```{r cluster_steup, echo = FALSE}
+```{r cluster_steup, echo = FALSE, warning = FALSE}
 Clean_data <- subset(sounddata_2018, select = -c(releaseDate, artist_name, album_name, explicit, is_local, name, popularity, key0, key, time_signature, time_signature1, explicitFALSE, explicitTRUE, Streams, relseaseDuration))
 # Center/scale the data
 Clean_data_scaled <- scale(Clean_data, center=TRUE, scale=TRUE)
@@ -99,7 +99,7 @@ cor=cor(Clean_data_scaled)
 ```
 
 
-```{r PCA_table, echo = FALSE}
+```{r PCA_table, echo = FALSE, warning = FALSE}
 # PCA
 pca = prcomp(x = Clean_data_scaled,scale=TRUE)
 loadings = pca$rotation
@@ -116,4 +116,42 @@ for (i in c(1:length(PVE))) {
 summary_table = cbind(ID, VE, PVE, CP)
 colnames(summary_table)<- c("ID", "Standard deviation", "Proportion of Variance", "Cumulative Proportion")
 kable(summary_table)
+```
+
+
+
+```{r K-grid, echo = FALSE, warning = FALSE}
+pca_result = as.data.frame(pca$x)
+pca_top_data <- subset(pca_result, select = -c(21:25))
+
+#K-grid **15
+k_grid = seq(2, 20, by=1)
+SSE_grid = foreach(k = k_grid, .combine='c') %do% {
+  cluster_k = kmeans(pca_top_data, k, nstart=50)
+  cluster_k$tot.withinss
+}
+
+plot(k_grid, SSE_grid, xlab="K",ylab="SSE Grid", sub="SSE Grid vs K")
+```
+
+
+```{r CH-grid, echo = FALSE, warning = FALSE}
+#CH-grid to find the optimal K  **16
+CH_grid = foreach(k = k_grid, .combine='c') %do% {
+  cluster_k = kmeans(pca_top_data, k, nstart=50)
+  W = cluster_k$tot.withinss
+  B = cluster_k$betweenss
+  CH = (B/W)*((N-k)/(k-1))
+  CH
+}
+
+plot(k_grid, CH_grid, xlab="K",
+     ylab="CH Grid",
+     sub="CH Grid vs K")
+```
+
+```{r Gap, echo = FALSE, warning = FALSE}
+#Gap statistics **4
+Market_gap = clusGap(pca_top_data, FUN = kmeans, nstart = 40, K.max = 20, B = 10)
+plot(Market_gap)
 ```
