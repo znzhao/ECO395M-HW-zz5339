@@ -182,3 +182,20 @@ ggpairs(XX,aes(col = as.factor(cluster_result2$cluster), alpha = 0.8))
 XX = subset(sounddata_2018,select = c(speechiness, danceability, time_signature5, key11, key1))
 ggpairs(XX,aes(col = as.factor(cluster_result2$cluster), alpha = 0.8))
 ```
+
+```{r trend, echo = FALSE, warning = FALSE}
+#row.names(cluster_result2)
+cluster_result2_withID <- cbind(cluster_result2,row.names(cluster_result2))
+
+# calculating cluster quantity trend by week
+colnames(cluster_result2_withID)[4] <-"song_id"
+colnames(sounddata_2018_weekly)[7] <-"song_id"
+sounddata_2018_weekly$cluster <- cluster_result2_withID$cluster[match(sounddata_2018_weekly$song_id, cluster_result2_withID$song_id)]
+
+Trend = sounddata_2018_weekly %>% group_by(Date, cluster) %>%  summarise(StreamNum = sum(Streams))
+Pic = ggplot(data = Trend, mapping = aes(x = as.Date(Trend$Date), y = StreamNum, col = as.factor(cluster)))+
+  geom_point()+
+  geom_line(aes(group = as.factor(cluster)))+
+  theme(axis.text.x = element_text(angle = 90))
+Pic
+```

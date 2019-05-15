@@ -135,3 +135,5 @@ The explanation of the variables comes from the following link: <https://develop
 ![](final_project_files/figure-markdown_github/PC2-1.png)
 
 ![](final_project_files/figure-markdown_github/PC3-1.png)
+
+![](final_project_files/figure-markdown_github/trend-1.png)
