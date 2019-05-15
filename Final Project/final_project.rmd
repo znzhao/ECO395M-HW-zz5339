@@ -1,13 +1,524 @@
 ---
-title: "Final Project: The Trend in Pop Music"
+title: "Final Project: The Streams Analysis of Pop Music in 2018"
 author: "Chong Wang, Tianping Wu, Zhenning Zhao, Zhiyang Lin"
 date: "2019/5/16"
 output:
   md_document:
     variant: markdown_github
 ---
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(foreach)
+library(cluster)
+library(corrplot)
+library(plotly)
 library(tidyverse)
+library(GGally)
+library(LICORS)  # for kmeans++
+library(randomForest)
+library(stringr)
+library(pdp)
+library(gamlr)
+library(knitr)
+library(gbm)
+
 ```
+
+# The Streams Analysis of Pop Music in 2018
+
+By Chong Wang, Tianping Wu, Zhenning Zhao, Zhiyang Lin
+
+## Introduction
+
+Popular music market is extremely large, especially in recent years. Pop songs inspire generations from all walks of life. Every day, oceans of pop tracks jump on to the Top 200 List of Spotify. In this project, we analysed the data of the 2018 popular music database from Spotify.com, in order to help the big digital music server improve playlist song recommendations and to help the record companies make decisions on which album to promote according to the predictions on the playing streams.
+
+This project mainly answers the following questions: first, predict the streams of the tracks; and second, analysis the pattern of the popularity trend. To answer the first question, we used stepwise method, the lasso method and the random forest and boosting to build a prediction model of the streams of the tracks, with the features of the songs and the albums as predictor. In order to answer the second question, we first used PCA and K-means to cluster the songs by features, dividing songs into different categories. Then we plotted the trend of the popularity of different type of songs, showing the change in the trend of the listener’s taste.
+
+## Data
+
+```{r data_intro, echo=FALSE, warning = FALSE}
+myurl <- "https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/Final%20Project/data/sounddata_2018.csv"
+sounddata_2018 <- read.csv(url(myurl), row.names=1)
+sounddata_2018 = subset(sounddata_2018,is.na(sounddata_2018$valence)==FALSE)
+sounddata_2018$key = sounddata_2018$key %>% as.factor()
+temp = model.matrix( ~ key-1,sounddata_2018)
+sounddata_2018 = cbind(sounddata_2018,temp)
+sounddata_2018$time_signature = sounddata_2018$time_signature %>% as.factor()
+temp = model.matrix( ~ time_signature-1,sounddata_2018)
+sounddata_2018 = cbind(sounddata_2018,temp)
+temp = model.matrix( ~ explicit-1,sounddata_2018)
+sounddata_2018 = cbind(sounddata_2018,temp)
+relseaseDuration = as.Date(sounddata_2018$releaseDate)
+temp = c()
+for (i in c(1:length(relseaseDuration))) {
+  temp = c(temp,as.Date("2019/1/1", origin = "1990/1/1"))
+}
+relseaseDuration = as.numeric(as.Date(temp, origin = "1990/1/1")-relseaseDuration)
+sounddata_2018 = cbind(sounddata_2018, relseaseDuration)
+#delete uncategorized label "unused attributes"
+Clean_data <- subset(sounddata_2018, select = -c(releaseDate, artist_name, album_name, explicit, is_local, name, popularity, key0, key, time_signature, time_signature1, explicitFALSE))
+Clean_data$acousticness <- Clean_data$acousticness %>% as.numeric()
+
+myurl <- "https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/Final%20Project/data/sounddata_2018weekly.csv"
+sounddata_2018_weekly <- read.csv(url(myurl))
+
+# Multiple plot function
+#
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+  
+  if (numPlots==1) {
+    print(plots[[1]])
+    
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+      
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+```
+
+The dataset that we use comes from spotify.com. Spotify is one of the biggest digital music servicer that gives you access to many songs. From https://spotifycharts.com, we have the weekly data of the top 200 songs in the US. We use the data of 2018, giving us 1,497 different songs.
+
+Fortunately, Spotify has a public API, which provides us many useful features of the songs. We use python robot to gather the data of not only the song features but also the data of the artists and the album. In the end, the formal dataset includes the following variables:
+
+Table1: Variable Descriptions
+
+|  variables   |   descriptions    |
+|----------------|----------------------|
+|id|song ID|
+|duration_ms_x|   The duration of the track in milliseconds. |
+|acousticness|A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 1.0 represents high confidence the track is acoustic.|
+|danceability|Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable.|
+|energy|Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.|
+|instrumentalness|Predicts whether a track contains no vocals. “Ooh” and “aah” sounds are treated as instrumental in this context. Rap or spoken word tracks are clearly “vocal”. The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.|
+| liveness|Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 0.8 provides strong likelihood that the track is live.|
+|loudness|The overall loudness of a track in decibels (dB). Loudness values are averaged across the entire track and are useful for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). Values typical range between -60 and 0 db.|
+|mode|Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.|
+|speechiness|Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks.|
+| tempo|The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.|
+|valence|A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).|
+|key|The estimated overall key of the track. Integers map to pitches using standard Pitch Class notation . E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on. If no key was detected, the value is -1.|
+|time_signature|An estimated overall time signature of a track. The time signature (meter) is a notational convention to specify how many beats are in each bar (or measure).|
+|relseaseDuration|The date the album was first released.|
+
+The explanation of the variables comes from the following link: https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/ Although this project only run on the dataset of 2018, we can do similar analysis for spotify for more songs and more recent data with similar method.
+
+## Prediction
+
+We want to build the best predictive model for streams. We chose between linear regression model and decision tree models, using methods like stepwise selection, lasso regression and random forests.
+
+In the first model, We started with the null model by regressing streams on one, followed by running stepwise selection within 25 song feature variables and obtained our final model.
+
+In the second model, We began with the medium model by regressing streams on all other 25 variables, and used stepwise method to choose variables within all the 25 song features and their interactions.
+
+The two selected models are shown below. we had 5 and 31 significant coefficients, respectively in the first and second model.
+
+```{r model1and2, echo = FALSE, warning = FALSE}
+#Streams as an dependent variable
+#stepwise
+null1 = lm(Streams~1, data=Clean_data)
+medium1 = lm(Streams ~ ., data=Clean_data)
+big1 = lm(Streams ~ (.)^2, data=Clean_data)
+stepwise1 = step(null1, scope=formula(medium1), dir="both", trace = FALSE)
+stepwise2 = step(medium1, scope=formula(big1), dir="both", trace = FALSE)
+model1 = formula(stepwise1)
+model2 = formula(stepwise2)
+model1
+model2
+```
+
+We then used the Lasso model to assemble the best predictive model possible for streams. We used this method to select above two models. We didn’t consider the interaction terms in model 3, while included the interaction terms in model 4.
+
+In the model 3, from the path plot below we could see that minimum AIC occurs at segment 8
+
+```{r pathplot3, echo = FALSE, warning = FALSE}
+#Lasso
+Stx1 = sparse.model.matrix(Streams ~ ., data=Clean_data)[,-1] 
+Sty1 = Clean_data$Streams
+Stlasso1 = gamlr(Stx1, Sty1, lambda.min.ratio=0.000001)
+#plot(log(Stlasso1$lambda), AICc(Stlasso1))
+#which.min(AICc(Stlasso1))
+plot(Stlasso1)
+Stbeta1 = coef(Stlasso1)
+```
+
+Thus, we used the model at the segment 8 and chose 6 coefficients. The specific model is shown below.
+
+```{r model3, echo = FALSE, warning = FALSE}
+p1 <- dimnames(Stbeta1)[[1]]
+p2 <- c()
+for (i in c(1:length(Stbeta1))){
+  p2 <- c(p2, as.list(Stbeta1)[[i]])
+}
+model3 = c("Streams ~ ")
+for (i in c(2:length(Stbeta1))){
+  if (p2[i] != 0){
+    if (model3 == "Streams ~ "){
+      model3 = paste(model3, p1[i])
+    }
+    else{
+      model3 = paste(model3,"+", p1[i])
+    }
+  }
+}
+model3 <- as.formula(model3)
+model3
+```
+
+In the model4, from the path plot below we could see that minimum AIC occurs at segment 5.
+
+```{r pathplot4, echo = FALSE, warning = FALSE}
+Stx2 = sparse.model.matrix(Streams ~ (.)^2, data=Clean_data)[,-1] 
+Sty2 = Clean_data$Streams
+Stlasso2 = gamlr(Stx2, Sty2, lambda.min.ratio=0.00000001)
+#plot(log(Stlasso2$lambda), AICc(Stlasso2))
+#which.min(AICc(Stlasso2))
+plot(Stlasso2)
+```
+
+Thus, we used the model at the segment 5 and chose 8 coefficients. The specific model is shown below.
+
+```{r model4, echo = FALSE, warning = FALSE}
+Stbeta2 = coef(Stlasso2)
+
+p1 <- dimnames(Stbeta2)[[1]]
+p2 <- c()
+for (i in c(1:length(Stbeta2))){
+  p2 <- c(p2, as.list(Stbeta2)[[i]])
+}
+model4 = c("Streams ~ ")
+for (i in c(2:length(Stbeta2))){
+  if (p2[i] != 0){
+    if (model4 == "Streams ~ "){
+      model4 = paste(model4, p1[i])
+    }
+    else{
+      model4 = paste(model4,"+", p1[i])
+    }
+  }
+}
+model4 <- as.formula(model4)
+model4
+#optimal lambda
+#log(Stlasso1$lambda[which.min(AICc(Stlasso1))])
+#sum(Stbeta1!=0)
+#log(Stlasso2$lambda[which.min(AICc(Stlasso2))])
+#sum(Stbeta2!=0)
+```
+
+Afterwards, we used the decision tree models to assemble the best predictive model possible for streams. We tried the random forest model and the boosting model on the dataset, which gave us 2 non-linear models: model 5 and model 6.
+
+```{r tree, echo = FALSE, warning = FALSE}
+#trees and random forests
+# split into a training and testing set
+N = nrow(Clean_data)
+train_frac = 0.8
+N_train = floor(train_frac*N)
+N_test = N - N_train
+train_ind = sample.int(N, N_train, replace=FALSE) %>% sort
+Clean_data_train = Clean_data[train_ind,]
+Clean_data_test = Clean_data[-train_ind,]
+
+
+# 1. bagging:
+rmse_forest = c()
+for (K in c(1:27)){
+  forest1 = randomForest(Streams ~ ., mtry=K, nTree=50, data=Clean_data_train)
+  yhat_forest_test = predict(forest1, Clean_data_test)
+  rmse_foresttemp = mean((Clean_data_test$Streams - yhat_forest_test)^2) %>% sqrt
+  rmse_forest = c(rmse_forest, rmse_foresttemp)
+}
+a=which.min(rmse_forest)
+model5=randomForest(Streams ~ ., mtry=a, nTree=50, data=Clean_data_train)
+
+
+# 2. Boosting:
+boost1 = gbm(Streams ~ ., data=Clean_data_train, 
+             interaction.depth=2, n.trees=200, shrinkage=.05, distribution = "gaussian")
+#plot(Streams ~ energy, data=Clean_data_train)
+#points(predict(boost1, n.trees=500) ~ energy, data=Clean_data_train, pch=19, col='red')
+model6 = boost1
+```
+
+```{r K_fold, echo = FALSE, warning = FALSE}
+#k-fold cross validation
+N = nrow(Clean_data)
+# Create a vector of fold indicators
+K = 10
+fold_id = rep_len(1:K, N)  # repeats 1:K over and over again
+fold_id = sample(fold_id, replace=FALSE) # permute the order randomly
+step_err_save1 = rep(0, K)
+step_err_save2 = rep(0, K)
+lasso_err_save1 = rep(0, K)
+lasso_err_save2 = rep(0, K)
+bag_err_save = rep(0,K)
+boost_err_save = rep(0,K)
+for(i in 1:K) {
+  train_set = which(fold_id != i)
+  y_test = Clean_data$Streams[-train_set]
+  step_model1 = lm(model1, data=Clean_data[train_set,])
+  step_model2 = lm(model2, data=Clean_data[train_set,])
+  lasso_model1 = lm(model3, data=Clean_data[train_set,])
+  lasso_model2 = lm(model4, data=Clean_data[train_set,])
+  bag_model = randomForest(Streams ~ ., mtry=a, nTree=100, data=Clean_data[train_set,])
+  boost_model = gbm(Streams ~ ., data=Clean_data[train_set,], interaction.depth=2, n.trees=500, shrinkage=.05, distribution = "gaussian")
+  yhat_test1 = predict(step_model1, newdata=Clean_data[-train_set,])
+  step_err_save1[i] = mean((y_test - yhat_test1)^2)
+  yhat_test2 = predict(step_model2, newdata=Clean_data[-train_set,])
+  step_err_save2[i] = mean((y_test - yhat_test2)^2)
+  yhat_test3 = predict(lasso_model1, newdata=Clean_data[-train_set,])
+  lasso_err_save1[i] = mean((y_test - yhat_test3)^2)
+  yhat_test4 = predict(lasso_model2, newdata=Clean_data[-train_set,])
+  lasso_err_save2[i] = mean((y_test - yhat_test4)^2)
+  yhat_test5 = predict(bag_model, newdata=Clean_data[-train_set,])
+  bag_err_save[i] = mean((y_test - yhat_test5)^2)
+  yhat_test6 = predict(boost_model, newdata=Clean_data[-train_set,], n.trees=500)
+  boost_err_save[i] = mean((y_test - yhat_test6)^2)
+}
+
+# RMSE
+c(sqrt(mean(step_err_save1)), sqrt(mean(step_err_save2)), sqrt(mean(lasso_err_save1)), sqrt(mean(lasso_err_save2)), sqrt(mean(bag_err_save)), sqrt(mean(boost_err_save)))
+```
+
+Lastly, we used k-fold cross validation in order to compare 6 models above. We found that the CVs of model 2 has the minimum CV, and therefore it is our best predictive model possible for streams. A linear model with interactions is easy to interpret.
+
+
+The second best model is model 5, which came from the random forest method. The random forest model has one advantage over the linear regression: it will only give us positive predictions. As a result, we used both model 2 and model 5 to do the predictions. 
+
+
+```{r model2coef, echo = FALSE, warning = FALSE}
+table1 = summary(step_model2)
+kable(as.data.frame(table1["coefficients"]))
+```
+
+From the model 2, we can clearly see that danceability, energy, liveness, loudness, mode, spechiness and key6 have positive effects on streams, which means the more these factors used in the song, the song will be played by more people. Also, we need to pay attention to release duration. The longer the release duration is, the song will be played by less people, which means people prefer to play latest songs on Spotify.
+
+```{r pdp, echo = FALSE, warning = FALSE}
+# partial dependence plot: temp
+p1 = bag_model %>%
+  partial(pred.var = "danceability") %>% autoplot
+
+
+# partial dependence plot: temp
+p2 = bag_model %>%
+  partial(pred.var = "energy") %>% autoplot
+
+# partial dependence plot: hour
+p3 = bag_model %>%
+  partial(pred.var = "liveness") %>% autoplot
+
+# partial dependence plot: day
+p4 = bag_model %>%
+  partial(pred.var = "loudness") %>% autoplot
+
+# partial dependence plot: PC1
+p5 = bag_model %>%
+  partial(pred.var = "speechiness") %>% autoplot
+
+
+# partial dependence plot: PC5
+p6 = bag_model %>%
+  partial(pred.var = "key6") %>% autoplot
+multiplot(p1, p2, p3, p4, p5, p6, cols=2)
+
+```
+
+From model 5, we get the Partial dependence functions of the song features, and the result seems robust to the model 2.
+
+## PCA and Clustering
+
+###  General methodologies
+
+We would like to segment the 1,497 songs into groups with similar features in order to recommend to listeners who share the same interests/taste. For the reason of reducing unnecessary noises and computations, we first reduced the initial 27 variables by PCA. Next, we clustered them into groups with similar principle components, and based on the features in each principal component and the actual songs in each cluster, we were able to describe them in secular terminologies such as “genre”. 
+
+```{r cluster_steup, echo = FALSE, warning = FALSE}
+Clean_data <- subset(sounddata_2018, select = -c(releaseDate, artist_name, album_name, explicit, is_local, name, popularity, key0, key, time_signature, time_signature1, explicitFALSE, explicitTRUE, Streams, relseaseDuration))
+# Center/scale the data
+Clean_data_scaled <- scale(Clean_data, center=TRUE, scale=TRUE)
+N = nrow(Clean_data_scaled)
+
+# correlation
+cor=cor(Clean_data_scaled)
+```
+
+### PCA
+We would like to use PCA to balance between the amount of computation load and explanatory variability, while eliminating as much noise as possible from our data. After centering and scaling of the data, we calculated the the loading matrix/scores matrix in order to derive the proportion of variance explained (PVE) and decide the number of principal components needed.
+
+```{r PCA_table, echo = FALSE, warning = FALSE}
+# PCA
+pca = prcomp(x = Clean_data_scaled,scale=TRUE)
+loadings = pca$rotation
+scores = pca$x
+# PVE
+VE = pca$sdev^2
+PVE = VE / sum(VE) %>% round(4)
+CP = c()
+ID = c()
+for (i in c(1:length(PVE))) {
+  ID = c(ID, paste("PC", i, sep = ""))
+  CP = c(CP, round(sum(PVE[1:i]),4))
+}
+summary_table = cbind(ID, VE, PVE, CP)
+colnames(summary_table)<- c("ID", "Standard deviation", "Proportion of Variance", "Cumulative Proportion")
+kable(summary_table)
+```
+
+In the table above, we see that the first 20 principle components explain more than 90% of the variability. We believe that these 20 principle components would keep our computation load low and eliminate some of the noises, while keeping the majority of the variability. Clustering would further group our songs based on these 20 principle components.
+
+### Clustering
+K-means++ clustering was used to determine our market segments. 3 types of supporting analysis were used to help us determine the the number of them(centroids): Elbow plot(SSE), CH index and Gap statistics.
+
+```{r K-grid, echo = FALSE, warning = FALSE}
+pca_result = as.data.frame(pca$x)
+pca_top_data <- subset(pca_result, select = -c(21:25))
+
+#K-grid **15
+k_grid = seq(2, 20, by=1)
+SSE_grid = foreach(k = k_grid, .combine='c') %do% {
+  cluster_k = kmeans(pca_top_data, k, nstart=50)
+  cluster_k$tot.withinss
+}
+
+plot(k_grid, SSE_grid, xlab="K",ylab="SSE Grid", sub="SSE Grid vs K")
+```
+
+
+```{r CH-grid, echo = FALSE, warning = FALSE}
+#CH-grid to find the optimal K  **16
+CH_grid = foreach(k = k_grid, .combine='c') %do% {
+  cluster_k = kmeans(pca_top_data, k, nstart=50)
+  W = cluster_k$tot.withinss
+  B = cluster_k$betweenss
+  CH = (B/W)*((N-k)/(k-1))
+  CH
+}
+
+plot(k_grid, CH_grid, xlab="K",
+     ylab="CH Grid",
+     sub="CH Grid vs K")
+```
+
+```{r Gap, echo = FALSE, warning = FALSE}
+#Gap statistics **4
+Market_gap = clusGap(pca_top_data, FUN = kmeans, nstart = 40, K.max = 20, B = 10)
+plot(Market_gap)
+```
+
+As shown above, both elbow plot and CH index returned K=16 and gap statistics K=4. Clustering 16 segments would not show us distinct differences among them as we now only have 20 principle components to allocate. So we selected K=4 as our anchor and explored the nearby Ks to see which one provides us the best explanation for each cluster. By “best explanation”, we considered the following 2 categories.
+
+- Clusters that have songs with clear and unique distribution in any of the 20 features.
+- Clusters that have songs with clear genre by their artist name and actual music.(we played a considerable quantity of sample size from each cluster on Youtube to confirm this)
+
+As the result, we eventually picked K = 5.
+
+Song market segments breakdown by distribution of features
+After the 5 clusters are determined, we reversed the principle components into the original features to determine cluster characteristics. We show some of the cluster identifiable distributions and the summary of each cluster below.
+
+```{r K_means, echo = FALSE, warning = FALSE}
+# k-means analysis
+clust2 = kmeanspp(pca_top_data, k=5, nstart=50)
+cluster_result2 = as.data.frame(clust2[1])
+cluster_result2 <- cbind(cluster_result2,sounddata_2018$artist_name,sounddata_2018$name)
+#xtabs(~1+cluster_result2$cluster)
+```
+
+```{r PC1, echo = FALSE, warning = FALSE}
+#PC1
+XX = subset(sounddata_2018,select = c(acousticness, time_signature3, time_signature5, instrumentalness, time_signature1))
+ggpairs(XX,aes(col = as.factor(cluster_result2$cluster), alpha = 0.8))
+```
+
+```{r PC2, echo = FALSE, warning = FALSE}
+#PC2
+XX = subset(sounddata_2018,select = c(energy, loudness, time_signature5, time_signature3, liveness))
+ggpairs(XX,aes(col = as.factor(cluster_result2$cluster), alpha = 0.8))
+```
+
+```{r PC3, echo = FALSE, warning = FALSE}
+#PC3
+XX = subset(sounddata_2018,select = c(speechiness, danceability, time_signature5, key11, key1))
+ggpairs(XX,aes(col = as.factor(cluster_result2$cluster), alpha = 0.8))
+```
+
+Cluster 1: High in energy, high in loudness, high danceability, low speechiness, considerate amount of G key, low acousticness
+
+Cluster 2: Many 5 quarter time signature songs, high in energy
+
+Cluster 3: Many songs with high energy, high on loudness
+
+Cluster 4: Many songs with high on loudness, high danceability, considerable amount of B flat key
+
+Cluster 5: Many 3 quarter time signature songs, low speechiness
+
+### Song market segments breakdown by genre
+
+Since we have the full list of song names and artist names available in each cluster, we could actually listen to the songs and categorize them manually by the music genre standard as in pop, rock, rap, etc. If our cluster characteristics determined by K-means++  show close resemblance of the music genre, then our recommendation system may be effective, at least to the extent of traditional music listeners with distinct preference over specific genre.
+
+Cluster 1: Many songs with electronically altered/amplified sounds, very rhythmic, but genre varying from  pop to rap to country, etc. Typical examples would be I Get The Bag by Gucci Mane, Echame La Culpa by Luis Fonsi, IDGAF by Dua Lipa. 
+
+Cluster 2: Indeed many songs with 5/4 time signature, high energy and rhythmic, but clearly sets apart different vibe compared cluster 1, perhaps due to the different time signature. Typical examples would be Top Off by DJ Khaled, You Can Cry by Marshmello, and Creep on me by GASHI.
+
+Cluster 3: Genre varies a lot in this cluster, as shown in the very different artists such as Drake, Kendrick Lamar, Taylor Swift, XXXTENTACION and Queen. We did realize that out of the many rap songs in this cluster, most of them were the “slower” ones. For example, Wow by Post Malone and Forever Ever by Trippie Redd.
+
+Cluster 4: Songs in B flat key stands out, such as Betrayed by Lil Xan and Midnight Summer Jam by Justin Timberlake, which make this cluster a different vibe than others. 
+
+Cluster 5: Many indie and pop songs with long vowel sounds, typical examples would be A Million Dreams by Ziv Zaifman, Perfect by Ed Sheeran and The Night We met by Lord Huron.
+
+### Trend in popularity
+We also calculated the total streams of different song clusters by time. The following graph shows the trend in the total streams of different categories.
+
+From this graph we can see that the stream of five types of songs doesn’t change too much in a year.  Cluster 1 music has more streams overall, due to the fact that there are more songs in this categories. There is a peak in the end of April in 2018 for cluster 1, and then the streams goes back to normal. From this graph we can also see that at the end of the year cluster 1 music is not as popular as in the middle of the year, but type 3 music becomes more and more popular, especially in july and the end of the year. The popularity of cluster 2, cluster 4 and cluster 5 music doesn’t change too much in the whole year. 
+
+```{r trend, echo = FALSE, warning = FALSE}
+#row.names(cluster_result2)
+cluster_result2_withID <- cbind(cluster_result2,row.names(cluster_result2))
+
+# calculating cluster quantity trend by week
+colnames(cluster_result2_withID)[4] <-"song_id"
+colnames(sounddata_2018_weekly)[7] <-"song_id"
+sounddata_2018_weekly$cluster <- cluster_result2_withID$cluster[match(sounddata_2018_weekly$song_id, cluster_result2_withID$song_id)]
+
+Trend = sounddata_2018_weekly %>% group_by(Date, cluster) %>%  summarise(StreamNum = sum(Streams))
+Pic = ggplot(data = Trend, mapping = aes(x = as.Date(Trend$Date), y = StreamNum, col = as.factor(cluster)))+
+  geom_point()+
+  geom_line(aes(group = as.factor(cluster)))+
+  theme(axis.text.x = element_text(angle = 90))
+Pic
+```
+
+## Conclusion
+
+Traditionally music listeners explore songs by specific genre and artists. This confirmation bias, typically nurtured through years of artificial genre segmentation by media and artist reputation, could be limiting listeners from the songs that they really want to exposed to. The question of “Why are we attracted to certain songs?” is a philosophical discussion that is beyond the scope of our project here, but given the data from spotify data and our clustering method, we perhaps show that key, time signature and speed of the songs are some of the contributing factors to our inner biological working of what to like and dislike. Then, our basic recommendation system, most likely already used by music industry like Spotify, could recommend songs not by mere  genre and artist names, but also by specific keys and time signatures each listener is attracted to, subconsciously.  
+
