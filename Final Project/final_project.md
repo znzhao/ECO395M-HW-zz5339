@@ -95,3 +95,25 @@ Table1: Variable Descriptions
 </table>
 
 The explanation of the variables comes from the following link: <https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/> Although this project only run on the dataset of 2018, we can do similar analysis for spotify for more songs and more recent data with similar method.
+
+    ## Importance of components:
+    ##                           PC1     PC2     PC3     PC4    PC5     PC6
+    ## Standard deviation     1.6740 1.33171 1.21131 1.20116 1.0966 1.08682
+    ## Proportion of Variance 0.1121 0.07094 0.05869 0.05771 0.0481 0.04725
+    ## Cumulative Proportion  0.1121 0.18302 0.24171 0.29943 0.3475 0.39477
+    ##                            PC7     PC8     PC9    PC10    PC11    PC12
+    ## Standard deviation     1.07922 1.05784 1.05297 1.04306 1.04009 1.03156
+    ## Proportion of Variance 0.04659 0.04476 0.04435 0.04352 0.04327 0.04257
+    ## Cumulative Proportion  0.44136 0.48612 0.53047 0.57399 0.61726 0.65983
+    ##                           PC13    PC14    PC15    PC16    PC17    PC18
+    ## Standard deviation     1.02623 1.01947 1.00306 0.97324 0.94496 0.90611
+    ## Proportion of Variance 0.04213 0.04157 0.04025 0.03789 0.03572 0.03284
+    ## Cumulative Proportion  0.70195 0.74353 0.78377 0.82166 0.85738 0.89022
+    ##                           PC19   PC20   PC21    PC22    PC23    PC24
+    ## Standard deviation     0.86968 0.8046 0.7778 0.64744 0.45744 0.31693
+    ## Proportion of Variance 0.03025 0.0259 0.0242 0.01677 0.00837 0.00402
+    ## Cumulative Proportion  0.92047 0.9464 0.9706 0.98733 0.99570 0.99972
+    ##                           PC25
+    ## Standard deviation     0.08359
+    ## Proportion of Variance 0.00028
+    ## Cumulative Proportion  1.00000
