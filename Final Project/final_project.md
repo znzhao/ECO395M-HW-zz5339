@@ -140,7 +140,7 @@ Thus, we used the model at the segment 5 and chose 8 coefficients. The specific 
 
 Afterwards, we used the decision tree models to assemble the best predictive model possible for streams. We tried the random forest model and the boosting model on the dataset, which gave us 2 non-linear models: model 5 and model 6.
 
-    ## [1] 34861789 34604471 34848498 34852566 34812298 35412832
+    ## [1] 34885885 34692692 34870874 34875591 34637136 34732149
 
 Lastly, we used k-fold cross validation in order to compare 6 models above. We found that the CVs of model 2 has the minimum CV, and therefore it is our best predictive model possible for streams. A linear model with interactions is easy to interpret.
 
@@ -148,37 +148,37 @@ The second best model is model 5, which came from the random forest method. The 
 
 |                               |  coefficients.Estimate|  coefficients.Std..Error|  coefficients.t.value|  coefficients.Pr...t..|
 |-------------------------------|----------------------:|------------------------:|---------------------:|----------------------:|
-| (Intercept)                   |           1.646100e+07|             1.452541e+07|             1.1332558|              0.2573131|
-| duration\_ms\_x               |          -2.172727e+01|             2.087135e+01|            -1.0410092|              0.2980624|
-| acousticness                  |          -5.616762e+05|             1.367282e+07|            -0.0410798|              0.9672385|
-| danceability                  |           2.364541e+07|             8.254704e+06|             2.8644771|              0.0042433|
-| energy                        |          -7.675973e+05|             1.429147e+07|            -0.0537102|              0.9571742|
-| liveness                      |           1.162265e+08|             3.825623e+07|             3.0381073|              0.0024275|
-| loudness                      |           9.342085e+05|             5.982664e+05|             1.5615260|              0.1186399|
-| mode                          |           5.195895e+06|             3.091328e+06|             1.6807970|              0.0930395|
-| speechiness                   |           1.675947e+07|             1.822265e+07|             0.9197054|              0.3578951|
-| valence                       |          -1.835778e+07|             7.807869e+06|            -2.3511902|              0.0188602|
-| key6                          |          -2.396707e+06|             1.078424e+07|            -0.2222415|              0.8241603|
-| key8                          |          -3.773707e+07|             2.441152e+07|            -1.5458713|              0.1223759|
-| key10                         |          -6.653445e+06|             4.303636e+06|            -1.5460056|              0.1223435|
-| explicitTRUE                  |          -9.515646e+07|             2.669989e+07|            -3.5639269|              0.0003784|
-| relseaseDuration              |          -7.172592e+01|             3.537077e+02|            -0.2027831|              0.8393359|
-| explicitTRUE:relseaseDuration |           1.187783e+04|             3.432025e+03|             3.4608806|              0.0005556|
-| valence:explicitTRUE          |           2.769236e+07|             9.218679e+06|             3.0039404|              0.0027154|
-| duration\_ms\_x:key8          |           2.328996e+02|             7.181771e+01|             3.2429264|              0.0012127|
-| energy:liveness               |          -1.493510e+08|             5.134338e+07|            -2.9088650|              0.0036883|
-| acousticness:liveness         |          -1.126892e+08|             3.795888e+07|            -2.9687190|              0.0030445|
-| mode:speechiness              |          -2.902330e+07|             1.437260e+07|            -2.0193487|              0.0436532|
-| mode:key10                    |           1.896886e+07|             6.976023e+06|             2.7191505|              0.0066310|
-| speechiness:explicitTRUE      |          -2.920611e+07|             1.893065e+07|            -1.5427947|              0.1231208|
-| liveness:key6                 |           8.207375e+07|             3.105448e+07|             2.6428951|              0.0083175|
-| acousticness:energy           |           3.696090e+07|             2.256555e+07|             1.6379345|              0.1016742|
-| valence:key6                  |          -3.256067e+07|             1.836554e+07|            -1.7729216|              0.0764728|
-| mode:key6                     |           1.421859e+07|             8.024995e+06|             1.7717877|              0.0766610|
-| danceability:key8             |          -5.464746e+07|             2.495492e+07|            -2.1898470|              0.0287102|
-| key8:explicitTRUE             |           2.921233e+07|             9.725016e+06|             3.0038335|              0.0027163|
-| valence:key8                  |           4.742451e+07|             1.782397e+07|             2.6607156|              0.0078922|
-| speechiness:key8              |          -4.504812e+07|             2.673174e+07|            -1.6851926|              0.0921883|
+| (Intercept)                   |           2.935411e+07|             1.381697e+07|             2.1244972|              0.0338144|
+| duration\_ms\_x               |          -1.426660e+01|             1.942172e+01|            -0.7345694|              0.4627326|
+| acousticness                  |          -6.369157e+06|             1.329563e+07|            -0.4790414|              0.6319887|
+| danceability                  |           1.936512e+07|             7.754984e+06|             2.4971187|              0.0126420|
+| energy                        |          -1.125593e+07|             1.355996e+07|            -0.8300854|              0.4066409|
+| liveness                      |           5.539854e+07|             3.777722e+07|             1.4664537|              0.1427635|
+| loudness                      |           1.304697e+06|             5.723850e+05|             2.2794037|              0.0228025|
+| mode                          |           6.367308e+06|             2.935859e+06|             2.1688056|              0.0302759|
+| speechiness                   |           1.812646e+07|             1.879077e+07|             0.9646472|              0.3348986|
+| valence                       |          -1.938086e+07|             7.354000e+06|            -2.6354169|              0.0085021|
+| key6                          |           3.521116e+06|             1.049675e+07|             0.3354483|              0.7373404|
+| key8                          |          -3.137017e+07|             2.373283e+07|            -1.3218048|              0.1864627|
+| key10                         |          -6.159600e+06|             3.969540e+06|            -1.5517161|              0.1209704|
+| explicitTRUE                  |          -7.054111e+07|             2.424187e+07|            -2.9098876|              0.0036763|
+| relseaseDuration              |           3.683182e+01|             3.203443e+02|             0.1149757|              0.9084819|
+| explicitTRUE:relseaseDuration |           8.522167e+03|             3.115808e+03|             2.7351385|              0.0063191|
+| valence:explicitTRUE          |           2.313654e+07|             8.748680e+06|             2.6445747|              0.0082766|
+| duration\_ms\_x:key8          |           1.748676e+02|             6.995779e+01|             2.4996156|              0.0125537|
+| energy:liveness               |          -8.267967e+07|             4.967158e+07|            -1.6645267|              0.0962451|
+| acousticness:liveness         |          -6.225872e+07|             3.678652e+07|            -1.6924332|              0.0907999|
+| mode:speechiness              |          -3.059230e+07|             1.388837e+07|            -2.2027270|              0.0277867|
+| mode:key10                    |           1.134572e+07|             6.457889e+06|             1.7568771|              0.0791711|
+| speechiness:explicitTRUE      |          -2.085315e+07|             1.977460e+07|            -1.0545423|              0.2918281|
+| liveness:key6                 |           6.895065e+07|             2.841077e+07|             2.4269194|              0.0153611|
+| acousticness:energy           |           2.801608e+07|             2.176927e+07|             1.2869551|              0.1983361|
+| valence:key6                  |          -3.453401e+07|             1.792188e+07|            -1.9269196|              0.0542046|
+| mode:key6                     |           1.079977e+07|             7.372969e+06|             1.4647783|              0.1432201|
+| danceability:key8             |          -4.456651e+07|             2.330261e+07|            -1.9125113|              0.0560274|
+| key8:explicitTRUE             |           3.137743e+07|             8.998033e+06|             3.4871435|              0.0005043|
+| valence:key8                  |           4.403813e+07|             1.585436e+07|             2.7776667|              0.0055528|
+| speechiness:key8              |          -5.542545e+07|             2.669746e+07|            -2.0760573|              0.0380823|
 
 From the model 2, we can clearly see that danceability, energy, liveness, loudness, mode, spechiness and key6 have positive effects on streams, which means the more these factors used in the song, the song will be played by more people. Also, we need to pay attention to release duration. The longer the release duration is, the song will be played by less people, which means people prefer to play latest songs on Spotify.
 
@@ -240,6 +240,7 @@ K-means++ clustering was used to determine our market segments. 3 types of suppo
 As shown above, both elbow plot and CH index returned K=16 and gap statistics K=4. Clustering 16 segments would not show us distinct differences among them as we now only have 20 principle components to allocate. So we selected K=4 as our anchor and explored the nearby Ks to see which one provides us the best explanation for each cluster. By “best explanation”, we considered the following 2 categories.
 
 -   Clusters that have songs with clear and unique distribution in any of the 20 features.
+
 -   Clusters that have songs with clear genre by their artist name and actual music.(we played a considerable quantity of sample size from each cluster on Youtube to confirm this)
 
 As the result, we eventually picked K = 5.
@@ -252,15 +253,15 @@ Song market segments breakdown by distribution of features After the 5 clusters 
 
 ![](final_project_files/figure-markdown_github/PC3-1.png)
 
-Cluster 1: High in energy, high in loudness, high danceability, low speechiness, considerate amount of G key, low acousticness
+-   Cluster 1: High in energy, high in loudness, high danceability, low speechiness, considerate amount of G key, low acousticness
 
-Cluster 2: Many 5 quarter time signature songs, high in energy
+-   Cluster 2: Many 5 quarter time signature songs, high in energy
 
-Cluster 3: Many songs with high energy, high on loudness
+-   Cluster 3: Many songs with high energy, high on loudness
 
-Cluster 4: Many songs with high on loudness, high danceability, considerable amount of B flat key
+-   Cluster 4: Many songs with high on loudness, high danceability, considerable amount of B flat key
 
-Cluster 5: Many 3 quarter time signature songs, low speechiness
+-   Cluster 5: Many 3 quarter time signature songs, low speechiness
 
 ### Song market segments breakdown by genre
 
@@ -286,5 +287,7 @@ From this graph we can see that the stream of five types of songs doesn’t chan
 
 Conclusion
 ----------
+
+In each age, the popularity of songs reflects people’s preference to music, which may differ from each era. To predict the success of a song, we need take care of the contemporaneous music preference. In 2018, modern people are crazy about music elements of danceability, energy, liveness and so on. It seems that they are more likely to pursue the latest music. As a result, In order to predict the song’s popularity trend in 2019, the first thing we need to do is to gather the information of public music preference next year.
 
 Traditionally music listeners explore songs by specific genre and artists. This confirmation bias, typically nurtured through years of artificial genre segmentation by media and artist reputation, could be limiting listeners from the songs that they really want to exposed to. The question of “Why are we attracted to certain songs?” is a philosophical discussion that is beyond the scope of our project here, but given the data from spotify data and our clustering method, we perhaps show that key, time signature and speed of the songs are some of the contributing factors to our inner biological working of what to like and dislike. Then, our basic recommendation system, most likely already used by music industry like Spotify, could recommend songs not by mere genre and artist names, but also by specific keys and time signatures each listener is attracted to, subconsciously.

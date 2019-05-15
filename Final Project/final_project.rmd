@@ -1,5 +1,5 @@
 ---
-title: "Final Project: The Streams Analysis of Pop Music in 2018"
+title: "Final Project: The Streams Analysis of Popular Music in 2018"
 author: "Chong Wang, Tianping Wu, Zhenning Zhao, Zhiyang Lin"
 date: "2019/5/16"
 output:
@@ -374,6 +374,7 @@ cor=cor(Clean_data_scaled)
 ```
 
 ### PCA
+
 We would like to use PCA to balance between the amount of computation load and explanatory variability, while eliminating as much noise as possible from our data. After centering and scaling of the data, we calculated the the loading matrix/scores matrix in order to derive the proportion of variance explained (PVE) and decide the number of principal components needed.
 
 ```{r PCA_table, echo = FALSE, warning = FALSE}
@@ -439,6 +440,7 @@ plot(Market_gap)
 As shown above, both elbow plot and CH index returned K=16 and gap statistics K=4. Clustering 16 segments would not show us distinct differences among them as we now only have 20 principle components to allocate. So we selected K=4 as our anchor and explored the nearby Ks to see which one provides us the best explanation for each cluster. By “best explanation”, we considered the following 2 categories.
 
 - Clusters that have songs with clear and unique distribution in any of the 20 features.
+
 - Clusters that have songs with clear genre by their artist name and actual music.(we played a considerable quantity of sample size from each cluster on Youtube to confirm this)
 
 As the result, we eventually picked K = 5.
@@ -472,15 +474,15 @@ XX = subset(sounddata_2018,select = c(speechiness, danceability, time_signature5
 ggpairs(XX,aes(col = as.factor(cluster_result2$cluster), alpha = 0.8))
 ```
 
-Cluster 1: High in energy, high in loudness, high danceability, low speechiness, considerate amount of G key, low acousticness
+- Cluster 1: High in energy, high in loudness, high danceability, low speechiness, considerate amount of G key, low acousticness
 
-Cluster 2: Many 5 quarter time signature songs, high in energy
+- Cluster 2: Many 5 quarter time signature songs, high in energy
 
-Cluster 3: Many songs with high energy, high on loudness
+- Cluster 3: Many songs with high energy, high on loudness
 
-Cluster 4: Many songs with high on loudness, high danceability, considerable amount of B flat key
+- Cluster 4: Many songs with high on loudness, high danceability, considerable amount of B flat key
 
-Cluster 5: Many 3 quarter time signature songs, low speechiness
+- Cluster 5: Many 3 quarter time signature songs, low speechiness
 
 ### Song market segments breakdown by genre
 
@@ -497,6 +499,7 @@ Cluster 4: Songs in B flat key stands out, such as Betrayed by Lil Xan and Midni
 Cluster 5: Many indie and pop songs with long vowel sounds, typical examples would be A Million Dreams by Ziv Zaifman, Perfect by Ed Sheeran and The Night We met by Lord Huron.
 
 ### Trend in popularity
+
 We also calculated the total streams of different song clusters by time. The following graph shows the trend in the total streams of different categories.
 
 From this graph we can see that the stream of five types of songs doesn’t change too much in a year.  Cluster 1 music has more streams overall, due to the fact that there are more songs in this categories. There is a peak in the end of April in 2018 for cluster 1, and then the streams goes back to normal. From this graph we can also see that at the end of the year cluster 1 music is not as popular as in the middle of the year, but type 3 music becomes more and more popular, especially in july and the end of the year. The popularity of cluster 2, cluster 4 and cluster 5 music doesn’t change too much in the whole year. 
@@ -519,6 +522,8 @@ Pic
 ```
 
 ## Conclusion
+
+In each age, the popularity of songs reflects people’s preference to music, which may differ from each era. To predict the success of a song, we need take care of the contemporaneous music preference. In 2018, modern people are crazy about music elements of danceability, energy, liveness and so on. It seems that they are more likely to pursue the latest music. As a result, In order to predict the song’s popularity trend in 2019, the first thing we need to do is to gather the information of public music preference next year.   
 
 Traditionally music listeners explore songs by specific genre and artists. This confirmation bias, typically nurtured through years of artificial genre segmentation by media and artist reputation, could be limiting listeners from the songs that they really want to exposed to. The question of “Why are we attracted to certain songs?” is a philosophical discussion that is beyond the scope of our project here, but given the data from spotify data and our clustering method, we perhaps show that key, time signature and speed of the songs are some of the contributing factors to our inner biological working of what to like and dislike. Then, our basic recommendation system, most likely already used by music industry like Spotify, could recommend songs not by mere  genre and artist names, but also by specific keys and time signatures each listener is attracted to, subconsciously.  
 
