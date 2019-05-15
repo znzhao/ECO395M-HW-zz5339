@@ -104,5 +104,16 @@ cor=cor(Clean_data_scaled)
 pca = prcomp(x = Clean_data_scaled,scale=TRUE)
 loadings = pca$rotation
 scores = pca$x
-kable(summary(pca))
+# PVE
+VE = pca$sdev^2
+PVE = VE / sum(VE) %>% round(4)
+CP = c()
+ID = c()
+for (i in c(1:length(PVE))) {
+  ID = c(ID, paste("PC", i, sep = ""))
+  CP = c(CP, round(sum(PVE[1:i])),4)
+}
+summary_table = cbind(ID, VE, PVE, CP)
+colnames(summary_table)<- c("ID", "Standard deviation", "Proportion of Variance", "Cumulative Proportion")
+kable(summary_table)
 ```
