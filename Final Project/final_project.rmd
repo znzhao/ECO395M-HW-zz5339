@@ -17,7 +17,10 @@ library(GGally)
 library(LICORS)  # for kmeans++
 library(randomForest)
 library(stringr)
+library(pdp)
+library(gamlr)
 library(knitr)
+library(gbm)
 
 ```
 
@@ -58,6 +61,52 @@ Clean_data$acousticness <- Clean_data$acousticness %>% as.numeric()
 
 myurl <- "https://raw.githubusercontent.com/znzhao/ECO395M-HW-zz5339/master/Final%20Project/data/sounddata_2018weekly.csv"
 sounddata_2018_weekly <- read.csv(url(myurl))
+
+# Multiple plot function
+#
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+  
+  if (numPlots==1) {
+    print(plots[[1]])
+    
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+      
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
 ```
 
 The dataset that we use comes from spotify.com. Spotify is one of the biggest digital music servicer that gives you access to many songs. From https://spotifycharts.com, we have the weekly data of the top 200 songs in the US. We use the data of 2018, giving us 1,497 different songs.
@@ -86,6 +135,205 @@ Table1: Variable Descriptions
 
 The explanation of the variables comes from the following link: https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/ Although this project only run on the dataset of 2018, we can do similar analysis for spotify for more songs and more recent data with similar method.
 
+
+
+
+
+
+
+```{r model1and2, echo = FALSE, warning = FALSE}
+#Streams as an dependent variable
+#stepwise
+null1 = lm(Streams~1, data=Clean_data)
+medium1 = lm(Streams ~ ., data=Clean_data)
+big1 = lm(Streams ~ (.)^2, data=Clean_data)
+stepwise1 = step(null1, scope=formula(medium1), dir="both", trace = FALSE)
+stepwise2 = step(medium1, scope=formula(big1), dir="both", trace = FALSE)
+model1 = formula(stepwise1)
+model2 = formula(stepwise2)
+model1
+model2
+```
+
+
+
+```{r pathplot3, echo = FALSE, warning = FALSE}
+#Lasso
+Stx1 = sparse.model.matrix(Streams ~ ., data=Clean_data)[,-1] 
+Sty1 = Clean_data$Streams
+Stlasso1 = gamlr(Stx1, Sty1, lambda.min.ratio=0.000001)
+#plot(log(Stlasso1$lambda), AICc(Stlasso1))
+#which.min(AICc(Stlasso1))
+plot(Stlasso1)
+Stbeta1 = coef(Stlasso1)
+```
+
+```{r model3, echo = FALSE, warning = FALSE}
+p1 <- dimnames(Stbeta1)[[1]]
+p2 <- c()
+for (i in c(1:length(Stbeta1))){
+  p2 <- c(p2, as.list(Stbeta1)[[i]])
+}
+model3 = c("Streams ~ ")
+for (i in c(2:length(Stbeta1))){
+  if (p2[i] != 0){
+    if (model3 == "Streams ~ "){
+      model3 = paste(model3, p1[i])
+    }
+    else{
+      model3 = paste(model3,"+", p1[i])
+    }
+  }
+}
+model3 <- as.formula(model3)
+model3
+```
+
+```{r pathplot4, echo = FALSE, warning = FALSE}
+Stx2 = sparse.model.matrix(Streams ~ (.)^2, data=Clean_data)[,-1] 
+Sty2 = Clean_data$Streams
+Stlasso2 = gamlr(Stx2, Sty2, lambda.min.ratio=0.00000001)
+#plot(log(Stlasso2$lambda), AICc(Stlasso2))
+#which.min(AICc(Stlasso2))
+plot(Stlasso2)
+```
+
+
+```{r model4, echo = FALSE, warning = FALSE}
+Stbeta2 = coef(Stlasso2)
+
+p1 <- dimnames(Stbeta2)[[1]]
+p2 <- c()
+for (i in c(1:length(Stbeta2))){
+  p2 <- c(p2, as.list(Stbeta2)[[i]])
+}
+model4 = c("Streams ~ ")
+for (i in c(2:length(Stbeta2))){
+  if (p2[i] != 0){
+    if (model4 == "Streams ~ "){
+      model4 = paste(model4, p1[i])
+    }
+    else{
+      model4 = paste(model4,"+", p1[i])
+    }
+  }
+}
+model4 <- as.formula(model4)
+model4
+#optimal lambda
+#log(Stlasso1$lambda[which.min(AICc(Stlasso1))])
+#sum(Stbeta1!=0)
+#log(Stlasso2$lambda[which.min(AICc(Stlasso2))])
+#sum(Stbeta2!=0)
+```
+
+
+```{r tree, echo = FALSE, warning = FALSE}
+#trees and random forests
+# split into a training and testing set
+N = nrow(Clean_data)
+train_frac = 0.8
+N_train = floor(train_frac*N)
+N_test = N - N_train
+train_ind = sample.int(N, N_train, replace=FALSE) %>% sort
+Clean_data_train = Clean_data[train_ind,]
+Clean_data_test = Clean_data[-train_ind,]
+
+
+# 1. bagging:
+rmse_forest = c()
+for (K in c(1:27)){
+  forest1 = randomForest(Streams ~ ., mtry=K, nTree=50, data=Clean_data_train)
+  yhat_forest_test = predict(forest1, Clean_data_test)
+  rmse_foresttemp = mean((Clean_data_test$Streams - yhat_forest_test)^2) %>% sqrt
+  rmse_forest = c(rmse_forest, rmse_foresttemp)
+}
+a=which.min(rmse_forest)
+model5=randomForest(Streams ~ ., mtry=a, nTree=50, data=Clean_data_train)
+
+
+# 2. Boosting:
+boost1 = gbm(Streams ~ ., data=Clean_data_train, 
+             interaction.depth=2, n.trees=200, shrinkage=.05)
+#plot(Streams ~ energy, data=Clean_data_train)
+#points(predict(boost1, n.trees=500) ~ energy, data=Clean_data_train, pch=19, col='red')
+model6 = boost1
+```
+
+```{r K_fold, echo = FALSE, warning = FALSE}
+#k-fold cross validation
+N = nrow(Clean_data)
+# Create a vector of fold indicators
+K = 10
+fold_id = rep_len(1:K, N)  # repeats 1:K over and over again
+fold_id = sample(fold_id, replace=FALSE) # permute the order randomly
+step_err_save1 = rep(0, K)
+step_err_save2 = rep(0, K)
+lasso_err_save1 = rep(0, K)
+lasso_err_save2 = rep(0, K)
+bag_err_save = rep(0,K)
+boost_err_save = rep(0,K)
+for(i in 1:K) {
+  train_set = which(fold_id != i)
+  y_test = Clean_data$Streams[-train_set]
+  step_model1 = lm(model1, data=Clean_data[train_set,])
+  step_model2 = lm(model2, data=Clean_data[train_set,])
+  lasso_model1 = lm(model3, data=Clean_data[train_set,])
+  lasso_model2 = lm(model4, data=Clean_data[train_set,])
+  bag_model = randomForest(Streams ~ ., mtry=a, nTree=100, data=Clean_data[train_set,])
+  boost_model = gbm(Streams ~ ., data=Clean_data[train_set,], interaction.depth=2, n.trees=500, shrinkage=.05)
+  yhat_test1 = predict(step_model1, newdata=Clean_data[-train_set,])
+  step_err_save1[i] = mean((y_test - yhat_test1)^2)
+  yhat_test2 = predict(step_model2, newdata=Clean_data[-train_set,])
+  step_err_save2[i] = mean((y_test - yhat_test2)^2)
+  yhat_test3 = predict(lasso_model1, newdata=Clean_data[-train_set,])
+  lasso_err_save1[i] = mean((y_test - yhat_test3)^2)
+  yhat_test4 = predict(lasso_model2, newdata=Clean_data[-train_set,])
+  lasso_err_save2[i] = mean((y_test - yhat_test4)^2)
+  yhat_test5 = predict(bag_model, newdata=Clean_data[-train_set,])
+  bag_err_save[i] = mean((y_test - yhat_test5)^2)
+  yhat_test6 = predict(boost_model, newdata=Clean_data[-train_set,], n.trees=500)
+  boost_err_save[i] = mean((y_test - yhat_test6)^2)
+}
+
+# RMSE
+c(sqrt(mean(step_err_save1)), sqrt(mean(step_err_save2)), sqrt(mean(lasso_err_save1)), sqrt(mean(lasso_err_save2)), sqrt(mean(bag_err_save)), sqrt(mean(boost_err_save)))
+```
+
+```{r model2coef, echo = FALSE, warning = FALSE}
+table1 = summary(step_model2)
+kable(as.data.frame(table1["coefficients"]))
+```
+
+```{r pdp, echo = FALSE, warning = FALSE}
+# partial dependence plot: temp
+p1 = bag_model %>%
+  partial(pred.var = "danceability") %>% autoplot
+
+
+# partial dependence plot: temp
+p2 = bag_model %>%
+  partial(pred.var = "energy") %>% autoplot
+
+# partial dependence plot: hour
+p3 = bag_model %>%
+  partial(pred.var = "liveness") %>% autoplot
+
+# partial dependence plot: day
+p4 = bag_model %>%
+  partial(pred.var = "loudness") %>% autoplot
+
+# partial dependence plot: PC1
+p5 = bag_model %>%
+  partial(pred.var = "speechiness") %>% autoplot
+
+
+# partial dependence plot: PC5
+p6 = bag_model %>%
+  partial(pred.var = "key6") %>% autoplot
+multiplot(p1, p2, p3, p4, p5, p6, cols=2)
+
+```
 
 ## PCA and Clustering
 
@@ -203,9 +451,13 @@ ggpairs(XX,aes(col = as.factor(cluster_result2$cluster), alpha = 0.8))
 ```
 
 Cluster 1: High in energy, high in loudness, high danceability, low speechiness, considerate amount of G key, low acousticness
+
 Cluster 2: Many 5 quarter time signature songs, high in energy
+
 Cluster 3: Many songs with high energy, high on loudness
+
 Cluster 4: Many songs with high on loudness, high danceability, considerable amount of B flat key
+
 Cluster 5: Many 3 quarter time signature songs, low speechiness
 
 ### Song market segments breakdown by genre
@@ -225,7 +477,7 @@ Cluster 5: Many indie and pop songs with long vowel sounds, typical examples wou
 ### Trend in popularity
 We also calculated the total streams of different song clusters by time. The following graph shows the trend in the total streams of different categories.
 
-From this graph we can see that the stream of five types of songs doesn’t change too much in a year.  Cluster 1 music has more streams overall, due to the fact that there are more songs in this categories. There is a peak in the end of April in 2018 for cluster 1, and then the streams goes back to normal. From this graph we can also see that at the end of the year cluster 1 music is not as popular as in the middle of the year, but type 3 music becomes more and more popular, especially in july. The popularity of cluster 2, cluster 4 and cluster 5 music doesn’t change too much in the whole year. 
+From this graph we can see that the stream of five types of songs doesn’t change too much in a year.  Cluster 1 music has more streams overall, due to the fact that there are more songs in this categories. There is a peak in the end of April in 2018 for cluster 1, and then the streams goes back to normal. From this graph we can also see that at the end of the year cluster 1 music is not as popular as in the middle of the year, but type 3 music becomes more and more popular, especially in july and the end of the year. The popularity of cluster 2, cluster 4 and cluster 5 music doesn’t change too much in the whole year. 
 
 ```{r trend, echo = FALSE, warning = FALSE}
 #row.names(cluster_result2)

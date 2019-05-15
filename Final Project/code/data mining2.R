@@ -2,6 +2,7 @@ library(cluster)
 library(corrplot)
 library(plotly)
 library(tidyverse)
+library(ggplot2)
 library(GGally)
 library(LICORS) 
 library(gamlr)
@@ -136,7 +137,7 @@ model5=randomForest(Streams ~ ., mtry=a, nTree=100, data=Clean_data_train)
 library(gbm)
 boost1 = gbm(Streams ~ ., data=Clean_data_train, 
              interaction.depth=2, n.trees=500, shrinkage=.05)
-plot(Streams ~ energy, data=Clean_data_train)
+#plot(Streams ~ energy, data=Clean_data_train)
 points(predict(boost1, n.trees=500) ~ energy, data=Clean_data_train, pch=19, col='red')
 model6 = boost1
 
@@ -179,65 +180,37 @@ for(i in 1:K) {
 # RMSE
 c(sqrt(mean(step_err_save1)), sqrt(mean(step_err_save2)), sqrt(mean(lasso_err_save1)), sqrt(mean(lasso_err_save2)), sqrt(mean(bag_err_save)), sqrt(mean(boost_err_save)))
 
-
-yhat_test2 = predict(step_model2, newdata=Clean_data)
-yhat_test5 = predict(bag_model, newdata=Clean_data)
-ggplot()+
-  geom_point(aes(x = Clean_data$loudness, y = Clean_data$Streams))+
-  geom_point(aes(x = Clean_data$loudness, y = yhat_test2), col = "red", alpha = 0.5)+
-  geom_point(aes(x = Clean_data$loudness, y = yhat_test5), col = "blue", alpha = 0.5)
+table1 = summary(step_model2)
+kable(as.data.frame(table1["coefficients"]))
 
 
 
-library(tidyverse)
-library(randomForest)
-library(gbm)
 library(pdp)
 
-load_coast = read.csv('../data/load_coast.csv', row.names=1)
-N = nrow(load_coast)
-
-# split into a training and testing set
-train_frac = 0.8
-N_train = floor(train_frac*N)
-N_test = N - N_train
-train_ind = sample.int(N, N_train, replace=FALSE) %>% sort
-load_train = load_coast[train_ind,]
-load_test = load_coast[-train_ind,]
-
-# random forests
-# average over 25 bootstrap samples
-# 5 candidate variables (mtry=5) in each bootstrapped sample
-forest2 = randomForest(COAST ~ ., data = load_train, mtry = 5, ntree=100)
-yhat_forest2 = predict(forest2, load_test)
-rmse_forest2 = mean((yhat_forest2 - load_test$COAST)^2) %>% sqrt
-
 # partial dependence plot: temp
-forest2 %>%
-  partial(pred.var = "KHOU_temp") %>% autoplot
+p1 = bag_model %>%
+  partial(pred.var = "danceability") %>% autoplot
 
 
 # partial dependence plot: temp
-forest2 %>%
-  partial(pred.var = "KHOU_dewpoint") %>% autoplot
+p2 = bag_model %>%
+  partial(pred.var = "energy") %>% autoplot
 
 # partial dependence plot: hour
-forest2 %>%
-  partial(pred.var = "hour") %>% autoplot
+p3 = bag_model %>%
+  partial(pred.var = "liveness") %>% autoplot
 
 # partial dependence plot: day
-forest2 %>%
-  partial(pred.var = "day") %>% autoplot
+p4 = bag_model %>%
+  partial(pred.var = "loudness") %>% autoplot
 
 # partial dependence plot: PC1
-forest2 %>%
-  partial(pred.var = "PC1") %>% autoplot
+p5 = bag_model %>%
+  partial(pred.var = "speechiness") %>% autoplot
 
 
 # partial dependence plot: PC5
-forest2 %>%
-  partial(pred.var = "PC5") %>% autoplot
-
-
-
+p6 = bag_model %>%
+  partial(pred.var = "key6") %>% autoplot
+multiplot(p1, p2, p3, p4, p5, p6, cols=2)
 

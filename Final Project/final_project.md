@@ -96,6 +96,78 @@ Table1: Variable Descriptions
 
 The explanation of the variables comes from the following link: <https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/> Although this project only run on the dataset of 2018, we can do similar analysis for spotify for more songs and more recent data with similar method.
 
+    ## Streams ~ danceability + speechiness + explicitTRUE + key8
+
+    ## Streams ~ duration_ms_x + acousticness + danceability + energy + 
+    ##     liveness + loudness + mode + speechiness + valence + key6 + 
+    ##     key8 + key10 + explicitTRUE + relseaseDuration + explicitTRUE:relseaseDuration + 
+    ##     valence:explicitTRUE + duration_ms_x:key8 + energy:liveness + 
+    ##     acousticness:liveness + mode:speechiness + mode:key10 + speechiness:explicitTRUE + 
+    ##     liveness:key6 + acousticness:energy + valence:key6 + mode:key6 + 
+    ##     danceability:key8 + key8:explicitTRUE + valence:key8 + speechiness:key8
+
+![](final_project_files/figure-markdown_github/pathplot3-1.png)
+
+    ## Streams ~ danceability + speechiness + key8 + explicitTRUE + 
+    ##     relseaseDuration
+
+![](final_project_files/figure-markdown_github/pathplot4-1.png)
+
+    ## Streams ~ danceability + danceability:time_signature4 + danceability:explicitTRUE + 
+    ##     energy:speechiness + speechiness:relseaseDuration + key8:explicitTRUE + 
+    ##     time_signature4:explicitTRUE
+
+    ## Distribution not specified, assuming gaussian ...
+
+    ## Distribution not specified, assuming gaussian ...
+    ## Distribution not specified, assuming gaussian ...
+    ## Distribution not specified, assuming gaussian ...
+    ## Distribution not specified, assuming gaussian ...
+    ## Distribution not specified, assuming gaussian ...
+    ## Distribution not specified, assuming gaussian ...
+    ## Distribution not specified, assuming gaussian ...
+    ## Distribution not specified, assuming gaussian ...
+    ## Distribution not specified, assuming gaussian ...
+    ## Distribution not specified, assuming gaussian ...
+
+    ## [1] 34861269 34583941 34849850 34820011 34618342 34914735
+
+|                               |  coefficients.Estimate|  coefficients.Std..Error|  coefficients.t.value|  coefficients.Pr...t..|
+|-------------------------------|----------------------:|------------------------:|---------------------:|----------------------:|
+| (Intercept)                   |           1.140462e+07|             1.451707e+07|             0.7856007|              0.4322428|
+| duration\_ms\_x               |          -2.302173e+01|             2.060254e+01|            -1.1174219|              0.2640178|
+| acousticness                  |           4.443487e+06|             1.358047e+07|             0.3271969|              0.7435710|
+| danceability                  |           2.404583e+07|             8.182758e+06|             2.9385973|              0.0033544|
+| energy                        |           6.793030e+06|             1.422992e+07|             0.4773767|              0.6331731|
+| liveness                      |           1.496744e+08|             3.930043e+07|             3.8084674|              0.0001463|
+| loudness                      |           1.181442e+06|             6.012029e+05|             1.9651304|              0.0496091|
+| mode                          |           6.088800e+06|             3.053952e+06|             1.9937446|              0.0463859|
+| speechiness                   |           2.154659e+07|             1.780755e+07|             1.2099690|              0.2265079|
+| valence                       |          -2.187674e+07|             7.722874e+06|            -2.8327203|              0.0046857|
+| key6                          |           2.892070e+06|             1.113720e+07|             0.2596765|              0.7951539|
+| key8                          |          -2.342799e+07|             2.361419e+07|            -0.9921151|              0.3213236|
+| key10                         |          -5.988868e+06|             4.280707e+06|            -1.3990372|              0.1620373|
+| explicitTRUE                  |          -1.135980e+08|             3.007322e+07|            -3.7773811|              0.0001656|
+| relseaseDuration              |          -1.962746e+00|             3.425947e+02|            -0.0057291|              0.9954298|
+| explicitTRUE:relseaseDuration |           1.468476e+04|             3.904863e+03|             3.7606331|              0.0001769|
+| valence:explicitTRUE          |           2.451811e+07|             9.206285e+06|             2.6631926|              0.0078347|
+| duration\_ms\_x:key8          |           1.624178e+02|             7.129942e+01|             2.2779685|              0.0228881|
+| energy:liveness               |          -1.902833e+08|             5.196448e+07|            -3.6617947|              0.0002604|
+| acousticness:liveness         |          -1.338086e+08|             3.846141e+07|            -3.4790356|              0.0005196|
+| mode:speechiness              |          -2.584703e+07|             1.445181e+07|            -1.7884978|              0.0739255|
+| mode:key10                    |           7.638239e+06|             6.888008e+06|             1.1089185|              0.2676678|
+| speechiness:explicitTRUE      |          -4.126666e+07|             1.870125e+07|            -2.2066260|              0.0275122|
+| liveness:key6                 |           6.680831e+07|             3.080819e+07|             2.1685246|              0.0302973|
+| acousticness:energy           |           3.767796e+07|             2.233166e+07|             1.6871993|              0.0918018|
+| valence:key6                  |          -3.243932e+07|             1.936793e+07|            -1.6748986|              0.0941915|
+| mode:key6                     |           1.352786e+07|             8.023182e+06|             1.6860971|              0.0920140|
+| danceability:key8             |          -5.022478e+07|             2.383914e+07|            -2.1068201|              0.0353219|
+| key8:explicitTRUE             |           2.632320e+07|             9.186314e+06|             2.8654799|              0.0042299|
+| valence:key8                  |           4.048841e+07|             1.606122e+07|             2.5208805|              0.0118235|
+| speechiness:key8              |          -2.803594e+07|             2.610494e+07|            -1.0739704|              0.2830327|
+
+![](final_project_files/figure-markdown_github/pdp-1.png)
+
 PCA and Clustering
 ------------------
 
@@ -162,7 +234,15 @@ Song market segments breakdown by distribution of features After the 5 clusters 
 
 ![](final_project_files/figure-markdown_github/PC3-1.png)
 
-Cluster 1: High in energy, high in loudness, high danceability, low speechiness, considerate amount of G key, low acousticness Cluster 2: Many 5 quarter time signature songs, high in energy Cluster 3: Many songs with high energy, high on loudness Cluster 4: Many songs with high on loudness, high danceability, considerable amount of B flat key Cluster 5: Many 3 quarter time signature songs, low speechiness
+Cluster 1: High in energy, high in loudness, high danceability, low speechiness, considerate amount of G key, low acousticness
+
+Cluster 2: Many 5 quarter time signature songs, high in energy
+
+Cluster 3: Many songs with high energy, high on loudness
+
+Cluster 4: Many songs with high on loudness, high danceability, considerable amount of B flat key
+
+Cluster 5: Many 3 quarter time signature songs, low speechiness
 
 ### Song market segments breakdown by genre
 
@@ -182,7 +262,7 @@ Cluster 5: Many indie and pop songs with long vowel sounds, typical examples wou
 
 We also calculated the total streams of different song clusters by time. The following graph shows the trend in the total streams of different categories.
 
-From this graph we can see that the stream of five types of songs doesn’t change too much in a year. Cluster 1 music has more streams overall, due to the fact that there are more songs in this categories. There is a peak in the end of April in 2018 for cluster 1, and then the streams goes back to normal. From this graph we can also see that at the end of the year cluster 1 music is not as popular as in the middle of the year, but type 3 music becomes more and more popular, especially in july. The popularity of cluster 2, cluster 4 and cluster 5 music doesn’t change too much in the whole year.
+From this graph we can see that the stream of five types of songs doesn’t change too much in a year. Cluster 1 music has more streams overall, due to the fact that there are more songs in this categories. There is a peak in the end of April in 2018 for cluster 1, and then the streams goes back to normal. From this graph we can also see that at the end of the year cluster 1 music is not as popular as in the middle of the year, but type 3 music becomes more and more popular, especially in july and the end of the year. The popularity of cluster 2, cluster 4 and cluster 5 music doesn’t change too much in the whole year.
 
 ![](final_project_files/figure-markdown_github/trend-1.png)
 
