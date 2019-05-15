@@ -17,7 +17,7 @@ The dataset that we used comes from Spotify.com. Spotify is one of the biggest d
 
 Thanks to Spotify's public API, we also have access to the data on the song features. We used python robot to gather the data of song features, artists information and album information. In the end, the formal dataset includes the following variables:
 
-Table1: Variable Descriptions
+<b>Table1: Variable Descriptions</b>
 
 <table style="width:56%;">
 <colgroup>

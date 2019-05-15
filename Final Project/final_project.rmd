@@ -32,7 +32,7 @@ By Chong Wang, Tianping Wu, Zhenning Zhao, Zhiyang Lin
 
 Popular music market is remarkably large, especially in recent years. Pop songs inspire generations from all walks of life. Every day, oceans of pop tracks jump on to the Top 200 List of Spotify. In this project, we analysed the data of the 2018 popular music database from Spotify.com, with the aim of helping digital music servers to improve playlist song recommendations, and, helping record companies to make album promotion decisions according to the predictions on the playing streams.
 
-This project mainly answered the following questions: first, predict the streams of the tracks; and second, analysis the pattern of the popularity trend. As for the first question, we used stepwise method, the lasso method and the random forest and boosting to build a prediction model of track streams, with the features of the songs and the albums as predictors. As for the second question, we firstly used PCA and K-means to cluster the songs by features, dividing songs into different categories; then we plotted the trend of the popularity of different types of songs, showing the changes in the trend of listener¡¯s tastes.
+This project mainly answered the following questions: first, predict the streams of the tracks; and second, analysis the pattern of the popularity trend. As for the first question, we used stepwise method, the lasso method and the random forest and boosting to build a prediction model of track streams, with the features of the songs and the albums as predictors. As for the second question, we firstly used PCA and K-means to cluster the songs by features, dividing songs into different categories; then we plotted the trend of the popularity of different types of songs, showing the changes in the trend of listener??s tastes.
 
 
 ## Data
@@ -114,7 +114,7 @@ The dataset that we used comes from Spotify.com. Spotify is one of the biggest d
 
 Thanks to Spotify's public API, we also have access to the data on the song features. We used python robot to gather the data of song features, artists information and album information. In the end, the formal dataset includes the following variables:
 
-<b>Table1: Variable Descriptions<b>
+<b>Table1: Variable Descriptions</b>
 
 |  variables   |   descriptions    |
 |----------------|----------------------|
@@ -123,14 +123,14 @@ Thanks to Spotify's public API, we also have access to the data on the song feat
 |acousticness|A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 1.0 represents high confidence the track is acoustic.|
 |danceability|Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable.|
 |energy|Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.|
-|instrumentalness|Predicts whether a track contains no vocals. â€œOohâ€? and â€œaahâ€? sounds are treated as instrumental in this context. Rap or spoken word tracks are clearly â€œvocalâ€?. The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.|
+|instrumentalness|Predicts whether a track contains no vocals. â€œOoh??? and â€œaah??? sounds are treated as instrumental in this context. Rap or spoken word tracks are clearly â€œvocal???. The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.|
 | liveness|Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 0.8 provides strong likelihood that the track is live.|
 |loudness|The overall loudness of a track in decibels (dB). Loudness values are averaged across the entire track and are useful for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). Values typical range between -60 and 0 db.|
 |mode|Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.|
 |speechiness|Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks.|
 | tempo|The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.|
 |valence|A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).|
-|key|The estimated overall key of the track. Integers map to pitches using standard Pitch Class notation . E.g. 0 = C, 1 = Câ™?/Dâ™?, 2 = D, and so on. If no key was detected, the value is -1.|
+|key|The estimated overall key of the track. Integers map to pitches using standard Pitch Class notation . E.g. 0 = C, 1 = C???/D???, 2 = D, and so on. If no key was detected, the value is -1.|
 |time_signature|An estimated overall time signature of a track. The time signature (meter) is a notational convention to specify how many beats are in each bar (or measure).|
 |relseaseDuration|The duration since the date the album was first released till the end of 2018.|
 
@@ -371,7 +371,7 @@ From model 5, we got the Partial dependence functions of the song features, and 
 
 ###  General methodologies
 
-In this section we would like to segment the 1,497 songs into groups with similar features in order to recommend to listeners who share the same interests/taste. For the reason of reducing unnecessary noises and computations, we first reduced the initial 27 variables by PCA. Next, we clustered them into groups with similar principle components, and based on the features in each principal component and the actual songs in each cluster, we were able to describe them in secular terminologies such as ¡°genre¡±. 
+In this section we would like to segment the 1,497 songs into groups with similar features in order to recommend to listeners who share the same interests/taste. For the reason of reducing unnecessary noises and computations, we first reduced the initial 27 variables by PCA. Next, we clustered them into groups with similar principle components, and based on the features in each principal component and the actual songs in each cluster, we were able to describe them in secular terminologies such as ??genre??. 
 
 ```{r cluster_steup, echo = FALSE, warning = FALSE}
 Clean_data <- subset(sounddata_2018, select = -c(releaseDate, artist_name, album_name, explicit, is_local, name, popularity, key0, key, time_signature, time_signature1, explicitFALSE, explicitTRUE, Streams, relseaseDuration))
@@ -414,6 +414,8 @@ In the table above, we see that the first 20 principle components explain more t
 
 K-means++ clustering was used to determine our market segments. 3 types of supporting analysis were used to help us determine the the number of them(centroids): Elbow plot(SSE), CH index and Gap statistics.
 
+Figure4: SSE Grid vs K
+
 ```{r K-grid, echo = FALSE, warning = FALSE}
 pca_result = as.data.frame(pca$x)
 pca_top_data <- subset(pca_result, select = -c(21:25))
@@ -425,8 +427,10 @@ SSE_grid = foreach(k = k_grid, .combine='c') %do% {
   cluster_k$tot.withinss
 }
 
-plot(k_grid, SSE_grid, xlab="K",ylab="SSE Grid", title="SSE Grid vs K")
+plot(k_grid, SSE_grid, xlab="K",ylab="SSE Grid")
 ```
+
+Figure5: CH Grid vs K
 
 ```{r CH-grid, echo = FALSE, warning = FALSE}
 #CH-grid to find the optimal K  **16
@@ -439,8 +443,7 @@ CH_grid = foreach(k = k_grid, .combine='c') %do% {
 }
 
 plot(k_grid, CH_grid, xlab="K",
-     ylab="CH Grid",
-     title="CH Grid vs K")
+     ylab="CH Grid")
 ```
 
 ```{r Gap, echo = FALSE, warning = FALSE}
@@ -449,7 +452,7 @@ Market_gap = clusGap(pca_top_data, FUN = kmeans, nstart = 40, K.max = 20, B = 10
 plot(Market_gap)
 ```
 
-As shown above, both elbow plot and CH index returned K=16 and gap statistics K=4. Clustering 16 segments would not show us distinct differences among them as we now only have 20 principle components to allocate. So we selected K=4 as our anchor and explored the nearby Ks to see which one provides us the best explanation for each cluster.  By ¡°best explanation¡±, we considered the following 2 categories.
+As shown above, both elbow plot and CH index returned K=16 and gap statistics K=4. Clustering 16 segments would not show us distinct differences among them as we now only have 20 principle components to allocate. So we selected K=4 as our anchor and explored the nearby Ks to see which one provides us the best explanation for each cluster.  By ??best explanation??, we considered the following 2 categories.
 
 - Clusters that have songs with clear and unique distribution in any of the 20 features.
 
