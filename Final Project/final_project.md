@@ -96,6 +96,17 @@ Table1: Variable Descriptions
 
 The explanation of the variables comes from the following link: <https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/> Although this project only run on the dataset of 2018, we can do similar analysis for spotify for more songs and more recent data with similar method.
 
+PCA and Clustering
+------------------
+
+### General methodologies
+
+We would like to segment the 1,497 songs into groups with similar features in order to recommend to listeners who share the same interests/taste. For the reason of reducing unnecessary noises and computations, we first reduced the initial 27 variables by PCA. Next, we clustered them into groups with similar principle components, and based on the features in each principal component and the actual songs in each cluster, we were able to describe them in secular terminologies such as “genre”.
+
+### PCA
+
+We would like to use PCA to balance between the amount of computation load and explanatory variability, while eliminating as much noise as possible from our data. After centering and scaling of the data, we calculated the the loading matrix/scores matrix in order to derive the proportion of variance explained (PVE) and decide the number of principal components needed.
+
 | ID   | Standard deviation  | Proportion of Variance | Cumulative Proportion |
 |:-----|:--------------------|:-----------------------|:----------------------|
 | PC1  | 2.80212353537273    | 0.112084941414909      | 0.1121                |
@@ -124,11 +135,26 @@ The explanation of the variables comes from the following link: <https://develop
 | PC24 | 0.100442731001129   | 0.00401770924004517    | 0.9997                |
 | PC25 | 0.00698743489964209 | 0.000279497395985684   | 1                     |
 
+In the table above, we see that the first 20 principle components explain more than 90% of the variability. We believe that these 20 principle components would keep our computation load low and eliminate some of the noises, while keeping the majority of the variability. Clustering would further group our songs based on these 20 principle components.
+
+### Clustering
+
+K-means++ clustering was used to determine our market segments. 3 types of supporting analysis were used to help us determine the the number of them(centroids): Elbow plot(SSE), CH index and Gap statistics.
+
 ![](final_project_files/figure-markdown_github/K-grid-1.png)
 
 ![](final_project_files/figure-markdown_github/CH-grid-1.png)
 
 ![](final_project_files/figure-markdown_github/Gap-1.png)
+
+As shown above, both elbow plot and CH index returned K=16 and gap statistics K=4. Clustering 16 segments would not show us distinct differences among them as we now only have 20 principle components to allocate. So we selected K=4 as our anchor and explored the nearby Ks to see which one provides us the best explanation for each cluster. By “best explanation”, we considered the following 2 categories.
+
+-   Clusters that have songs with clear and unique distribution in any of the 20 features.
+-   Clusters that have songs with clear genre by their artist name and actual music.(we played a considerable quantity of sample size from each cluster on Youtube to confirm this)
+
+As the result, we eventually picked K = 5.
+
+Song market segments breakdown by distribution of features After the 5 clusters are determined, we reversed the principle components into the original features to determine cluster characteristics. We show some of the cluster identifiable distributions and the summary of each cluster below.
 
 ![](final_project_files/figure-markdown_github/PC1-1.png)
 
@@ -136,4 +162,31 @@ The explanation of the variables comes from the following link: <https://develop
 
 ![](final_project_files/figure-markdown_github/PC3-1.png)
 
+Cluster 1: High in energy, high in loudness, high danceability, low speechiness, considerate amount of G key, low acousticness Cluster 2: Many 5 quarter time signature songs, high in energy Cluster 3: Many songs with high energy, high on loudness Cluster 4: Many songs with high on loudness, high danceability, considerable amount of B flat key Cluster 5: Many 3 quarter time signature songs, low speechiness
+
+### Song market segments breakdown by genre
+
+Since we have the full list of song names and artist names available in each cluster, we could actually listen to the songs and categorize them manually by the music genre standard as in pop, rock, rap, etc. If our cluster characteristics determined by K-means++ show close resemblance of the music genre, then our recommendation system may be effective, at least to the extent of traditional music listeners with distinct preference over specific genre.
+
+Cluster 1: Many songs with electronically altered/amplified sounds, very rhythmic, but genre varying from pop to rap to country, etc. Typical examples would be I Get The Bag by Gucci Mane, Echame La Culpa by Luis Fonsi, IDGAF by Dua Lipa.
+
+Cluster 2: Indeed many songs with 5/4 time signature, high energy and rhythmic, but clearly sets apart different vibe compared cluster 1, perhaps due to the different time signature. Typical examples would be Top Off by DJ Khaled, You Can Cry by Marshmello, and Creep on me by GASHI.
+
+Cluster 3: Genre varies a lot in this cluster, as shown in the very different artists such as Drake, Kendrick Lamar, Taylor Swift, XXXTENTACION and Queen. We did realize that out of the many rap songs in this cluster, most of them were the “slower” ones. For example, Wow by Post Malone and Forever Ever by Trippie Redd.
+
+Cluster 4: Songs in B flat key stands out, such as Betrayed by Lil Xan and Midnight Summer Jam by Justin Timberlake, which make this cluster a different vibe than others.
+
+Cluster 5: Many indie and pop songs with long vowel sounds, typical examples would be A Million Dreams by Ziv Zaifman, Perfect by Ed Sheeran and The Night We met by Lord Huron.
+
+### Trend in popularity
+
+We also calculated the total streams of different song clusters by time. The following graph shows the trend in the total streams of different categories.
+
+From this graph we can see that the stream of five types of songs doesn’t change too much in a year. Cluster 1 music has more streams overall, due to the fact that there are more songs in this categories. There is a peak in the end of April in 2018 for cluster 1, and then the streams goes back to normal. From this graph we can also see that at the end of the year cluster 1 music is not as popular as in the middle of the year, but type 3 music becomes more and more popular, especially in july. The popularity of cluster 2, cluster 4 and cluster 5 music doesn’t change too much in the whole year.
+
 ![](final_project_files/figure-markdown_github/trend-1.png)
+
+Conclusion
+----------
+
+Traditionally music listeners explore songs by specific genre and artists. This confirmation bias, typically nurtured through years of artificial genre segmentation by media and artist reputation, could be limiting listeners from the songs that they really want to exposed to. The question of “Why are we attracted to certain songs?” is a philosophical discussion that is beyond the scope of our project here, but given the data from spotify data and our clustering method, we perhaps show that key, time signature and speed of the songs are some of the contributing factors to our inner biological working of what to like and dislike. Then, our basic recommendation system, most likely already used by music industry like Spotify, could recommend songs not by mere genre and artist names, but also by specific keys and time signatures each listener is attracted to, subconsciously.
