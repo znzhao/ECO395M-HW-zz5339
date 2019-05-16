@@ -263,7 +263,7 @@ In the table above, we see that the first 20 principle components explain more t
 
 K-means++ clustering was used to determine our market segments. 3 types of supporting analysis were used to help us determine the number of K (centroids): Elbow plot(SSE), CH index and Gap statistics.
 
-Figure4: SSE Grid vs K
+<b>Figure4: SSE Grid vs K</b>
 
 ![](final_project_files/figure-markdown_github/K-grid-1.png)
 
