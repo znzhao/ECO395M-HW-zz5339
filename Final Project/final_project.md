@@ -3,6 +3,11 @@ The Streams Analysis of Pop Music in 2018
 
 By Chong Wang, Tianping Wu, Zhenning Zhao, Zhiyang Lin
 
+Abstract
+--------
+
+that we gathered from Spotify.com. We built linear and non-linear prediction models of the total steams of the songs, and improved the performance of the prediction comparing with the baseline model. We also segmented the songs into 5 groups through unsupervised algorithm, and assessed the popularity trend of different groups through the entire year. The result of this project can help digital music servers improve playlist song recommendations, and help record companies make album promotion decisions.
+
 Introduction
 ------------
 
@@ -154,14 +159,14 @@ Afterwards, we used the decision tree models to assemble the best predictive mod
 
 Table2: RMSE of different models
 
-| t1      | t2               |
+| Model   | CV               |
 |:--------|:-----------------|
-| Model 1 | 34814856.692731  |
-| Model 2 | 34516858.7946194 |
-| Model 3 | 34800827.1259022 |
-| Model 4 | 34801152.3908246 |
-| Model 5 | 34944265.8389199 |
-| Model 6 | 34813307.0549766 |
+| Model 1 | 34840435.179146  |
+| Model 2 | 34564106.5343185 |
+| Model 3 | 34826041.1398837 |
+| Model 4 | 34851764.9504253 |
+| Model 5 | 34718963.619308  |
+| Model 6 | 34751194.4492581 |
 
 Lastly, we used k-fold cross validation in order to compare 6 models above. We found that the CVs of model 2 has the minimum CV, and therefore it is our best predictive model possible for streams. The advantage of a linear model is that a linear model with interactions is much easier to interpret than the non-linear models.
 
@@ -171,37 +176,37 @@ Table3: coefficients of model 2
 
 |                               |  coefficients.Estimate|  coefficients.Std..Error|  coefficients.t.value|  coefficients.Pr...t..|
 |-------------------------------|----------------------:|------------------------:|---------------------:|----------------------:|
-| (Intercept)                   |           1.610315e+07|             1.527626e+07|             1.0541292|              0.2920171|
-| duration\_ms\_x               |          -2.782328e+01|             2.138038e+01|            -1.3013464|              0.1933675|
-| acousticness                  |          -8.409955e+05|             1.430565e+07|            -0.0587876|              0.9531302|
-| danceability                  |           2.420147e+07|             8.436447e+06|             2.8686806|              0.0041876|
-| energy                        |           1.993447e+05|             1.484666e+07|             0.0134269|              0.9892892|
-| liveness                      |           1.367288e+08|             4.027370e+07|             3.3949891|              0.0007067|
-| loudness                      |           1.359647e+06|             6.213027e+05|             2.1883815|              0.0288170|
-| mode                          |           6.927869e+06|             3.151175e+06|             2.1985035|              0.0280867|
-| speechiness                   |           2.833149e+07|             1.937353e+07|             1.4623813|              0.1438753|
-| valence                       |          -1.798842e+07|             7.892760e+06|            -2.2791039|              0.0228203|
-| key6                          |           8.023674e+06|             1.071018e+07|             0.7491636|              0.4538924|
-| key8                          |          -1.776449e+07|             2.607050e+07|            -0.6814017|              0.4957371|
-| key10                         |          -7.913282e+06|             4.349166e+06|            -1.8194941|              0.0690630|
-| explicitTRUE                  |          -7.784787e+07|             2.590728e+07|            -3.0048646|              0.0027072|
-| relseaseDuration              |           6.000073e+00|             3.436813e+02|             0.0174582|              0.9860737|
-| explicitTRUE:relseaseDuration |           9.868721e+03|             3.331921e+03|             2.9618709|              0.0031126|
-| valence:explicitTRUE          |           2.624880e+07|             9.407662e+06|             2.7901511|              0.0053443|
-| duration\_ms\_x:key8          |           1.798120e+02|             7.808314e+01|             2.3028274|              0.0214438|
-| energy:liveness               |          -1.747848e+08|             5.332286e+07|            -3.2778593|              0.0010733|
-| acousticness:liveness         |          -1.182352e+08|             3.916593e+07|            -3.0188269|              0.0025863|
-| mode:speechiness              |          -3.595017e+07|             1.481408e+07|            -2.4267571|              0.0153679|
-| mode:key10                    |           1.897850e+07|             7.038272e+06|             2.6964712|              0.0070972|
-| speechiness:explicitTRUE      |          -4.084091e+07|             1.986392e+07|            -2.0560346|              0.0399759|
-| liveness:key6                 |           5.186566e+07|             3.074621e+07|             1.6868962|              0.0918601|
-| acousticness:energy           |           3.890194e+07|             2.336503e+07|             1.6649642|              0.0961578|
-| valence:key6                  |          -3.923775e+07|             1.829996e+07|            -2.1441437|              0.0322040|
-| mode:key6                     |           1.041353e+07|             7.833259e+06|             1.3294000|              0.1839463|
-| danceability:key8             |          -5.685399e+07|             2.548938e+07|            -2.2304971|              0.0258824|
-| key8:explicitTRUE             |           2.773616e+07|             9.606567e+06|             2.8872083|              0.0039502|
-| valence:key8                  |           2.938672e+07|             1.694164e+07|             1.7345846|              0.0830484|
-| speechiness:key8              |          -3.423017e+07|             2.630103e+07|            -1.3014762|              0.1933231|
+| (Intercept)                   |           1.939546e+07|             1.424285e+07|             1.3617677|              0.1735041|
+| duration\_ms\_x               |          -1.285396e+01|             2.061053e+01|            -0.6236600|              0.5329589|
+| acousticness                  |          -1.132336e+06|             1.357940e+07|            -0.0833863|              0.9335570|
+| danceability                  |           1.930377e+07|             8.110417e+06|             2.3801207|              0.0174486|
+| energy                        |          -5.905232e+06|             1.405362e+07|            -0.4201930|              0.6744130|
+| liveness                      |           1.151387e+08|             3.754734e+07|             3.0664944|              0.0022100|
+| loudness                      |           1.365591e+06|             5.822997e+05|             2.3451678|              0.0191663|
+| mode                          |           6.464018e+06|             3.005014e+06|             2.1510778|              0.0316515|
+| speechiness                   |           3.002956e+07|             1.770453e+07|             1.6961508|              0.0900936|
+| valence                       |          -1.736114e+07|             7.658709e+06|            -2.2668494|              0.0235610|
+| key6                          |           1.542874e+06|             1.062235e+07|             0.1452479|              0.8845374|
+| key8                          |           1.275097e+07|             2.373965e+07|             0.5371171|              0.5912774|
+| key10                         |          -6.852558e+06|             4.138133e+06|            -1.6559541|              0.0979693|
+| explicitTRUE                  |          -6.633616e+07|             2.521885e+07|            -2.6304197|              0.0086274|
+| relseaseDuration              |           9.661472e+01|             3.460742e+02|             0.2791734|              0.7801556|
+| explicitTRUE:relseaseDuration |           8.419318e+03|             3.241924e+03|             2.5970126|              0.0095086|
+| valence:explicitTRUE          |           2.394169e+07|             9.072348e+06|             2.6389734|              0.0084139|
+| duration\_ms\_x:key8          |           5.472764e+01|             7.150119e+01|             0.7654087|              0.4441653|
+| energy:liveness               |          -1.448993e+08|             5.006177e+07|            -2.8944107|              0.0038613|
+| acousticness:liveness         |          -1.308889e+08|             3.908219e+07|            -3.3490662|              0.0008338|
+| mode:speechiness              |          -3.257587e+07|             1.400231e+07|            -2.3264647|              0.0201449|
+| mode:key10                    |           1.534371e+07|             6.877201e+06|             2.2310980|              0.0258424|
+| speechiness:explicitTRUE      |          -3.867105e+07|             1.857743e+07|            -2.0816152|              0.0375704|
+| liveness:key6                 |           5.508033e+07|             3.014694e+07|             1.8270622|              0.0679166|
+| acousticness:energy           |           4.304442e+07|             2.244087e+07|             1.9181261|              0.0553111|
+| valence:key6                  |          -2.779565e+07|             1.810757e+07|            -1.5350291|              0.1250169|
+| mode:key6                     |           1.410961e+07|             7.858246e+06|             1.7955160|              0.0728007|
+| danceability:key8             |          -5.389169e+07|             2.384875e+07|            -2.2597284|              0.0240009|
+| key8:explicitTRUE             |           2.201661e+07|             9.272133e+06|             2.3744920|              0.0177157|
+| valence:key8                  |           1.788809e+07|             1.643636e+07|             1.0883242|              0.2766511|
+| speechiness:key8              |          -3.372025e+07|             2.543891e+07|            -1.3255381|              0.1852226|
 
 From model 2, we can clearly see that danceability, energy, liveness, loudness, mode, spechiness and key6 have positive effects on streams, which means the more these factors used in the song, the more people the song will be played by. Also, we need to pay attention to release duration of the album . The longer the release duration is, the song will be played by less people, which means people prefer to play latest songs on Spotify.
 

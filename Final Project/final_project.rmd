@@ -28,6 +28,10 @@ library(gbm)
 
 By Chong Wang, Tianping Wu, Zhenning Zhao, Zhiyang Lin
 
+## Abstract
+
+that we gathered from Spotify.com. We built linear and non-linear prediction models of the total steams of the songs, and improved the performance of the prediction comparing with the baseline model. We also segmented the songs into 5 groups through unsupervised algorithm, and assessed the popularity trend of different groups through the entire year. The result of this project can help digital music servers improve playlist song recommendations, and help record companies make album promotion decisions.
+
 ## Introduction
 
 Popular music market is remarkably large, especially in recent years. Pop songs inspire generations from all walks of life. Every day, oceans of pop tracks jump on to the Top 200 List of Spotify. In this project, we analysed the data of the 2018 popular music database from Spotify.com, with the aim of helping digital music servers to improve playlist song recommendations, and, helping record companies to make album promotion decisions according to the predictions on the playing streams.
@@ -323,6 +327,7 @@ for(i in 1:K) {
 t1 = c("Model 1","Model 2","Model 3","Model 4","Model 5","Model 6" )
 t2 = c(sqrt(mean(step_err_save1)), sqrt(mean(step_err_save2)), sqrt(mean(lasso_err_save1)), sqrt(mean(lasso_err_save2)), sqrt(mean(bag_err_save)), sqrt(mean(boost_err_save)))
 table1 = cbind(t1,t2)
+colnames(table1)<- c("Model", "CV")
 kable(table1)
 ```
 
