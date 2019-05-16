@@ -157,7 +157,7 @@ Thus, we used the model at the segment 5 and chose 8 coefficients. The specific 
 
 Afterwards, we used the decision tree models to assemble the best predictive model possible for streams. We tried the random forest model and the boosting model on the dataset, which gave us 2 non-linear models: model 5 and model 6.
 
-Table2: RMSE of different models
+<b>Table2: RMSE of different models</b>
 
 | Model   | CV               |
 |:--------|:-----------------|
@@ -172,7 +172,7 @@ Lastly, we used k-fold cross validation in order to compare 6 models above. We f
 
 The second best model was model 5, which came from the random forest method. The random forest model has one advantage over the linear regression: it will only give us positive predictions. As a result, we used both model 2 and model 5 to do the predictions.
 
-Table3: coefficients of model 2
+<b>Table3: coefficients of model 2</b>
 
 |                               |  coefficients.Estimate|  coefficients.Std..Error|  coefficients.t.value|  coefficients.Pr...t..|
 |-------------------------------|----------------------:|------------------------:|---------------------:|----------------------:|
@@ -227,7 +227,7 @@ In this section we would like to segment the 1,497 songs into groups with simila
 
 We would like to use PCA to balance between the amount of computation load and explanatory variability, while eliminating as much noise as possible from our data. After centering and scaling of the data, we calculated the the loading matrix/scores matrix in order to derive the proportion of variance explained (PVE) and decide the number of principal components needed.
 
-Table4: PCA components
+<b>Table4: PCA components</b>
 
 | ID   | Standard deviation  | Proportion of Variance | Cumulative Proportion |
 |:-----|:--------------------|:-----------------------|:----------------------|

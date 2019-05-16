@@ -286,7 +286,7 @@ boost1 = gbm(Streams ~ ., data=Clean_data_train,
 model6 = boost1
 ```
 
-Table2: RMSE of different models
+<b>Table2: RMSE of different models</b>
 
 ```{r K_fold, echo = FALSE, warning = FALSE}
 #k-fold cross validation
@@ -337,7 +337,7 @@ Lastly, we used k-fold cross validation in order to compare 6 models above. We f
 The second best model was model 5, which came from the random forest method. The random forest model has one advantage over the linear regression: it will only give us positive predictions. As a result, we used both model 2 and model 5 to do the predictions.
 
 
-Table3: coefficients of model 2
+<b>Table3: coefficients of model 2</b>
 
 ```{r model2coef, echo = FALSE, warning = FALSE}
 table1 = summary(step_model2)
@@ -400,7 +400,7 @@ cor=cor(Clean_data_scaled)
 
 We would like to use PCA to balance between the amount of computation load and explanatory variability, while eliminating as much noise as possible from our data. After centering and scaling of the data, we calculated the the loading matrix/scores matrix in order to derive the proportion of variance explained (PVE) and decide the number of principal components needed.
 
-Table4: PCA components
+<b>Table4: PCA components</b>
 
 ```{r PCA_table, echo = FALSE, warning = FALSE}
 # PCA
