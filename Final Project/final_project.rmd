@@ -166,6 +166,8 @@ We then used the Lasso model to assemble the best predictive model possible for 
 
 In the model 3, from the path plot below we could see that minimum AIC occurs at segment 8
 
+<b> Figure1: Pathplot of Lasso (Model 3) </b>
+
 ```{r pathplot3, echo = FALSE, warning = FALSE}
 #Lasso
 Stx1 = sparse.model.matrix(Streams ~ ., data=Clean_data)[,-1] 
@@ -202,6 +204,8 @@ model3
 ```
 
 In the model4, from the path plot below we could see that minimum AIC occurs at segment 5.
+
+<b> Figure2: Pathplot of Lasso (Model 4) </b>
 
 ```{r pathplot4, echo = FALSE, warning = FALSE}
 Stx2 = sparse.model.matrix(Streams ~ (.)^2, data=Clean_data)[,-1] 
@@ -335,6 +339,8 @@ kable(as.data.frame(table1["coefficients"]))
 
 From model 2, we can clearly see that danceability, energy, liveness, loudness, mode, spechiness and key6 have positive effects on streams, which means the more these factors used in the song, the more people the song will be played by. Also, we need to pay attention to release duration of the album . The longer the release duration is, the song will be played by less people, which means people prefer to play latest songs on Spotify.
 
+<b> Figure3: partial dependence plot (Model 5) </b>
+
 ```{r pdp, echo = FALSE, warning = FALSE}
 # partial dependence plot: temp
 p1 = bag_model %>%
@@ -430,7 +436,7 @@ SSE_grid = foreach(k = k_grid, .combine='c') %do% {
 plot(k_grid, SSE_grid, xlab="K",ylab="SSE Grid")
 ```
 
-Figure5: CH Grid vs K
+<b>Figure5: CH Grid vs K</b>
 
 ```{r CH-grid, echo = FALSE, warning = FALSE}
 #CH-grid to find the optimal K  **16
@@ -445,6 +451,8 @@ CH_grid = foreach(k = k_grid, .combine='c') %do% {
 plot(k_grid, CH_grid, xlab="K",
      ylab="CH Grid")
 ```
+
+<b> Figure6: Gap vs K </b>
 
 ```{r Gap, echo = FALSE, warning = FALSE}
 #Gap statistics **4
@@ -464,6 +472,7 @@ As the result, we eventually picked K = 5.
 
 After the 5 clusters are determined, we reversed the principle components into the original features to determine cluster characteristics. We show some of the cluster identifiable distributions and the summary of each cluster below.
 
+
 ```{r K_means, echo = FALSE, warning = FALSE}
 # k-means analysis
 clust2 = kmeanspp(pca_top_data, k=5, nstart=50)
@@ -471,6 +480,8 @@ cluster_result2 = as.data.frame(clust2[1])
 cluster_result2 <- cbind(cluster_result2,sounddata_2018$artist_name,sounddata_2018$name)
 #xtabs(~1+cluster_result2$cluster)
 ```
+
+<b> Figure7: cluster identifiable distributions </b>
 
 ```{r PC1, echo = FALSE, warning = FALSE}
 #PC1
@@ -518,7 +529,8 @@ Cluster 5: Many indie and pop songs with long vowel sounds, typical examples wou
 
 We also calculated the total streams of different song clusters by time. The following graph shows the trend in the total streams of different categories.
 
-From this graph we can see that the stream of five types of songs doesn't change too much in a year.  Cluster 1 music has more streams overall, due to the fact that there are more songs in this categories. There is a peak in the end of April in 2018 for cluster 1, and then the streams goes back to normal. From this graph we can also see that at the end of the year cluster 1 music is not as popular as in the middle of the year, but type 3 music becomes more and more popular, especially in july and the end of the year. The popularity of cluster 2, cluster 4 and cluster 5 music doesn't change too much in the whole year. 
+
+<b> Figure8: trend in the total streams </b>
 
 ```{r trend, echo = FALSE, warning = FALSE}
 #row.names(cluster_result2)
@@ -533,9 +545,13 @@ Trend = sounddata_2018_weekly %>% group_by(Date, cluster) %>%  summarise(StreamN
 Pic = ggplot(data = Trend, mapping = aes(x = as.Date(Trend$Date), y = StreamNum, col = as.factor(cluster)))+
   geom_point()+
   geom_line(aes(group = as.factor(cluster)))+
-  theme(axis.text.x = element_text(angle = 90))
+  theme(axis.text.x = element_text(angle = 90))+
+  labs(x = "Weeks", y = "Streams")
 Pic
 ```
+
+From this graph we can see that the stream of five types of songs doesn't change too much in a year.  Cluster 1 music has more streams overall, due to the fact that there are more songs in this categories. There is a peak in the end of April in 2018 for cluster 1, and then the streams goes back to normal. From this graph we can also see that at the end of the year cluster 1 music is not as popular as in the middle of the year, but type 3 music becomes more and more popular, especially in july and the end of the year. The popularity of cluster 2, cluster 4 and cluster 5 music doesn't change too much in the whole year. 
+
 
 ## Conclusion
 
