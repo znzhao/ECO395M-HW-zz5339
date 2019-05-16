@@ -6,21 +6,21 @@ By Chong Wang, Tianping Wu, Zhenning Zhao, Zhiyang Lin
 Abstract
 --------
 
-that we gathered from Spotify.com. We built linear and non-linear prediction models of the total steams of the songs, and improved the performance of the prediction comparing with the baseline model. We also segmented the songs into 5 groups through unsupervised algorithm, and assessed the popularity trend of different groups through the entire year. The result of this project can help digital music servers improve playlist song recommendations, and help record companies make album promotion decisions.
+In this project, we gathered data from Spotify.com, and built linear and non-linear prediction models of the total streams of the songs, and improved the performance of the prediction comparing with the baseline model. We also segmented the songs into 5 groups through unsupervised algorithm, and assessed the popularity trend for different groups throughout the entire year. The result of this project can help digital music servers improve playlist song recommendations, and help record companies make album promotion decisions.
 
 Introduction
 ------------
 
-Popular music market is remarkably large, especially in recent years. Pop songs inspire generations from all walks of life. Every day, oceans of pop tracks jump on to the Top 200 List of Spotify. In this project, we analysed the data of the 2018 popular music database from Spotify.com, with the aim of helping digital music servers to improve playlist song recommendations, and, helping record companies to make album promotion decisions according to the predictions on the playing streams.
+Popular music market is remarkably large, especially in recent years. Songs inspire generations from all walks of life. Every day, oceans of tracks jump on to the Top 200 List on Spotify. In this project, we analyzed the data of the 2018 popular music database from Spotify.com, with the aim of helping digital music servers to improve playlist song recommendations, and helping record companies to make album promotion decisions according to the predictions on the playing streams.
 
-This project mainly answered the following questions: first, predict the streams of the tracks; and second, analysis the pattern of the popularity trend. As for the first question, we used stepwise method, the lasso method and the random forest and boosting to build a prediction model of track streams, with the features of the songs and the albums as predictors. As for the second question, we firstly used PCA and K-means to cluster the songs by features, dividing songs into different categories; then we plotted the trend of the popularity of different types of songs, showing the changes in the trend of listener's tastes.
+This project mainly answered the following questions: first, predict the streams of the tracks; and second, analysis of the pattern of the popularity trend. As for the first question, we used stepwise method, the lasso method and the random forest and boosting to build a prediction model of track streams, having features of the songs and the albums as predictors. As for the second question, we firstly used PCA and K-means to cluster the songs by features, dividing songs into different categories; then we plotted the trend of the popularity of different types of songs, showing the changes in the trend of listeners' tastes.
 
 Data
 ----
 
-The dataset that we used comes from Spotify.com. Spotify is one of the biggest digital music servicers that includes a variety of songs. From <https://spotifycharts.com>, we downloaded the weekly data of the top 200 songs in the US. The data in year 2018 gives us access to 1,497 different songs.
+Spotify is one of the biggest digital music servicers that includes a variety of songs. From <https://spotifycharts.com>, we downloaded the weekly data of the top 200 songs in the US. The data in year 2018 gives us access to 1,497 different songs.
 
-Thanks to Spotify's public API, we also have access to the data on the song features. We used python robot to gather the data of song features, artists information and album information. In the end, the formal dataset includes the following variables:
+Thanks to Spotify's public API, we also had access to the data on the song features. We used python robot to gather the data of song features, artists and album information. In the end, the formal dataset includes the following variables:
 
 <b>Table1: Variable Descriptions</b>
 
@@ -99,7 +99,7 @@ Thanks to Spotify's public API, we also have access to the data on the song feat
 </tbody>
 </table>
 
-The explanation of the variables comes from the following link: <https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/> Although this project only run on the dataset of 2018, we can do similar analysis for spotify for more songs and more recent data with similar method.
+The explanation of the variables comes from the following link: <https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/> Although this project only runs on the dataset of 2018, we can do similar analysis for spotify for more songs and older data using the similar method.
 
 Prediction
 ----------
@@ -126,9 +126,9 @@ The two selected models are shown below. we had 5 and 31 significant coefficient
     ##     liveness:key6 + acousticness:energy + valence:key6 + mode:key6 + 
     ##     danceability:key8 + key8:explicitTRUE + valence:key8 + speechiness:key8
 
-We then used the Lasso model to assemble the best predictive model possible for streams. We used this method to select above two models. We didn't consider the interaction terms in model 3, while included the interaction terms in model 4.
+We then used the Lasso model to assemble the best predictive model possible for streams. We used this method to select two models above. We did not consider the interaction terms in model 3, but included them in model 4.
 
-In the model 3, from the path plot below we could see that minimum AIC occurs at segment 8
+In the model 3, from the path plot below we could see that minimum AIC occurs at segment 8, where there are 6 coefficients in the model.
 
 <b> Figure1: Pathplot of Lasso (Model 3) </b>
 
@@ -141,7 +141,7 @@ Thus, we used the model at the segment 8 and chose 6 coefficients. The specific 
     ## Streams ~ danceability + speechiness + key8 + explicitTRUE + 
     ##     relseaseDuration
 
-In the model4, from the path plot below we could see that minimum AIC occurs at segment 5.
+In the model 4, from the path plot below we could see that minimum AIC occurs at segment 5, where there are 8 coefficients in the model.
 
 <b> Figure2: Pathplot of Lasso (Model 4) </b>
 
@@ -161,12 +161,12 @@ Table2: RMSE of different models
 
 | Model   | CV               |
 |:--------|:-----------------|
-| Model 1 | 34840435.179146  |
-| Model 2 | 34564106.5343185 |
-| Model 3 | 34826041.1398837 |
-| Model 4 | 34851764.9504253 |
-| Model 5 | 34718963.619308  |
-| Model 6 | 34751194.4492581 |
+| Model 1 | 34802186.114901  |
+| Model 2 | 34571981.9831834 |
+| Model 3 | 34786251.1980486 |
+| Model 4 | 34790460.5500625 |
+| Model 5 | 34406689.4147624 |
+| Model 6 | 35101041.336879  |
 
 Lastly, we used k-fold cross validation in order to compare 6 models above. We found that the CVs of model 2 has the minimum CV, and therefore it is our best predictive model possible for streams. The advantage of a linear model is that a linear model with interactions is much easier to interpret than the non-linear models.
 
@@ -176,52 +176,52 @@ Table3: coefficients of model 2
 
 |                               |  coefficients.Estimate|  coefficients.Std..Error|  coefficients.t.value|  coefficients.Pr...t..|
 |-------------------------------|----------------------:|------------------------:|---------------------:|----------------------:|
-| (Intercept)                   |           1.939546e+07|             1.424285e+07|             1.3617677|              0.1735041|
-| duration\_ms\_x               |          -1.285396e+01|             2.061053e+01|            -0.6236600|              0.5329589|
-| acousticness                  |          -1.132336e+06|             1.357940e+07|            -0.0833863|              0.9335570|
-| danceability                  |           1.930377e+07|             8.110417e+06|             2.3801207|              0.0174486|
-| energy                        |          -5.905232e+06|             1.405362e+07|            -0.4201930|              0.6744130|
-| liveness                      |           1.151387e+08|             3.754734e+07|             3.0664944|              0.0022100|
-| loudness                      |           1.365591e+06|             5.822997e+05|             2.3451678|              0.0191663|
-| mode                          |           6.464018e+06|             3.005014e+06|             2.1510778|              0.0316515|
-| speechiness                   |           3.002956e+07|             1.770453e+07|             1.6961508|              0.0900936|
-| valence                       |          -1.736114e+07|             7.658709e+06|            -2.2668494|              0.0235610|
-| key6                          |           1.542874e+06|             1.062235e+07|             0.1452479|              0.8845374|
-| key8                          |           1.275097e+07|             2.373965e+07|             0.5371171|              0.5912774|
-| key10                         |          -6.852558e+06|             4.138133e+06|            -1.6559541|              0.0979693|
-| explicitTRUE                  |          -6.633616e+07|             2.521885e+07|            -2.6304197|              0.0086274|
-| relseaseDuration              |           9.661472e+01|             3.460742e+02|             0.2791734|              0.7801556|
-| explicitTRUE:relseaseDuration |           8.419318e+03|             3.241924e+03|             2.5970126|              0.0095086|
-| valence:explicitTRUE          |           2.394169e+07|             9.072348e+06|             2.6389734|              0.0084139|
-| duration\_ms\_x:key8          |           5.472764e+01|             7.150119e+01|             0.7654087|              0.4441653|
-| energy:liveness               |          -1.448993e+08|             5.006177e+07|            -2.8944107|              0.0038613|
-| acousticness:liveness         |          -1.308889e+08|             3.908219e+07|            -3.3490662|              0.0008338|
-| mode:speechiness              |          -3.257587e+07|             1.400231e+07|            -2.3264647|              0.0201449|
-| mode:key10                    |           1.534371e+07|             6.877201e+06|             2.2310980|              0.0258424|
-| speechiness:explicitTRUE      |          -3.867105e+07|             1.857743e+07|            -2.0816152|              0.0375704|
-| liveness:key6                 |           5.508033e+07|             3.014694e+07|             1.8270622|              0.0679166|
-| acousticness:energy           |           4.304442e+07|             2.244087e+07|             1.9181261|              0.0553111|
-| valence:key6                  |          -2.779565e+07|             1.810757e+07|            -1.5350291|              0.1250169|
-| mode:key6                     |           1.410961e+07|             7.858246e+06|             1.7955160|              0.0728007|
-| danceability:key8             |          -5.389169e+07|             2.384875e+07|            -2.2597284|              0.0240009|
-| key8:explicitTRUE             |           2.201661e+07|             9.272133e+06|             2.3744920|              0.0177157|
-| valence:key8                  |           1.788809e+07|             1.643636e+07|             1.0883242|              0.2766511|
-| speechiness:key8              |          -3.372025e+07|             2.543891e+07|            -1.3255381|              0.1852226|
+| (Intercept)                   |           1.477139e+07|             1.485051e+07|             0.9946722|              0.3200784|
+| duration\_ms\_x               |          -2.605650e+01|             2.103190e+01|            -1.2389035|              0.2156020|
+| acousticness                  |          -2.563100e+06|             1.417628e+07|            -0.1808020|              0.8565508|
+| danceability                  |           2.093635e+07|             8.411312e+06|             2.4890702|              0.0129305|
+| energy                        |           3.889140e+06|             1.442581e+07|             0.2695959|              0.7875134|
+| liveness                      |           1.365523e+08|             3.889650e+07|             3.5106571|              0.0004621|
+| loudness                      |           1.041643e+06|             6.078866e+05|             1.7135477|              0.0868472|
+| mode                          |           3.864808e+06|             3.200567e+06|             1.2075386|              0.2274416|
+| speechiness                   |           2.145372e+07|             1.910959e+07|             1.1226677|              0.2617833|
+| valence                       |          -1.790494e+07|             8.049094e+06|            -2.2244667|              0.0262860|
+| key6                          |           1.312836e+06|             1.077294e+07|             0.1218643|              0.9030251|
+| key8                          |          -2.688801e+07|             2.472275e+07|            -1.0875817|              0.2769788|
+| key10                         |          -8.169889e+06|             4.400088e+06|            -1.8567559|              0.0635690|
+| explicitTRUE                  |          -7.402228e+07|             2.606267e+07|            -2.8401651|              0.0045784|
+| relseaseDuration              |           9.841779e+01|             3.603640e+02|             0.2731066|              0.7848141|
+| explicitTRUE:relseaseDuration |           9.531865e+03|             3.351770e+03|             2.8438305|              0.0045264|
+| valence:explicitTRUE          |           2.267844e+07|             9.489738e+06|             2.3897859|              0.0169981|
+| duration\_ms\_x:key8          |           1.736374e+02|             7.610545e+01|             2.2815364|              0.0226757|
+| energy:liveness               |          -1.775605e+08|             5.172173e+07|            -3.4329967|              0.0006155|
+| acousticness:liveness         |          -1.204973e+08|             3.865382e+07|            -3.1173467|              0.0018644|
+| mode:speechiness              |          -2.604542e+07|             1.506519e+07|            -1.7288486|              0.0840705|
+| mode:key10                    |           1.757108e+07|             6.870561e+06|             2.5574439|              0.0106557|
+| speechiness:explicitTRUE      |          -3.399285e+07|             2.045238e+07|            -1.6620487|              0.0967410|
+| liveness:key6                 |           5.895453e+07|             3.118061e+07|             1.8907436|              0.0588779|
+| acousticness:energy           |           4.280839e+07|             2.337989e+07|             1.8309917|              0.0673276|
+| valence:key6                  |          -2.895847e+07|             1.907235e+07|            -1.5183480|              0.1291667|
+| mode:key6                     |           1.542865e+07|             8.176206e+06|             1.8870187|              0.0593776|
+| danceability:key8             |          -4.036365e+07|             2.535969e+07|            -1.5916460|              0.1117043|
+| key8:explicitTRUE             |           2.513174e+07|             1.057592e+07|             2.3763173|              0.0176287|
+| valence:key8                  |           3.149553e+07|             1.701434e+07|             1.8511171|              0.0643765|
+| speechiness:key8              |          -3.889988e+07|             2.753208e+07|            -1.4128928|              0.1579235|
 
-From model 2, we can clearly see that danceability, energy, liveness, loudness, mode, spechiness and key6 have positive effects on streams, which means the more these factors used in the song, the more people the song will be played by. Also, we need to pay attention to release duration of the album . The longer the release duration is, the song will be played by less people, which means people prefer to play latest songs on Spotify.
+From model 2, we can clearly see that danceability, energy, liveness, loudness, mode, speechiness and key 6 have positive effects on streams, which means the more these factors used in the song, the more people the song will be played. Also, we need to pay attention to release duration of the album . The longer the release duration is, the song will be played by less people, which means people prefer to play latest songs on Spotify.
 
 <b> Figure3: partial dependence plot (Model 5) </b>
 
 ![](final_project_files/figure-markdown_github/pdp-1.png)
 
-From model 5, we got the Partial dependence functions of the song features, and the result seems robust to the result of model 2. Hence, both linear model and the decision tree model gave us similar results.
+Lastly, from model 5, we got the Partial dependence functions of the song features, and the result seems robust to the result of model 2. Hence, both linear model and the decision tree model gave us similar results.
 
 PCA and Clustering
 ------------------
 
 ### General methodologies
 
-In this section we would like to segment the 1,497 songs into groups with similar features in order to recommend to listeners who share the same interests/taste. For the reason of reducing unnecessary noises and computations, we first reduced the initial 27 variables by PCA. Next, we clustered them into groups with similar principle components, and based on the features in each principal component and the actual songs in each cluster, we were able to describe them in secular terminologies such as ??genre??.
+In this section we would like to segment the 1,497 songs into groups with similar features in order to recommend to listeners who share the same interests/taste. For the reason of reducing unnecessary noises and computations, we first reduced the initial 25 variables by PCA. Next, we clustered them into groups with similar principle components, and based on the features in each principal component and the actual songs in each cluster, we were able to describe them in secular terminologies such as ??genre??.
 
 ### PCA
 
@@ -261,7 +261,7 @@ In the table above, we see that the first 20 principle components explain more t
 
 ### Clustering
 
-K-means++ clustering was used to determine our market segments. 3 types of supporting analysis were used to help us determine the the number of them(centroids): Elbow plot(SSE), CH index and Gap statistics.
+K-means++ clustering was used to determine our market segments. 3 types of supporting analysis were used to help us determine the number of K (centroids): Elbow plot(SSE), CH index and Gap statistics.
 
 Figure4: SSE Grid vs K
 
@@ -285,7 +285,7 @@ As the result, we eventually picked K = 5.
 
 ### Song market segments breakdown by distribution of features
 
-After the 5 clusters are determined, we reversed the principle components into the original features to determine cluster characteristics. We show some of the cluster identifiable distributions and the summary of each cluster below.
+After the 5 clusters were determined, we reversed the principle components into the original features to determine cluster characteristics. We showed some of the cluster identifiable distributions and the summary of each cluster below.
 
 <b> Figure7: cluster identifiable distributions </b>
 
@@ -307,7 +307,7 @@ After the 5 clusters are determined, we reversed the principle components into t
 
 ### Song market segments breakdown by genre
 
-Since we have the full list of song names and artist names available in each cluster, we could actually listen to the songs and categorize them manually by the music genre standard as in pop, rock, rap, etc. If our cluster characteristics determined by K-means++ show close resemblance of the music genre, then our recommendation system may be effective, at least to the extent of traditional music listeners with distinct preference over specific genre.
+Since we have the full list of song names and artist names available in each cluster, we could actually listen to the songs and categorize them manually by the music genre standard as in pop, rock, rap, etc. If our cluster characteristics determined by K-means++ show close resemblance of the music genre, then our recommendation system could be effective, at least to the extent of traditional music listeners with distinct preference over specific genre.
 
 Cluster 1: Many songs with electronically altered/amplified sounds, very rhythmic, but genre varying from pop to rap to country, etc. Typical examples would be I Get The Bag by Gucci Mane, Echame La Culpa by Luis Fonsi, IDGAF by Dua Lipa.
 
@@ -321,17 +321,17 @@ Cluster 5: Many indie and pop songs with long vowel sounds, typical examples wou
 
 ### Trend in popularity
 
-We also calculated the total streams of different song clusters by time. The following graph shows the trend in the total streams of different categories.
+We also calculated the total streams of different song clusters by time. The following graph demonstrates the trend in the total streams of different categories.
 
 <b> Figure8: trend in the total streams </b>
 
 ![](final_project_files/figure-markdown_github/trend-1.png)
 
-From this graph we can see that the stream of five types of songs doesn't change too much in a year. Cluster 1 music has more streams overall, due to the fact that there are more songs in this categories. There is a peak in the end of April in 2018 for cluster 1, and then the streams goes back to normal. From this graph we can also see that at the end of the year cluster 1 music is not as popular as in the middle of the year, but type 3 music becomes more and more popular, especially in july and the end of the year. The popularity of cluster 2, cluster 4 and cluster 5 music doesn't change too much in the whole year.
+From this graph it is demonstrated that the stream of five types of songs does not change too much in a year. Cluster 4 music has more streams overall, due to the fact that there are more songs in this categories. There is a peak in the end of April in 2018 for cluster 4, and then the streams goes back to normal. From this graph we can also see that at the end of the year cluster 4 music is not as popular as in the middle of the year, but type 5 music becomes more and more popular, especially in June and the end of the year. The popularity of cluster 1, cluster 2 and cluster 3 music doesn't change too much in the whole year. 
 
 Conclusion
 ----------
 
-In each age, the popularity of songs reflects people's preference to music, which may differ from each era. To predict the success of a song, we need take care of the contemporaneous music preference. In 2018, modern people are crazy about music elements of danceability, energy, liveness and so on. It seems that they are more likely to pursue the latest music. As a result, In order to predict the song's popularity trend in 2019, the first thing we need to do is to gather the information of public music preference next year.
+In each age, the popularity of songs reflects people's preference over different music, which may also differ from each era. To predict the success of a song, we need to take care of the contemporaneous music preference. In 2018, modern people are crazy about music elements of danceability, energy, liveness and so on. It seems that they are more likely to pursue the latest music. As a result, in order to predict the song's popularity trend in 2019, the first thing we need to do is to gather the information of public music preference next year.
 
-Traditionally music listeners explore songs by specific genre and artists. This confirmation bias, typically nurtured through years of artificial genre segmentation by media and artist reputation, could be limiting listeners from the songs that they really want to exposed to. The question of "why are we attracted to certain songs" is a philosophical discussion that is beyond the scope of our project here, but given the data from spotify data and our clustering method, we perhaps show that key, time signature and speed of the songs are some of the contributing factors to our inner biological working of what to like and dislike. Then, our basic recommendation system, most likely already used by music industry like Spotify, could recommend songs not by mere genre and artist names, but also by specific keys and time signatures each listener is attracted to, subconsciously.
+Traditional music listeners explore songs by specific genre and artists. This confirmation bias, typically nurtured through years of artificial genre segmentation by media and artist reputation, could limit listeners from the songs that they really want to be expoed to. The question of "why are we attracted to certain songs" is a philosophical discussion that is beyond the scope of our project here, but given the data from Spotify data and our clustering method, we perhaps show that key, time signature and speed of the songs are some of the contributing factors to our inner biological working of what to like and dislike. Then, our basic recommendation system, most likely already used by music industry like Spotify, could recommend songs not by mere genre and artist names, but also by specific keys and time signatures each listener is attracted to, subconsciously.
